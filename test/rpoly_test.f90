@@ -5,15 +5,15 @@
     program rpoly_test
 
     use iso_fortran_env
-    use polyroots_module, only: wp => polyroots_module_rk, rpoly
+    use polyroots_module, only: wp => polyroots_module_rk, rpoly, qr_algeq_solver
 
     implicit none
 
-    real (wp)  :: p(50), zr(50), zi(50)
-    integer    :: degree, i
+    real (wp)  :: p(50), zr(50), zi(50), detil, c(0:9)
+    integer    :: degree, i, istatus
     logical    :: fail
 
-    write(*, '(A)') ' example 1. polynomial with zeros 1,2,...,10.'
+    write(*, '(/A)') 'rpoly example 1. polynomial with zeros 1,2,...,10.'
 
     degree = 10
     p(1) = 1._wp
@@ -36,17 +36,29 @@
                                     (zr(i), zi(i), i=1,degree)
     end if
 
+    ! only for monic polynomial (p(1) = 1)
+    write(*, '(/A)') 'qr_algeq_solver example 1. polynomial with zeros 1,2,...,10.'
+    ! have to reorder the coefficients for this routine:
+    do i = 0, degree-1
+        c(i) = p(degree+1-i)
+    end do
+    zr = 0.0_wp
+    zi = 0.0_wp
+    call qr_algeq_solver(degree,c,zr,zi,detil,istatus)
+    write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+            (zr(i), zi(i), i=1,degree)
+
     ! this test provided by larry wigton
 
-    write(*, *)
-    write(*, *) "now try case where 1 is an obvious root"
+    write(*, '(/A)') 'rpoly example 2. polynomial with zeros 1,2,...,10.'
+    write(*, '(A)')  '[a case where 1 is an obvious root]'
     degree = 5
-    p(1) = 8.d0
-    p(2) = -8.d0
-    p(3) = 16.d0
-    p(4) = -16.d0
-    p(5) = 8.d0
-    p(6) = -8.d0
+    p(1) = 8.0_wp
+    p(2) = -8.0_wp
+    p(3) = 16.0_wp
+    p(4) = -16.0_wp
+    p(5) = 8.0_wp
+    p(6) = -8.0_wp
 
     call rpoly(p, degree, zr, zi, fail)
     if (fail) then
