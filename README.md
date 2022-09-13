@@ -14,6 +14,15 @@ A modern Fortran library for finding the roots of polynomials.
 
 **This is a work in progress**
 
+## Methods
+
+Method name | Polynomial type | Coefficients | Roots | Description
+--- | --- | --- | --- | ---
+`rpoly` | General | real | complex | [Jenkins & Traub](https://dl.acm.org/doi/10.1145/355637.355643)
+`dcbcrt` | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
+`dqdcrt` | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
+
+
 ## Compiling
 
 A `fmp.toml` file is provided for compiling polyroots-fortran with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
@@ -55,8 +64,6 @@ polyroots-fortran = { git="https://github.com/jacobwilliams/polyroots-fortran.gi
 ```
 
 To generate the documentation using [ford](https://github.com/Fortran-FOSS-Programmers/ford), run: ```ford polyroots-fortran.md```
-
-## Usage
 
 ## Documentation
 
