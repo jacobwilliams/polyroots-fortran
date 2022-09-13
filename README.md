@@ -22,7 +22,8 @@ Method name | Polynomial type | Coefficients | Roots | Description
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`qr_algeq_solver`](https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html) | Monic | real | complex | [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf)
-
+[`rpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpzero.f)
+[`cpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpzero.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpzero.f)
 
 ## Compiling
 

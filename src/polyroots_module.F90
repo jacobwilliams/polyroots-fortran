@@ -39,9 +39,12 @@ module polyroots_module
    integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
 
    real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
+   real(wp), parameter :: pi = acos(-1.0_wp)
 
    ! general polynomial routines:
    public :: rpoly
+   public :: cpzero
+   public :: rpzero
 
    ! special polynomial routines:
    public :: dcbcrt
@@ -50,6 +53,7 @@ module polyroots_module
 
    ! utility routines:
    public :: dcbrt
+   public :: cpevl
 
 contains
 !*****************************************************************************************
@@ -88,7 +92,7 @@ contains
       integer   :: cnt, nz, i, j, jj, l, nm1
       logical   :: zerok
 
-      real(wp),parameter :: deg2rad = acos(-1.0_wp) / 180.0_wp
+      real(wp),parameter :: deg2rad = pi / 180.0_wp
       real(wp),parameter :: cosr = cos(94.0_wp * deg2rad)
       real(wp),parameter :: sinr = sin(86.0_wp * deg2rad)
       real(wp),parameter :: base = radix(0.0_wp)
@@ -1610,6 +1614,279 @@ subroutine balance_companion(n,a)
     end subroutine hqr_eigen_hessenberg
 
     end subroutine qr_algeq_solver
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Evaluate a complex polynomial and its derivatives.
+!  Optionally compute error bounds for these values.
+!
+!***REVISION HISTORY  (YYMMDD)
+!  * 810223  DATE WRITTEN
+!  * 890531  Changed all specific intrinsics to generic.  (WRB)
+!  * 890831  Modified array declarations.  (WRB)
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900402  Added TYPE section.  (WRB)
+!  * Jacob Williams, 9/13/2022 : modernized this routine
+
+    subroutine cpevl(n,m,a,z,c,b,kbd)
+
+    implicit none
+
+    integer,intent(in) :: n !! Degree of the polynomial
+    integer,intent(in) :: m !! Number of derivatives to be calculated:
+                            !!
+                            !!  * M=0 evaluates only the function
+                            !!  * M=1 evaluates the function and first derivative, etc.
+                            !!
+                            !! if M > N+1 function and all N derivatives will be calculated.
+    complex(wp),intent(in) :: a(*) !! vector containing the N+1 coefficients of polynomial.
+                                   !! A(I) = coefficient of Z**(N+1-I)
+    complex(wp),intent(in) :: z !! point at which the evaluation is to take place
+    complex(wp),intent(out) :: c(*) !! Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
+                                    !! derivative at Z, I=0,...,M
+    complex(wp),intent(out) :: b(*) !! Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
+                                    !! of C(I) if they were requested. only needed if bounds are to be calculated.
+                                    !! It is not used otherwise.
+    logical,intent(in) :: kbd !! A logical variable, e.g. .TRUE. or .FALSE. which is
+                              !! to be set .TRUE. if bounds are to be computed.
+
+    real(wp) :: r , s
+    integer :: i , j , mini , np1
+    complex(wp) :: ci , cim1 , bi , bim1 , t , za , q
+
+    real(wp),parameter :: d1 = real(radix(1.0_wp))**(1-digits(1.0_wp))
+
+    za(q) = cmplx(abs(real(q,wp)),abs(aimag(q)),wp)
+    np1 = n + 1
+    do j = 1 , np1
+        ci = 0.0_wp
+        cim1 = a(j)
+        bi = 0.0_wp
+        bim1 = 0.0_wp
+        mini = min(m+1,n+2-j)
+        do i = 1 , mini
+            if ( j/=1 ) ci = c(i)
+            if ( i/=1 ) cim1 = c(i-1)
+            c(i) = cim1 + z*ci
+            if ( kbd ) then
+                if ( j/=1 ) bi = b(i)
+                if ( i/=1 ) bim1 = b(i-1)
+                t = bi + (3.0_wp*d1+4.0_wp*d1*d1)*za(ci)
+                r = real(za(z)*cmplx(real(t,wp),-aimag(t), wp), wp)
+                s = aimag(za(z)*t)
+                b(i) = (1.0_wp + 8.0_wp*d1)*(bim1+d1*za(cim1)+cmplx(r,s,wp))
+                if ( j==1 ) b(i) = 0.0_wp
+            endif
+        enddo
+    enddo
+
+    end subroutine cpevl
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Find the zeros of a polynomial with complex coefficients:
+!  `P(Z)= A(1)*Z**N + A(2)*Z**(N-1) +...+ A(N+1)`
+!
+!***REVISION HISTORY  (YYMMDD)
+!  * 810223  DATE WRITTEN. Kahaner, D. K., (NBS)
+!  * 890531  Changed all specific intrinsics to generic.  (WRB)
+!  * 890531  REVISION DATE from Version 3.2
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * Jacob Williams, 9/13/2022 : modernized this routine
+
+subroutine cpzero(in,a,r,t,iflg,s)
+
+    implicit none
+
+    integer,intent(in) :: in !! degree of P(Z)
+    complex(wp),intent(in) :: a(*) !! complex vector containing coefficients of P(Z),
+                                   !! A(I) = coefficient of Z**(N+1-i)
+    complex(wp),intent(inout) :: r(*) !! N word complex vector. On input: containing initial estimates for zeros
+                                      !! if these are known. On output: Ith zero
+    complex(wp) :: t(*) !! 4(N+1) word array used for temporary storage
+    integer,intent(inout) :: iflg !!### On Input:
+                                  !!
+                                  !! flag to indicate if initial estimates of zeros are input:
+                                  !!
+                                  !!  * If IFLG == 0, no estimates are input.
+                                  !!  * If IFLG /= 0, the vector R contains estimates of the zeros
+                                  !!
+                                  !! ** WARNING ****** If estimates are input, they must
+                                  !!                   be separated, that is, distinct or
+                                  !!                   not repeated.
+                                  !!### On Output:
+                                  !!
+                                  !! Error Diagnostics:
+                                  !!
+                                  !! * If IFLG == 0 on return, all is well
+                                  !! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input
+                                  !! * If IFLG == 2 on return, the program failed to converge
+                                  !!   after 25*N iterations.  Best current estimates of the
+                                  !!   zeros are in R(I).  Error bounds are not calculated.
+    real(wp),intent(out) :: s(*) !! an N word array. S(I) = bound for R(I)
+
+    integer :: i , imax , j , n , n1 , nit , nmax , nr
+    real(wp) :: u , v , x
+    complex(wp) :: pn , temp
+    complex(wp) :: ctmp(1), btmp(1)
+
+    if ( in<=0 .or. abs(a(1))==0.0_wp ) then
+        iflg = 1
+        return
+    else
+
+        ! check for easily obtained zeros
+
+        n = in
+        n1 = n + 1
+        if ( iflg==0 ) then
+20         n1 = n + 1
+            if ( n<=1 ) then
+                r(1) = -a(2)/a(1)
+                s(1) = 0.0_wp
+                return
+            elseif ( abs(a(n1))/=0.0_wp ) then
+                ! if initial estimates for zeros not given, find some
+                temp = -a(2)/(a(1)*n)
+                call cpevl(n,n,a,temp,t,t,.false.)
+                imax = n + 2
+                t(n1) = abs(t(n1))
+                do i = 2 , n1
+                t(n+i) = -abs(t(n+2-i))
+                if ( real(t(n+i),wp)<real(t(imax),wp) ) imax = n + i
+                enddo
+                x = (-real(t(imax),wp)/real(t(n1),wp))**(1.0_wp/(imax-n1))
+                do
+                x = 2.0_wp*x
+                call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                pn = ctmp(1)
+                if ( real(pn,wp)>=0.0_wp ) exit
+                end do
+                u = 0.5_wp*x
+                v = x
+            do
+                x = 0.5_wp*(u+v)
+                call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                pn = ctmp(1)
+                if ( real(pn,wp)>0.0_wp ) v = x
+                if ( real(pn,wp)<=0.0_wp ) u = x
+                if ( (v-u)<=0.001_wp*(1.0_wp+v) ) exit
+            end do
+                do i = 1 , n
+                u = (pi/n)*(2*i-1.5_wp)
+                r(i) = max(x,0.001_wp*abs(temp))*cmplx(cos(u),sin(u),wp) + temp
+                enddo
+            else
+                r(n) = 0.0_wp
+                s(n) = 0.0_wp
+                n = n - 1
+                goto 20
+            endif
+        endif
+
+        ! main iteration loop starts here
+        nr = 0
+        nmax = 25*n
+        do nit = 1 , nmax
+            do i = 1 , n
+                if ( nit==1 .or. abs(t(i))/=0.0_wp ) then
+                call cpevl(n,0,a,r(i),ctmp,btmp,.true.)
+                pn = ctmp(1)
+                temp = btmp(1)
+                if ( abs(real(pn,wp))+abs(aimag(pn))>real(temp,wp)+aimag(temp) ) then
+                    temp = a(1)
+                    do j = 1 , n
+                        if ( j/=i ) temp = temp*(r(i)-r(j))
+                    enddo
+                    t(i) = pn/temp
+                else
+                    t(i) = 0.0_wp
+                    nr = nr + 1
+                endif
+                endif
+            enddo
+            do i = 1 , n
+                r(i) = r(i) - t(i)
+            enddo
+            if ( nr==n ) goto 100
+        enddo
+        ! error exit
+        iflg = 2
+        return
+    endif
+
+  ! calculate error bounds for zeros
+100  do nr = 1 , n
+        call cpevl(n,n,a,r(nr),t,t(n+2),.true.)
+        x = abs(cmplx(abs(real(t(1),wp)),abs(aimag(t(1))),wp)+t(n+2))
+        s(nr) = 0.0_wp
+        do i = 1 , n
+            x = x*real(n1-i,wp)/i
+            temp = cmplx(max(abs(real(t(i+1),wp))-real(t(n1+i),wp),0.0_wp), &
+                    max(abs(aimag(t(i+1)))-aimag(t(n1+i)),0.0_wp), wp)
+            s(nr) = max(s(nr),(abs(temp)/x)**(1.0_wp/i))
+        enddo
+        s(nr) = 1.0_wp/s(nr)
+    enddo
+
+    end subroutine cpzero
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Find the zeros of a polynomial with real coefficients:
+!  `P(X)= A(1)*X**N + A(2)*X**(N-1) +...+ A(N+1)`
+!
+!***REVISION HISTORY  (YYMMDD)
+!  * 810223  DATE WRITTEN. Kahaner, D. K., (NBS)
+!  * 890206  REVISION DATE from Version 3.2
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * Jacob Williams, 9/13/2022 : modernized this routine
+!
+!@note This is just a wrapper to [[cpzero]]
+
+    subroutine rpzero(n,a,r,t,iflg,s)
+
+    implicit none
+
+    integer,intent(in) :: n !! degree of P(X)
+    real(wp),intent(in) :: a(*) !! real vector containing coefficients of P(X),
+                                !! A(I) = coefficient of X**(N+1-I)
+    complex(wp),intent(inout) :: r(*) !! N word complex vector. On Input: containing initial estimates for zeros
+                                      !! if these are known. On output: ith zero.
+    complex(wp) :: t(*) !! 6(N+1) word array used for temporary storage
+    integer,intent(inout) :: iflg !!### On Input:
+                                  !!
+                                  !! flag to indicate if initial estimates of zeros are input:
+                                  !!
+                                  !!  * If IFLG == 0, no estimates are input.
+                                  !!  * If IFLG /= 0, the vector R contains estimates of the zeros
+                                  !!
+                                  !! ** WARNING ****** If estimates are input, they must
+                                  !!                   be separated, that is, distinct or
+                                  !!                   not repeated.
+                                  !!### On Output:
+                                  !!
+                                  !! Error Diagnostics:
+                                  !!
+                                  !! * If IFLG == 0 on return, all is well
+                                  !! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input
+                                  !! * If IFLG == 2 on return, the program failed to converge
+                                  !!   after 25*N iterations.  Best current estimates of the
+                                  !!   zeros are in R(I).  Error bounds are not calculated.
+    real(wp),intent(out) :: s(*) !! an N word array. bound for R(I).
+
+    integer :: i, n1
+
+    n1 = n + 1
+    do i = 1 , n1
+        t(i) = cmplx(a(i), 0.0_wp, wp)
+    enddo
+    call cpzero(n,t,r,t(n+2),iflg,s)
+
+    end subroutine rpzero
 !*****************************************************************************************
 
 !*****************************************************************************************
