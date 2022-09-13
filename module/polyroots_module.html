@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1057 statements</a>
+    title="100.0% of total for modules and submodules.">1214 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -106,6 +106,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#variable-polyroots_module_rk">polyroots_module_rk</a>
       <a class="list-group-item" href="../module/polyroots_module.html#variable-wp">wp</a>
       <a class="list-group-item" href="../module/polyroots_module.html#variable-eps">eps</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#variable-pi">pi</a>
     </div>
   </div>
 </div>
@@ -125,6 +126,9 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbcrt">dcbcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dqdcrt">dqdcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-qr_algeq_solver">qr_algeq_solver</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
     </div>
   </div>
 </div>
@@ -169,6 +173,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#variable-polyroots_module_rk">polyroots_module_rk</a>
       <a class="list-group-item" href="../module/polyroots_module.html#variable-wp">wp</a>
       <a class="list-group-item" href="../module/polyroots_module.html#variable-eps">eps</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#variable-pi">pi</a>
     </div>
   </div>
 </div>
@@ -188,6 +193,9 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbcrt">dcbcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dqdcrt">dqdcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-qr_algeq_solver">qr_algeq_solver</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
     </div>
   </div>
 </div>
@@ -215,6 +223,11 @@
   <td><span class="anchor" id="variable-eps"></span>real(kind=wp),</td>
 <td>private,</td>  <td>parameter</td><td>::</td>
   <td><strong>eps</strong></td><td> =</td><td>epsilon(1.0_wp)</td><td><p>machine epsilon</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-pi"></span>real(kind=wp),</td>
+<td>private,</td>  <td>parameter</td><td>::</td>
+  <td><strong>pi</strong></td><td> =</td><td>acos(-1.0_wp)</td><td></td>
 </tr>
 </tbody>
 </table>
@@ -420,6 +433,219 @@ in the latter case degree is reset to the number of zeros found.</p></td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>istatus</strong></td><td><p>return code from <code>hqr_eigen_hessenberg</code></p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpevl"></span><h3>public subroutine <a href='../proc/cpevl.html'>cpevl</a>(n, m, a, z, c, b, kbd)</h3></div>
+  <div class="panel-body">
+       
+<p>Evaluate a complex polynomial and its derivatives.
+  Optionally compute error bounds for these values.</p><a href="../proc/cpevl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>Degree of the polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>m</strong></td><td><p>Number of derivatives to be calculated:</p>
+<ul>
+<li>M=0 evaluates only the function</li>
+<li>M=1 evaluates the function and first derivative, etc.</li>
+</ul>
+<p>if M &gt; N+1 function and all N derivatives will be calculated.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(*)</td><td><p>vector containing the N+1 coefficients of polynomial.
+A(I) = coefficient of Z**(N+1-I)</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>z</strong></td><td><p>point at which the evaluation is to take place</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>c</strong>(*)</td><td><p>Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
+derivative at Z, I=0,...,M</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>b</strong>(*)</td><td><p>Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
+of C(I) if they were requested. only needed if bounds are to be calculated.
+It is not used otherwise.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>logical,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>kbd</strong></td><td><p>A logical variable, e.g. .TRUE. or .FALSE. which is
+to be set .TRUE. if bounds are to be computed.</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpzero"></span><h3>public subroutine <a href='../proc/cpzero.html'>cpzero</a>(in, a, r, t, iflg, s)</h3></div>
+  <div class="panel-body">
+       
+<p>Find the zeros of a polynomial with complex coefficients:
+  <code>P(Z)= A(1)*Z**N + A(2)*Z**(N-1) +...+ A(N+1)</code></p><a href="../proc/cpzero.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>in</strong></td><td><p>degree of P(Z)</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(*)</td><td><p>complex vector containing coefficients of P(Z),
+A(I) = coefficient of Z**(N+1-i)</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>r</strong>(*)</td><td><p>N word complex vector. On input: containing initial estimates for zeros
+if these are known. On output: Ith zero</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp)</td>
+<td></td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>t</strong>(*)</td><td><p>4(N+1) word array used for temporary storage</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>iflg</strong></td><td><h3>On Input:</h3>
+<p>flag to indicate if initial estimates of zeros are input:</p>
+<ul>
+<li>If IFLG == 0, no estimates are input.</li>
+<li>If IFLG /= 0, the vector R contains estimates of the zeros</li>
+</ul>
+<p><strong> WARNING </strong>**** If estimates are input, they must
+                   be separated, that is, distinct or
+                   not repeated.</p>
+<h3>On Output:</h3>
+<p>Error Diagnostics:</p>
+<ul>
+<li>If IFLG == 0 on return, all is well</li>
+<li>If IFLG == 1 on return, A(1)=0.0 or N=0 on input</li>
+<li>If IFLG == 2 on return, the program failed to converge
+   after 25*N iterations.  Best current estimates of the
+   zeros are in R(I).  Error bounds are not calculated.</li>
+</ul></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>s</strong>(*)</td><td><p>an N word array. S(I) = bound for R(I)</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rpzero"></span><h3>public subroutine <a href='../proc/rpzero.html'>rpzero</a>(n, a, r, t, iflg, s)</h3></div>
+  <div class="panel-body">
+       
+<p>Find the zeros of a polynomial with real coefficients:
+  <code>P(X)= A(1)*X**N + A(2)*X**(N-1) +...+ A(N+1)</code></p><a href="../proc/rpzero.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>degree of P(X)</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(*)</td><td><p>real vector containing coefficients of P(X),
+A(I) = coefficient of X**(N+1-I)</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>r</strong>(*)</td><td><p>N word complex vector. On Input: containing initial estimates for zeros
+if these are known. On output: ith zero.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp)</td>
+<td></td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>t</strong>(*)</td><td><p>6(N+1) word array used for temporary storage</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>iflg</strong></td><td><h3>On Input:</h3>
+<p>flag to indicate if initial estimates of zeros are input:</p>
+<ul>
+<li>If IFLG == 0, no estimates are input.</li>
+<li>If IFLG /= 0, the vector R contains estimates of the zeros</li>
+</ul>
+<p><strong> WARNING </strong>**** If estimates are input, they must
+                   be separated, that is, distinct or
+                   not repeated.</p>
+<h3>On Output:</h3>
+<p>Error Diagnostics:</p>
+<ul>
+<li>If IFLG == 0 on return, all is well</li>
+<li>If IFLG == 1 on return, A(1)=0.0 or N=0 on input</li>
+<li>If IFLG == 2 on return, the program failed to converge
+   after 25*N iterations.  Best current estimates of the
+   zeros are in R(I).  Error bounds are not calculated.</li>
+</ul></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>s</strong>(*)</td><td><p>an N word array. bound for R(I).</p></td>
 </tr>
 </tbody>
 </table>
