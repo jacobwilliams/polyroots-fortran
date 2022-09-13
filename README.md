@@ -89,7 +89,7 @@ The polyroots-fortran source code and related files and documentation are distri
 ## References
 
 * [GAMS Class F1a](https://gams.nist.gov/cgi-bin/serve.cgi/Class/F1a).
-* `RPOLY` and `CPOLY` from Jenkins and Traub (1975) which can be found on Netlib.
+* `RPOLY` and `CPOLY` from Jenkins and Traub (1975) which can be found on Netlib. See also [Alan Miller's updated version](https://jblevins.org/mirror/amiller/rpoly.f90).
 * `qralg.f` (part of [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib) from [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf),
 * [Codes from Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/) and
 * [eiscor - eigensolvers based on unitary core transformations](https://github.com/eiscor/eiscor) containing the AMVW method from the work of [Aurentz et al. (2015), Fast and Backward Stable Computation of Roots of Polynomials](https://doi.org/10.1137/140983434) (an earlier version can be picked up from [the website of Ran Vandebril](https://people2.cs.kuleuven.be/~raf.vandebril/homepage/software/companion_qr.php?menu=5), one of the co-authors of that paper).
