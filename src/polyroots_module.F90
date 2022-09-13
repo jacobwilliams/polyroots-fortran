@@ -38,7 +38,7 @@ module polyroots_module
 
    integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
 
-   real(wp), parameter :: eps = epsilon(1.0_wp)
+   real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
 
    ! general polynomial routines:
    public :: rpoly
@@ -46,8 +46,9 @@ module polyroots_module
    ! special polynomial routines:
    public :: dcbcrt
    public :: dqdcrt
+   public :: qr_algeq_solver
 
-   ! utilities routines:
+   ! utility routines:
    public :: dcbrt
 
 contains
@@ -91,7 +92,7 @@ contains
       real(wp),parameter :: cosr = cos(94.0_wp * deg2rad)
       real(wp),parameter :: sinr = sin(86.0_wp * deg2rad)
       real(wp),parameter :: base = radix(0.0_wp)
-      real(wp),parameter :: eta = epsilon(1.0_wp)
+      real(wp),parameter :: eta = eps
       real(wp),parameter :: infin = huge(0.0_wp)
       real(wp),parameter :: smalno = tiny(0.0_wp)
       real(wp),parameter :: sqrthalf = sqrt(0.5_wp)
@@ -1223,5 +1224,394 @@ contains
 !*****************************************************************************************
 
 !*****************************************************************************************
-end module polyroots_module
+!>
+!  Solve the real coefficient monic algebraic equation by the qr-method.
+!
+!### Reference
+!  * [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib
+!    from [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf),
+
+   subroutine qr_algeq_solver(n,c,zr,zi,detil,istatus)
+
+    implicit none
+
+    integer,intent(in) :: n !! degree of the monic polynomial.
+    real(wp),intent(in) :: c(0:n-1) !! non-principal coefficients of the polynomial.
+                                    !! `i`-th degree coefficients is stored in `c(i)`.
+    real(wp),intent(out) :: zr(n) !! real part of output roots
+    real(wp),intent(out) :: zi(n) !! imaginary part of output roots
+    real(wp),intent(out) :: detil !! accuracy hint.
+    integer,intent(out) :: istatus !! return code from `hqr_eigen_hessenberg`
+
+    real(wp),allocatable :: a(:,:) !! work matrix
+    integer ,allocatable :: cnt(:) !! work area for counting the qr-iterations
+    integer :: i
+    integer :: iter
+    real(wp) :: afnorm
+
+    if ( n<=0 ) then
+       ! invalid arguments
+       istatus = 3
+       return
+    endif
+
+    allocate(a(n,n))
+    allocate(cnt(n))
+
+    ! build the companion matrix a.
+    call build_companion(n,a,c)
+
+    ! balancing the a itself.
+    call balance_companion(n,a)
+
+    ! compute the frobenius norm of the balanced companion matrix a.
+    afnorm = frobenius_norm_companion(n,a)
+
+    ! qr iterations from a.
+    call hqr_eigen_hessenberg(n,a,zr,zi,cnt,istatus)
+    if ( istatus/=0 ) then
+        write(*,'(A,1X,I4)')  'abnormal from hqr_eigen_hessenberg. istatus=' , istatus
+       if ( istatus==1 ) write(*,'(A)') 'matrix is completely zero.'
+       if ( istatus==2 ) write(*,'(A)') 'qr iteration does not converged.'
+       if ( istatus>3 )  write(*,'(A)') 'arguments violate the condition.'
+       return
+    endif
+
+    ! count the total qr iteration.
+    iter = 0
+    do i = 1 , n
+       if ( cnt(i)>0 ) iter = iter + cnt(i)
+    enddo
+
+    ! calculate the accuracy hint.
+    detil = eps*n*iter*afnorm
+
+contains
+
+subroutine build_companion(n,a,c)
+    !!  build the companion matrix of the polynomial.
+    implicit none
+
+    integer,intent(in)   :: n
+    real(wp),intent(out) :: a(n,n)
+    real(wp),intent(in)  :: c(0:n-1) !! coefficients in order of decreasing powers
+
+    integer i , j
+
+    do j = 1 , n
+       do i = 1 , n
+          a(i,j) = 0.0_wp
+       enddo
+    enddo
+
+    do i = 2 , n
+       a(i,i-1) = 1.0_wp
+    enddo
+
+    do i = 1 , n
+       a(i,n) = -c(i-1)
+    enddo
+
+end subroutine build_companion
+
+subroutine balance_companion(n,a)
+
+    !!  blancing the unsymmetric matrix `a`.
+    !!
+    !!  this fortran code is based on the algol code "balance" from paper:
+    !!   "balancing a matrixfor calculation of eigenvalues and eigenvectors"
+    !!   by b.n.parlett and c.reinsch, numer. math. 13, 293-304(1969).
+    !!
+    !!  note: the only non-zero elements of the companion matrix are touched.
+
+    implicit none
+    integer,intent(in) :: n
+    real(wp) :: a(n,n)
+
+    integer,parameter :: b = radix(1.0_wp) !! base of the floating point representation on the machine
+    integer,parameter :: b2 = b**2
+
+    integer :: i , j
+    real(wp) :: c , f , g , r , s
+    logical :: noconv
+
+    if ( n<=1 ) return ! do nothing
+
+    ! iteration:
+    main : do
+        noconv = .false.
+        do i = 1 , n
+            ! touch only non-zero elements of companion.
+            if ( i/=n ) then
+                c = abs(a(i+1,i))
+            else
+                c = 0.0_wp
+                do j = 1 , n - 1
+                    c = c + abs(a(j,n))
+                enddo
+            endif
+            if ( i==1 ) then
+                r = abs(a(1,n))
+            elseif ( i/=n ) then
+                r = abs(a(i,i-1)) + abs(a(i,n))
+            else
+                r = abs(a(i,i-1))
+            endif
+
+            if ( c/=0.0_wp .and. r/=0.0_wp ) then
+
+                g = r/b
+                f = 1.0_wp
+                s = c + r
+                do
+                    if ( c>=g ) exit
+                    f = f*b
+                    c = c*b2
+                end do
+                g = r*b
+                do
+                    if ( c<g ) exit
+                    f = f/b
+                    c = c/b2
+                end do
+                if ( (c+r)/f<0.95_wp*s ) then
+                    g = 1.0_wp/f
+                    noconv = .true.
+                    ! touch only non-zero elements of companion.
+                    if ( i==1 ) then
+                        a(1,n) = a(1,n)*g
+                    else
+                        a(i,i-1) = a(i,i-1)*g
+                        a(i,n) = a(i,n)*g
+                    endif
+                    if ( i/=n ) then
+                        a(i+1,i) = a(i+1,i)*f
+                    else
+                        do j = 1 , n
+                            a(j,i) = a(j,i)*f
+                        enddo
+                    endif
+                endif
+            endif
+        enddo
+        if ( noconv ) cycle main
+        exit main
+    end do main
+
+    end subroutine balance_companion
+
+    function frobenius_norm_companion(n,a) result(afnorm)
+
+    !!  calculate the frobenius norm of the companion-like matrix.
+    !!  note: the only non-zero elements of the companion matrix are touched.
+
+    implicit none
+
+    integer,intent(in) :: n
+    real(wp),intent(in) :: a(n,n)
+    real(wp) :: afnorm
+
+    integer :: i , j
+    real(wp) :: sum
+
+    sum = 0.0_wp
+    do j = 1 , n - 1
+       sum = sum + a(j+1,j)**2
+    enddo
+    do i = 1 , n
+       sum = sum + a(i,n)**2
+    enddo
+    afnorm = sqrt(sum)
+
+    end function frobenius_norm_companion
+
+    subroutine hqr_eigen_hessenberg(n0,h,wr,wi,cnt,istatus)
+
+        !!  eigenvalue computation by the householder qr method
+        !!  for the real hessenberg matrix.
+        !!
+        !! this fortran code is based on the algol code "hqr" from the paper:
+        !!       "the qr algorithm for real hessenberg matrices"
+        !!       by r.s.martin, g.peters and j.h.wilkinson,
+        !!       numer. math. 14, 219-231(1970).
+        !!
+        !! comment: finds the eigenvalues of a real upper hessenberg matrix,
+        !!          h, stored in the array h(1:n0,1:n0), and stores the real
+        !!          parts in the array wr(1:n0) and the imaginary parts in the
+        !!          array wi(1:n0).
+        !!          the procedure fails if any eigenvalue takes more than
+        !!          30 iterations.
+
+    implicit none
+
+    integer,intent(in) :: n0
+    real(wp) :: h(n0,n0)
+    real(wp) :: wr(n0) , wi(n0)
+    integer :: cnt(n0)
+    integer,intent(out) :: istatus
+
+    integer :: i , j , k , l , m , na , its
+    real(wp) :: p , q , r , s , t , w , x , y , z
+    logical :: notlast
+    integer :: n
+
+    ! note: n is changing in this subroutine.
+    n = n0
+    istatus = 0
+    t = 0.0_wp
+
+100 if ( n==0 ) return
+
+    its = 0
+    na = n - 1
+    ! look for single small sub-diagonal element
+200  do l = n , 2 , -1
+       if ( abs(h(l,l-1))<=eps*(abs(h(l-1,l-1))+abs(h(l,l))) ) goto 300
+    enddo
+    l = 1
+
+300  x = h(n,n)
+    if ( l==n ) then
+       ! one root found
+       wr(n) = x + t
+       wi(n) = 0.0_wp
+       cnt(n) = its
+       n = na
+       goto 100
+    else
+       y = h(na,na)
+       w = h(n,na)*h(na,n)
+       if ( l==na ) then
+          ! comment: two roots found
+          p = (y-x)/2
+          q = p**2 + w
+          y = sqrt(abs(q))
+          cnt(n) = -its
+          cnt(na) = its
+          x = x + t
+          if ( q>0.0_wp ) then
+             ! real pair
+             if ( p<0.0_wp ) y = -y
+             y = p + y
+             wr(na) = x + y
+             wr(n) = x - w/y
+             wi(na) = 0.0_wp
+             wi(n) = 0.0_wp
+          else
+            ! complex pair
+             wr(na) = x + p
+             wr(n) = x + p
+             wi(na) = y
+             wi(n) = -y
+          endif
+          n = n - 2
+          goto 100
+       else
+          if ( its==30 ) then
+             istatus = 1
+             return
+          endif
+          if ( its==10 .or. its==20 ) then
+             ! form exceptional shift
+             t = t + x
+             do i = 1 , n
+                h(i,i) = h(i,i) - x
+             enddo
+             s = abs(h(n,na)) + abs(h(na,n-2))
+             y = 0.75_wp*s
+             x = y
+             w = -0.4375_wp*s**2
+          endif
+          its = its + 1
+          ! look for two consecutive small sub-diagonal elements
+          do m = n - 2 , l , -1
+             z = h(m,m)
+             r = x - z
+             s = y - z
+             p = (r*s-w)/h(m+1,m) + h(m,m+1)
+             q = h(m+1,m+1) - z - r - s
+             r = h(m+2,m+1)
+             s = abs(p) + abs(q) + abs(r)
+             p = p/s
+             q = q/s
+             r = r/s
+             if ( m==l ) goto 320
+             if ( abs(h(m,m-1))*(abs(q)+abs(r))<=eps*abs(p) &
+                  *(abs(h(m-1,m-1))+abs(z)+abs(h(m+1,m+1))) ) goto 320
+          enddo
+
+320       do i = m + 2 , n
+             h(i,i-2) = 0.0_wp
+          enddo
+          do i = m + 3 , n
+             h(i,i-3) = 0.0_wp
+          enddo
+          ! double qr step involving rows l to n and columns m to n
+          do k = m , na
+             notlast = (k/=na)
+             if ( k/=m ) then
+                p = h(k,k-1)
+                q = h(k+1,k-1)
+                if ( notlast ) then
+                   r = h(k+2,k-1)
+                else
+                   r = 0.0_wp
+                endif
+                x = abs(p) + abs(q) + abs(r)
+                if ( x==0.0_wp ) goto 340
+                p = p/x
+                q = q/x
+                r = r/x
+             endif
+             s = sqrt(p**2+q**2+r**2)
+             if ( p<0.0_wp ) s = -s
+             if ( k/=m ) then
+                h(k,k-1) = -s*x
+             elseif ( l/=m ) then
+                h(k,k-1) = -h(k,k-1)
+             endif
+             p = p + s
+             x = p/s
+             y = q/s
+             z = r/s
+             q = q/p
+             r = r/p
+             ! row modification
+             do j = k , n
+                p = h(k,j) + q*h(k+1,j)
+                if ( notlast ) then
+                   p = p + r*h(k+2,j)
+                   h(k+2,j) = h(k+2,j) - p*z
+                endif
+                h(k+1,j) = h(k+1,j) - p*y
+                h(k,j) = h(k,j) - p*x
+             enddo
+             if ( k+3<n ) then
+                j = k + 3
+             else
+                j = n
+             endif
+             ! column modification;
+             do i = l , j
+                p = x*h(i,k) + y*h(i,k+1)
+                if ( notlast ) then
+                   p = p + z*h(i,k+2)
+                   h(i,k+2) = h(i,k+2) - p*r
+                endif
+                h(i,k+1) = h(i,k+1) - p*q
+                h(i,k) = h(i,k) - p
+             enddo
+
+340        enddo
+          goto 200
+       endif
+    endif
+
+    end subroutine hqr_eigen_hessenberg
+
+    end subroutine qr_algeq_solver
+!*****************************************************************************************
+
+!*****************************************************************************************
+    end module polyroots_module
 !*****************************************************************************************
