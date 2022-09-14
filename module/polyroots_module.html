@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1214 statements</a>
+    title="100.0% of total for modules and submodules.">1435 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -129,6 +129,8 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
     </div>
   </div>
 </div>
@@ -196,6 +198,8 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
     </div>
   </div>
 </div>
@@ -646,6 +650,152 @@ if these are known. On output: ith zero.</p></td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>s</strong>(*)</td><td><p>an N word array. bound for R(I).</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rpqr79"></span><h3>public subroutine <a href='../proc/rpqr79.html'>rpqr79</a>(ndeg, coeff, root, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>This routine computes all zeros of a polynomial of degree NDEG
+  with real coefficients by computing the eigenvalues of the
+  companion matrix.</p><a href="../proc/rpqr79.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ndeg</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>coeff</strong>(*)</td><td><p><code>NDEG+1</code> coefficients in descending order.  i.e.,
+<code>P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>root</strong>(*)</td><td><p><code>NDEG</code> vector of roots</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>Output Error Code</p>
+<h3>Normal Code:</h3>
+<ul>
+<li>0 -- means the roots were computed.</li>
+</ul>
+<h3>Abnormal Codes</h3>
+<ul>
+<li>1 -- more than 30 QR iterations on some eigenvalue of the
+      companion matrix</li>
+<li>2 -- COEFF(1)=0.0</li>
+<li>3 -- NDEG is invalid (less than or equal to 0)</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-hqr"></span><h3>private subroutine <a href='../proc/hqr.html'>hqr</a>(nm, n, low, igh, h, wr, wi, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>This subroutine finds the eigenvalues of a real
+  upper hessenberg matrix by the qr method.</p><a href="../proc/hqr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>nm</strong></td><td><p>must be set to the row dimension of two-dimensional
+array parameters as declared in the calling program
+dimension statement.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>order of the matrix</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>low</strong></td><td><p>low and igh are integers determined by the balancing
+subroutine  balanc.  if  balanc  has not been used,
+set low=1, igh=n.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>igh</strong></td><td><p>low and igh are integers determined by the balancing
+subroutine  balanc.  if  balanc  has not been used,
+set low=1, igh=n.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>h</strong>(nm,n)</td><td><p>On input: contains the upper hessenberg matrix.  information about
+the transformations used in the reduction to hessenberg
+form by  elmhes  or  orthes, if performed, is stored
+in the remaining triangle under the hessenberg matrix.</p>
+<p>On output: has been destroyed.  therefore, it must be saved
+before calling <code>hqr</code> if subsequent calculation and
+back transformation of eigenvectors is to be performed.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>wr</strong>(n)</td><td><p>the real parts of the eigenvalues.  the eigenvalues
+are unordered except that complex conjugate pairs
+of values appear consecutively with the eigenvalue
+having the positive imaginary part first.  if an
+error exit is made, the eigenvalues should be correct
+for indices ierr+1,...,n.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>wi</strong>(n)</td><td><p>the imaginary parts of the eigenvalues.  the eigenvalues
+are unordered except that complex conjugate pairs
+of values appear consecutively with the eigenvalue
+having the positive imaginary part first.  if an
+error exit is made, the eigenvalues should be correct
+for indices ierr+1,...,n.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>is set to:</p>
+<ul>
+<li>zero -- for normal return,</li>
+<li>j -- if the limit of 30*n iterations is exhausted
+   while the j-th eigenvalue is being sought.</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
