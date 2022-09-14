@@ -103,6 +103,7 @@ The polyroots-fortran source code and related files and documentation are distri
 * [What is a Companion Matrix | Nick Higham](https://nhigham.com/2021/03/23/what-is-a-companion-matrix/)
 * [19 Dubious Ways to Compute the Zeros of a Polynomial | Cleve's Corner](https://blogs.mathworks.com/cleve/2016/06/27/19-dubious-ways-to-compute-the-zeros-of-a-polynomial/)
 * [New Progress in Polynomial Root-finding | Victor Y. Pan](https://arxiv.org/pdf/1805.12042.pdf)
+* [pa03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
 
 ## See also
 
