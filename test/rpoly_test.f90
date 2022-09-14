@@ -9,7 +9,7 @@
 
     implicit none
 
-    real (wp)  :: p(50), zr(50), zi(50), detil, c(0:9),  s(50)
+    real (wp)  :: p(50), zr(50), zi(50), detil, s(50)
     integer    :: degree, i, istatus
     logical    :: fail
     complex(wp) :: r(50)
@@ -49,15 +49,8 @@
     write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
                                     (real(r(i),wp), aimag(r(i)), i=1,degree)
 
-    ! only for monic polynomial (p(1) = 1)
     write(*, '(/A)') 'qr_algeq_solver example 1. polynomial with zeros 1,2,...,10.'
-    ! have to reorder the coefficients for this routine:
-    do i = 0, degree-1
-        c(i) = p(degree+1-i)
-    end do
-    zr = 0.0_wp
-    zi = 0.0_wp
-    call qr_algeq_solver(degree,c,zr,zi,detil,istatus)
+    call qr_algeq_solver(degree,p,zr,zi,detil,istatus)
     write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
             (zr(i), zi(i), i=1,degree)
 
