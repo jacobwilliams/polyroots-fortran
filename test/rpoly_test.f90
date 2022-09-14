@@ -9,10 +9,10 @@
 
     implicit none
 
-    real (wp)  :: p(50), zr(50), zi(50), detil, s(50)
+    real (wp)  :: p(11), zr(11), zi(11), detil, s(11)
     integer    :: degree, i, istatus
     logical    :: fail
-    complex(wp) :: r(50)
+    complex(wp) :: r(11), cp(11)
     complex(wp) :: t(66) !! work array for rpzero
     integer :: icase
     integer, allocatable :: seed(:)
@@ -77,6 +77,16 @@
         write(*, '(a)') '  real part               imaginary part         root'
         call rpqr79(degree,p,r,istatus)
         if (istatus/=0) error stop ' ** failure by rpqr79 **'
+        call check_results(real(r,wp), aimag(r))
+
+        ! for now, just test this one with the real coefficients only:
+        write(*, '(/A)') 'cpqr79 example 1. polynomial with zeros 1,2,...,10.'
+        write(*, '(a)') '  real part               imaginary part         root'
+        do i = 1, degree+1
+            cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
+        end do
+        call cpqr79(degree,cp,r,istatus)
+        if (istatus/=0) error stop ' ** failure by cpqr79 **'
         call check_results(real(r,wp), aimag(r))
 
         write(*, '(/A)') 'qr_algeq_solver example 1. polynomial with zeros 1,2,...,10.'

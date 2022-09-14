@@ -47,7 +47,7 @@ module polyroots_module
    public :: cpzero
    public :: rpzero
    public :: rpqr79
-   ! monic:
+   public :: cpqr79
    public :: qr_algeq_solver
 
    ! special polynomial routines:
@@ -2318,6 +2318,440 @@ subroutine cpzero(in,a,r,t,iflg,s)
 #endif
 
     end subroutine polyroots
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  This routine computes all zeros of a polynomial of degree NDEG
+!  with complex coefficients by computing the eigenvalues of the
+!  companion matrix.
+!
+!### REVISION HISTORY  (YYMMDD)
+!  * 791201  DATE WRITTEN. Vandevender, W. H., (SNLA)
+!  * 890531  Changed all specific intrinsics to generic.  (WRB)
+!  * 890531  REVISION DATE from Version 3.2
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!  * 900326  Removed duplicate information from DESCRIPTION section. (WRB)
+!  * 911010  Code reworked and simplified.  (RWC and WRB)
+!  * Jacob Williams, 9/14/2022 : modernized this code
+
+    subroutine cpqr79(ndeg,coeff,root,ierr)
+        implicit none
+
+        integer,intent(in) :: ndeg !! degree of polynomial
+        complex(wp),intent(in) :: coeff(*) !! `(NDEG+1)` coefficients in descending order.  i.e.,
+                                           !! `P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+        complex(wp),intent(out) :: root(*) !! `(NDEG)` vector of roots
+        integer,intent(out) :: ierr !! Output Error Code.
+                                    !!
+                                    !!### Normal Code:
+                                    !!
+                                    !!  * 0 -- means the roots were computed.
+                                    !!
+                                    !!### Abnormal Codes:
+                                    !!
+                                    !!  * 1 --  more than 30 QR iterations on some eigenvalue of the companion matrix
+                                    !!  * 2 --  COEFF(1)=0.0
+                                    !!  * 3 --  NDEG is invalid (less than or equal to 0)
+
+        complex(wp) :: scale , c
+        integer :: k , khr , khi , kwr , kwi , kad , kj, km1
+        real(wp),dimension(:),allocatable :: work !! work array of dimension `2*NDEG*(NDEG+1)`
+
+        ierr = 0
+        if ( abs(coeff(1))==0.0_wp ) then
+           ierr = 2
+           write(*,*) 'leading coefficient is zero.'
+           return
+        endif
+
+        if ( ndeg<=0 ) then
+           ierr = 3
+           write(*,*) 'degree invalid.'
+           return
+        endif
+
+        if ( ndeg==1 ) then
+           root(1) = -coeff(2)/coeff(1)
+           return
+        endif
+
+        ! allocate work array:
+        allocate(work(2*NDEG*(NDEG+1)))
+
+        scale = 1.0_wp/coeff(1)
+        khr = 1
+        khi = khr + ndeg*ndeg
+        kwr = khi + khi - khr
+        kwi = kwr + ndeg
+
+        do k = 1 , kwr
+           work(k) = 0.0_wp
+        enddo
+
+        do k = 1 , ndeg
+           kad = (k-1)*ndeg + 1
+           c = scale*coeff(k+1)
+           work(kad) = -real(c,wp)
+           kj = khi + kad - 1
+           work(kj) = -aimag(c)
+           if ( k/=ndeg ) work(kad+k) = 1.0_wp
+        enddo
+
+        call comqr(ndeg,ndeg,1,ndeg,work(khr),work(khi),work(kwr),work(kwi),ierr)
+
+        if ( ierr/=0 ) then
+           ierr = 1
+           write(*,*) 'no convergence in 30 qr iterations.'
+           return
+        endif
+
+        do k = 1 , ndeg
+           km1 = k - 1
+           root(k) = cmplx(work(kwr+km1),work(kwi+km1), wp)
+        enddo
+
+        end subroutine cpqr79
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  this subroutine finds the eigenvalues of a complex
+!  upper hessenberg matrix by the qr method.
+!
+!### Notes
+!  * calls [[cdiv]] for complex division.
+!  * calls [[csroot]] for complex square root.
+!  * calls [[pythag]] for dsqrt(a*a + b*b) .
+!
+!### Reference
+!  * this subroutine is a translation of a unitary analogue of the
+!    algol procedure  comlr, num. math. 12, 369-376(1968) by martin
+!    and wilkinson.
+!    handbook for auto. comp., vol.ii-linear algebra, 396-403(1971).
+!    the unitary analogue substitutes the qr algorithm of francis
+!    (comp. jour. 4, 332-345(1962)) for the lr algorithm.
+!
+!### History
+!  * this version dated august 1983.
+!    questions and comments should be directed to burton s. garbow,
+!    mathematics and computer science div, argonne national laboratory
+!  * Jacob Williams, 9/14/2022 : modernized this code
+
+    subroutine comqr(nm,n,low,igh,hr,hi,wr,wi,ierr)
+    implicit none
+
+    integer,intent(in) :: nm !! row dimension of two-dimensional array parameters
+    integer,intent(in) :: n !! the order of the matrix
+    integer,intent(in) :: low !! integer determined by the balancing
+                              !! subroutine  cbal.  if  cbal  has not been used,
+                              !! set low=1
+    integer,intent(in) :: igh !! integer determined by the balancing
+                              !! subroutine  cbal.  if  cbal  has not been used,
+                              !! igh=n.
+    real(wp),intent(inout) :: hr(nm,n) !! On input: hr and hi contain the real and imaginary parts,
+                                       !! respectively, of the complex upper hessenberg matrix.
+                                       !! their lower triangles below the subdiagonal contain
+                                       !! information about the unitary transformations used in
+                                       !! the reduction by  corth, if performed.
+                                       !!
+                                       !! On Output: the upper hessenberg portions of hr and hi have been
+                                       !! destroyed.  therefore, they must be saved before
+                                       !! calling  comqr  if subsequent calculation of
+                                       !! eigenvectors is to be performed.
+    real(wp),intent(inout) :: hi(nm,n) !! See `hr` description
+    real(wp),intent(out) :: wr(n) !! the real parts of the eigenvalues.  if an error
+                                  !! exit is made, the eigenvalues should be correct
+                                  !! for indices `ierr+1,...,n`.
+    real(wp),intent(out) :: wi(n) !! the imaginary parts of the eigenvalues.  if an error
+                                  !! exit is made, the eigenvalues should be correct
+                                  !! for indices `ierr+1,...,n`.
+    integer,intent(out) :: ierr !! is set to:
+                                !!
+                                !!  * 0 -- for normal return
+                                !!  * j -- if the limit of 30*n iterations is exhausted
+                                !!    while the j-th eigenvalue is being sought.
+
+    integer :: i , j , l , en , ll , itn , its , lp1 , enm1
+    real(wp) :: si , sr , ti , tr , xi , xr , yi , yr , zzi , &
+                zzr , norm , tst1 , tst2
+
+    ierr = 0
+    if ( low/=igh ) then
+        ! create real subdiagonal elements
+        l = low + 1
+        do i = l , igh
+            ll = min(i+1,igh)
+            if ( hi(i,i-1)/=0.0_wp ) then
+                norm = pythag(hr(i,i-1),hi(i,i-1))
+                yr = hr(i,i-1)/norm
+                yi = hi(i,i-1)/norm
+                hr(i,i-1) = norm
+                hi(i,i-1) = 0.0_wp
+                do j = i , igh
+                si = yr*hi(i,j) - yi*hr(i,j)
+                hr(i,j) = yr*hr(i,j) + yi*hi(i,j)
+                hi(i,j) = si
+                enddo
+                do j = low , ll
+                si = yr*hi(j,i) + yi*hr(j,i)
+                hr(j,i) = yr*hr(j,i) - yi*hi(j,i)
+                hi(j,i) = si
+                enddo
+            endif
+        enddo
+    endif
+    ! store roots isolated by cbal
+    do i = 1 , n
+        if ( i<low .or. i>igh ) then
+            wr(i) = hr(i,i)
+            wi(i) = hi(i,i)
+        endif
+    enddo
+
+    en = igh
+    tr = 0.0_wp
+    ti = 0.0_wp
+    itn = 30*n
+
+    ! search for next eigenvalue
+100 if ( en<low ) return
+    its = 0
+    enm1 = en - 1
+
+    ! look for single small sub-diagonal element
+    ! for l=en step -1 until low d0 --
+200 do ll = low , en
+        l = en + low - ll
+        if ( l==low ) exit
+        tst1 = abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) + abs(hr(l,l)) + abs(hi(l,l))
+        tst2 = tst1 + abs(hr(l,l-1))
+        if ( tst2==tst1 ) exit
+    enddo
+
+    ! form shift
+    if ( l==en ) then
+        ! a root found
+        wr(en) = hr(en,en) + tr
+        wi(en) = hi(en,en) + ti
+        en = enm1
+        goto 100
+    elseif ( itn==0 ) then
+        ! set error -- all eigenvalues have not
+        !              converged after 30*n iterations
+        ierr = en
+    else
+        if ( its==10 .or. its==20 ) then
+            ! form exceptional shift
+            sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
+            si = 0.0_wp
+        else
+            sr = hr(en,en)
+            si = hi(en,en)
+            xr = hr(enm1,en)*hr(en,enm1)
+            xi = hi(enm1,en)*hr(en,enm1)
+            if ( xr/=0.0_wp .or. xi/=0.0_wp ) then
+                yr = (hr(enm1,enm1)-sr)/2.0_wp
+                yi = (hi(enm1,enm1)-si)/2.0_wp
+                call csroot(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,zzr,zzi)
+                if ( yr*zzr+yi*zzi<0.0_wp ) then
+                    zzr = -zzr
+                    zzi = -zzi
+                endif
+                call cdiv(xr,xi,yr+zzr,yi+zzi,xr,xi)
+                sr = sr - xr
+                si = si - xi
+            endif
+        endif
+
+        do i = low , en
+            hr(i,i) = hr(i,i) - sr
+            hi(i,i) = hi(i,i) - si
+        enddo
+
+        tr = tr + sr
+        ti = ti + si
+        its = its + 1
+        itn = itn - 1
+        ! reduce to triangle (rows)
+        lp1 = l + 1
+
+        do i = lp1 , en
+            sr = hr(i,i-1)
+            hr(i,i-1) = 0.0_wp
+            norm = pythag(pythag(hr(i-1,i-1),hi(i-1,i-1)),sr)
+            xr = hr(i-1,i-1)/norm
+            wr(i-1) = xr
+            xi = hi(i-1,i-1)/norm
+            wi(i-1) = xi
+            hr(i-1,i-1) = norm
+            hi(i-1,i-1) = 0.0_wp
+            hi(i,i-1) = sr/norm
+
+            do j = i , en
+                yr = hr(i-1,j)
+                yi = hi(i-1,j)
+                zzr = hr(i,j)
+                zzi = hi(i,j)
+                hr(i-1,j) = xr*yr + xi*yi + hi(i,i-1)*zzr
+                hi(i-1,j) = xr*yi - xi*yr + hi(i,i-1)*zzi
+                hr(i,j) = xr*zzr - xi*zzi - hi(i,i-1)*yr
+                hi(i,j) = xr*zzi + xi*zzr - hi(i,i-1)*yi
+            enddo
+
+        enddo
+
+        si = hi(en,en)
+        if ( si/=0.0_wp ) then
+            norm = pythag(hr(en,en),si)
+            sr = hr(en,en)/norm
+            si = si/norm
+            hr(en,en) = norm
+            hi(en,en) = 0.0_wp
+        endif
+        ! inverse operation (columns)
+        do j = lp1 , en
+            xr = wr(j-1)
+            xi = wi(j-1)
+
+            do i = l , j
+                yr = hr(i,j-1)
+                yi = 0.0_wp
+                zzr = hr(i,j)
+                zzi = hi(i,j)
+                if ( i/=j ) then
+                    yi = hi(i,j-1)
+                    hi(i,j-1) = xr*yi + xi*yr + hi(j,j-1)*zzi
+                endif
+                hr(i,j-1) = xr*yr - xi*yi + hi(j,j-1)*zzr
+                hr(i,j) = xr*zzr + xi*zzi - hi(j,j-1)*yr
+                hi(i,j) = xr*zzi - xi*zzr - hi(j,j-1)*yi
+            enddo
+
+        enddo
+
+        if ( si/=0.0_wp ) then
+            do i = l , en
+                yr = hr(i,en)
+                yi = hi(i,en)
+                hr(i,en) = sr*yr - si*yi
+                hi(i,en) = sr*yi + si*yr
+            enddo
+        endif
+        goto 200
+    endif
+
+    end subroutine comqr
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Compute the complex square root of a complex number.
+!
+!  `(YR,YI) = complex sqrt(XR,XI)`
+!
+!### REVISION HISTORY  (YYMMDD)
+!  * 811101  DATE WRITTEN
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900402  Added TYPE section.  (WRB)
+!  * Jacob Williams, 9/14/2022 : modernized this code
+
+    pure subroutine csroot(xr,xi,yr,yi)
+    implicit none
+
+    real(wp),intent(in) :: xr , xi
+    real(wp),intent(out) :: yr , yi
+
+    real(wp) :: s , tr , ti
+
+    ! branch chosen so that yr >= 0.0 and sign(yi) == sign(xi)
+    tr = xr
+    ti = xi
+    s = sqrt(0.5_wp*(pythag(tr,ti)+abs(tr)))
+    if ( tr>=0.0_wp ) yr = s
+    if ( ti<0.0_wp ) s = -s
+    if ( tr<=0.0_wp ) yi = s
+    if ( tr<0.0_wp ) yr = 0.5_wp*(ti/yi)
+    if ( tr>0.0_wp ) yi = 0.5_wp*(ti/yr)
+
+    end subroutine csroot
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Compute the complex quotient of two complex numbers.
+!
+!  Complex division, `(CR,CI) = (AR,AI)/(BR,BI)`
+!
+!### REVISION HISTORY  (YYMMDD)
+!  * 811101  DATE WRITTEN
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900402  Added TYPE section.  (WRB)
+!  * Jacob Williams, 9/14/2022 : modernized this code
+
+    pure subroutine cdiv(ar,ai,br,bi,cr,ci)
+    implicit none
+
+    real(wp),intent(in) :: ar , ai , br , bi
+    real(wp),intent(out) :: cr , ci
+
+    real(wp) :: s , ars , ais , brs , bis
+
+    s = abs(br) + abs(bi)
+    ars = ar/s
+    ais = ai/s
+    brs = br/s
+    bis = bi/s
+    s = brs**2 + bis**2
+    cr = (ars*brs+ais*bis)/s
+    ci = (ais*brs-ars*bis)/s
+
+    end subroutine cdiv
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Compute the complex square root of a complex number without
+!  destructive overflow or underflow.
+!
+!  Finds `sqrt(A**2+B**2)` without overflow or destructive underflow
+!
+!### REVISION HISTORY  (YYMMDD)
+!  * 811101  DATE WRITTEN
+!  * 890531  Changed all specific intrinsics to generic.  (WRB)
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900402  Added TYPE section.  (WRB)
+!  * Jacob Williams, 9/14/2022 : modernized this code
+
+    pure real(wp) function pythag(a,b)
+    implicit none
+
+    real(wp),intent(in) :: a , b
+
+    real(wp) :: p , q , r , s , t
+
+    p = max(abs(a),abs(b))
+    q = min(abs(a),abs(b))
+
+    if ( q==0.0_wp ) then
+        pythag = p
+    else
+        do
+            r = (q/p)**2
+            t = 4.0_wp + r
+            if ( t==4.0_wp ) then
+                pythag = p
+                exit
+            else
+                s = r/t
+                p = p + 2.0_wp*p*s
+                q = q*s
+            endif
+        end do
+    endif
+
+    end function pythag
 !*****************************************************************************************
 
 !*****************************************************************************************
