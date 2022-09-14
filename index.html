@@ -84,8 +84,8 @@
 <a href="https://github.com/jacobwilliams/polyroots-fortran/commits/master"><img alt="last-commit" src="https://img.shields.io/github/last-commit/jacobwilliams/polyroots-fortran"></a></p>
 <h2>Description</h2>
 <p>A modern Fortran library for finding the roots of polynomials.</p>
-<p><strong>This is a work in progress</strong></p>
 <h2>Methods</h2>
+<p>Many of the methods are from legacy libraries. They have been extensively modified and refactored into Modern Fortran.</p>
 <table>
 <thead>
 <tr>
@@ -191,6 +191,7 @@
 <div class="codehilite"><pre><span></span><code>fpm build --profile release --flag &quot;-DREAL32&quot;
 </code></pre></div>
 
+<p>All routines, except for <code>polyroots</code> are available for any of the three real kinds. <code>polyroots</code> is not available for <code>real128</code> kinds since there is no corresponding LAPACK eigenvalue solver.</p>
 <p>To run the unit tests:</p>
 <div class="codehilite"><pre><span></span><code>fpm test
 </code></pre></div>
