@@ -69,7 +69,7 @@ or, to use a specific version:
 polyroots-fortran = { git="https://github.com/jacobwilliams/polyroots-fortran.git", tag = "0.1"  }
 ```
 
-To generate the documentation using [ford](https://github.com/Fortran-FOSS-Programmers/ford), run: ```ford polyroots-fortran.md```
+To generate the documentation using [ford](https://github.com/Fortran-FOSS-Programmers/ford), run: ```ford ford.md```
 
 ## Documentation
 
