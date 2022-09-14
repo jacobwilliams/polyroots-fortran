@@ -42,15 +42,17 @@ module polyroots_module
    real(wp), parameter :: pi = acos(-1.0_wp)
 
    ! general polynomial routines:
+   public :: polyroots
    public :: rpoly
    public :: cpzero
    public :: rpzero
    public :: rpqr79
+   ! monic:
+   public :: qr_algeq_solver
 
    ! special polynomial routines:
    public :: dcbcrt
    public :: dqdcrt
-   public :: qr_algeq_solver
 
    ! utility routines:
    public :: dcbrt
@@ -2232,6 +2234,94 @@ subroutine cpzero(in,a,r,t,iflg,s)
     end do
 
     end subroutine hqr
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve for the roots of a real polynomial equation by
+!  computing the eigenvalues of the companion matrix.
+!
+!  This one uses LAPACK for the eigen solver (`sgeev` or `dgeev`).
+!
+!### Reference
+!  * Code from ivanpribec at
+!    [Fortran-lang Discourse](https://fortran-lang.discourse.group/t/cardanos-solution-of-the-cubic-equation/111/5)
+!
+!### History
+!  * Jacob Williams, 9/14/2022 : created this routine.
+!
+!@note Works only for single and double precision.
+
+    subroutine polyroots(n, p, wr, wi, info)
+
+    implicit none
+
+    integer,intent(in)   :: n      !! polynomial degree
+    real(wp),intent(in)  :: p(n+1) !! polynomial coefficients array, in order of decreasing powers
+    real(wp),intent(out) :: wr(n)  !! real parts of roots
+    real(wp),intent(out) :: wi(n)  !! imaginary parts of roots
+    integer,intent(out)  :: info   !! output from the lapack solver.
+                                   !! if `info=0` the routine converged.
+                                   !! if `info=-999`, then the leading coefficient is zero.
+
+    integer :: i !! counter
+    real(wp),allocatable,dimension(:,:) :: a !! companion matrix
+    real(wp),allocatable,dimension(:) :: work !! work array
+    real(wp),dimension(1) :: vl, vr !! not used here
+
+#ifdef REAL32
+    interface
+        subroutine sgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)
+            implicit none
+            character :: jobvl, jobvr
+            integer :: info, lda, ldvl, ldvr, lwork, n
+            real :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), wi( * ), work( * ), wr( * )
+        end subroutine sgeev
+    end interface
+#elif REAL128
+    ! do not have a quad solver in lapack
+#else
+    interface
+        subroutine dgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)
+            implicit none
+            character :: jobvl, jobvr
+            integer :: info, lda, ldvl, ldvr, lwork, n
+            double precision :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), wi( * ), work( * ), wr( * )
+        end subroutine dgeev
+    end interface
+#endif
+
+    ! error check:
+    if ( abs(p(1))==0.0_wp ) then
+        info = -999
+        return
+    endif
+
+    ! allocate the work array:
+    allocate(work(3*n))
+
+    ! create the companion matrix
+    allocate(a(n,n))
+    a = 0.0_wp
+    do i = 1, n-1
+        a(i,i+1) = 1.0_wp
+    end do
+    do i = n,1,-1
+        a(n,n-i+1) = -p(i+1) / p(1)
+    end do
+
+    ! call the lapack solver:
+#ifdef REAL32
+    ! single precision
+    call sgeev('N','N',n,a,n,wr,wi,vl,1,vr,1,work,3*n,info)
+#elif REAL128
+    error stop 'do not have a quad solver in lapack'
+#else
+    ! by default, use double precision:
+    call dgeev('N','N',n,a,n,wr,wi,vl,1,vr,1,work,3*n,info)
+#endif
+
+    end subroutine polyroots
 !*****************************************************************************************
 
 !*****************************************************************************************
