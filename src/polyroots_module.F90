@@ -1308,10 +1308,10 @@ subroutine build_companion(n,a,c)
     ! create the companion matrix
     a = 0.0_wp
     do i = 1, n-1
-        a(i,i+1) = 1.0_wp
+        a(i+1,i) = 1.0_wp
     end do
     do i = n,1,-1
-        a(n,n-i+1) = -c(i+1) / c(1)
+        a(n-i+1,n) = -c(i+1) / c(1)
     end do
 
 end subroutine build_companion
