@@ -5,18 +5,17 @@
     program rpoly_test
 
     use iso_fortran_env
-    use polyroots_module, only: wp => polyroots_module_rk, rpoly, qr_algeq_solver, rpzero, rpqr79
+    use polyroots_module, wp => polyroots_module_rk
 
     implicit none
 
     real (wp)  :: p(50), zr(50), zi(50), detil, c(0:9),  s(50)
     integer    :: degree, i, istatus
     logical    :: fail
-
     complex(wp) :: r(50)
     complex(wp) :: t(66) !! work array for rpzero
 
-    write(*, '(/A)') 'rpoly example 1. polynomial with zeros 1,2,...,10.'
+    !--------------------------------------
 
     degree = 10
     p(1) = 1._wp
@@ -31,32 +30,24 @@
     p(10) = -10628640._wp
     p(11) = 3628800._wp
 
+    write(*, '(/A)') 'rpoly example 1. polynomial with zeros 1,2,...,10.'
     call rpoly(p, degree, zr, zi, fail)
-    if (fail) then
-        error stop ' ** failure by rpoly **'
-    else
-        write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+    if (fail) error stop ' ** failure by rpoly **'
+    write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
                                     (zr(i), zi(i), i=1,degree)
-    end if
 
     write(*, '(/A)') 'rpzero example 1. polynomial with zeros 1,2,...,10.'
     istatus = 0 ! no estimates input
     call rpzero(degree,p,r,t,istatus,s)
-    if (istatus/=0) then
-        error stop ' ** failure by rpzero **'
-    else
-        write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+    if (istatus/=0) error stop ' ** failure by rpzero **'
+    write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
                                     (real(r(i),wp), aimag(r(i)), i=1,degree)
-    end if
 
     write(*, '(/A)') 'rpqr79 example 1. polynomial with zeros 1,2,...,10.'
     call rpqr79(degree,p,r,istatus)
-    if (istatus/=0) then
-        error stop ' ** failure by rpqr79 **'
-    else
-        write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+    if (istatus/=0) error stop ' ** failure by rpqr79 **'
+    write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
                                     (real(r(i),wp), aimag(r(i)), i=1,degree)
-    end if
 
     ! only for monic polynomial (p(1) = 1)
     write(*, '(/A)') 'qr_algeq_solver example 1. polynomial with zeros 1,2,...,10.'
@@ -70,6 +61,13 @@
     write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
             (zr(i), zi(i), i=1,degree)
 
+    write(*, '(/A)') 'polyroots example 1. polynomial with zeros 1,2,...,10.'
+    call polyroots(degree, p, zr, zi, istatus)
+    if (istatus/=0) error stop 'error: polyroots did not converge'
+    write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+            (zr(i), zi(i), i=1,degree)
+
+    !--------------------------------------
     ! this test provided by larry wigton
 
     write(*, '(/A)') 'rpoly example 2. polynomial with zeros 1,2,...,10.'

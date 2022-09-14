@@ -25,6 +25,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`rpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpzero.f)
 [`cpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpzero.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpzero.f)
 [`rpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpqr79.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpqr79.f)
+[`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | --
 
 ## Compiling
 
