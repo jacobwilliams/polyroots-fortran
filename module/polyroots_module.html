@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1466 statements</a>
+    title="100.0% of total for modules and submodules.">1723 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -115,6 +115,7 @@
   <div id="funcs-0" class="panel-collapse collapse">
     <div class="list-group">
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbrt">dcbrt</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-pythag">pythag</a>
     </div>
   </div>
 </div>
@@ -132,6 +133,10 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
     </div>
   </div>
 </div>
@@ -185,6 +190,7 @@
   <div id="funcs-1" class="panel-collapse collapse">
     <div class="list-group">
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbrt">dcbrt</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-pythag">pythag</a>
     </div>
   </div>
 </div>
@@ -202,6 +208,10 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
     </div>
   </div>
 </div>
@@ -262,6 +272,36 @@
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>x</strong></td><td></td>
+</tr>
+</tbody>
+</table>
+
+<h4>Return Value <small>real(kind=wp)</small></h4>  
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-pythag"></span><h3>private pure function <a href='../proc/pythag.html'>pythag</a>(a, b)</h3></div>
+  <div class="panel-body">
+       
+<p>Compute the complex square root of a complex number without
+  destructive overflow or underflow.</p><a href="../proc/pythag.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>b</strong></td><td></td>
 </tr>
 </tbody>
 </table>
@@ -846,6 +886,243 @@ for indices ierr+1,...,n.</p></td>
   <td><strong>info</strong></td><td><p>output from the lapack solver.
 if <code>info=0</code> the routine converged.
 if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpqr79"></span><h3>public subroutine <a href='../proc/cpqr79.html'>cpqr79</a>(ndeg, coeff, root, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>This routine computes all zeros of a polynomial of degree NDEG
+  with complex coefficients by computing the eigenvalues of the
+  companion matrix.</p><a href="../proc/cpqr79.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ndeg</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>coeff</strong>(*)</td><td><p><code>(NDEG+1)</code> coefficients in descending order.  i.e.,
+<code>P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>root</strong>(*)</td><td><p><code>(NDEG)</code> vector of roots</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>Output Error Code.</p>
+<h3>Normal Code:</h3>
+<ul>
+<li>0 -- means the roots were computed.</li>
+</ul>
+<h3>Abnormal Codes:</h3>
+<ul>
+<li>1 --  more than 30 QR iterations on some eigenvalue of the companion matrix</li>
+<li>2 --  COEFF(1)=0.0</li>
+<li>3 --  NDEG is invalid (less than or equal to 0)</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-comqr"></span><h3>private subroutine <a href='../proc/comqr.html'>comqr</a>(nm, n, low, igh, hr, hi, wr, wi, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>this subroutine finds the eigenvalues of a complex
+  upper hessenberg matrix by the qr method.</p><a href="../proc/comqr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>nm</strong></td><td><p>row dimension of two-dimensional array parameters</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>the order of the matrix</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>low</strong></td><td><p>integer determined by the balancing
+subroutine  cbal.  if  cbal  has not been used,
+set low=1</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>igh</strong></td><td><p>integer determined by the balancing
+subroutine  cbal.  if  cbal  has not been used,
+igh=n.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>hr</strong>(nm,n)</td><td><p>On input: hr and hi contain the real and imaginary parts,
+respectively, of the complex upper hessenberg matrix.
+their lower triangles below the subdiagonal contain
+information about the unitary transformations used in
+the reduction by  corth, if performed.</p>
+<p>On Output: the upper hessenberg portions of hr and hi have been
+destroyed.  therefore, they must be saved before
+calling  comqr  if subsequent calculation of
+eigenvectors is to be performed.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>hi</strong>(nm,n)</td><td><p>See <code>hr</code> description</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>wr</strong>(n)</td><td><p>the real parts of the eigenvalues.  if an error
+exit is made, the eigenvalues should be correct
+for indices <code>ierr+1,...,n</code>.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>wi</strong>(n)</td><td><p>the imaginary parts of the eigenvalues.  if an error
+exit is made, the eigenvalues should be correct
+for indices <code>ierr+1,...,n</code>.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>is set to:</p>
+<ul>
+<li>0 -- for normal return</li>
+<li>j -- if the limit of 30*n iterations is exhausted
+   while the j-th eigenvalue is being sought.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-csroot"></span><h3>private pure subroutine <a href='../proc/csroot.html'>csroot</a>(xr, xi, yr, yi)</h3></div>
+  <div class="panel-body">
+       
+<p>Compute the complex square root of a complex number.</p><a href="../proc/csroot.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>xr</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>xi</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>yr</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>yi</strong></td><td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cdiv"></span><h3>private pure subroutine <a href='../proc/cdiv.html'>cdiv</a>(ar, ai, br, bi, cr, ci)</h3></div>
+  <div class="panel-body">
+       
+<p>Compute the complex quotient of two complex numbers.</p><a href="../proc/cdiv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ar</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ai</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>br</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>bi</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>cr</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ci</strong></td><td></td>
 </tr>
 </tbody>
 </table>
