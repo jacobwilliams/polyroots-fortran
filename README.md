@@ -12,9 +12,9 @@
 
 A modern Fortran library for finding the roots of polynomials.
 
-**This is a work in progress**
-
 ## Methods
+
+Many of the methods are from legacy libraries. They have been extensively modified and refactored into Modern Fortran.
 
 Method name | Polynomial type | Coefficients | Roots | Reference
 --- | --- | --- | --- | ---
@@ -48,6 +48,8 @@ For example, to build a single precision version of the library, use:
 ```
 fpm build --profile release --flag "-DREAL32"
 ```
+
+All routines, except for `polyroots` are available for any of the three real kinds. `polyroots` is not available for `real128` kinds since there is no corresponding LAPACK eigenvalue solver.
 
 To run the unit tests:
 
