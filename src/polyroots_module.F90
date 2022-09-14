@@ -45,6 +45,7 @@ module polyroots_module
    public :: rpoly
    public :: cpzero
    public :: rpzero
+   public :: rpqr79
 
    ! special polynomial routines:
    public :: dcbcrt
@@ -1431,26 +1432,27 @@ subroutine balance_companion(n,a)
 
     subroutine hqr_eigen_hessenberg(n0,h,wr,wi,cnt,istatus)
 
-        !!  eigenvalue computation by the householder qr method
-        !!  for the real hessenberg matrix.
-        !!
-        !! this fortran code is based on the algol code "hqr" from the paper:
-        !!       "the qr algorithm for real hessenberg matrices"
-        !!       by r.s.martin, g.peters and j.h.wilkinson,
-        !!       numer. math. 14, 219-231(1970).
-        !!
-        !! comment: finds the eigenvalues of a real upper hessenberg matrix,
-        !!          h, stored in the array h(1:n0,1:n0), and stores the real
-        !!          parts in the array wr(1:n0) and the imaginary parts in the
-        !!          array wi(1:n0).
-        !!          the procedure fails if any eigenvalue takes more than
-        !!          30 iterations.
+    !!  eigenvalue computation by the householder qr method
+    !!  for the real hessenberg matrix.
+    !!
+    !! this fortran code is based on the algol code "hqr" from the paper:
+    !!       "the qr algorithm for real hessenberg matrices"
+    !!       by r.s.martin, g.peters and j.h.wilkinson,
+    !!       numer. math. 14, 219-231(1970).
+    !!
+    !! comment: finds the eigenvalues of a real upper hessenberg matrix,
+    !!          h, stored in the array h(1:n0,1:n0), and stores the real
+    !!          parts in the array wr(1:n0) and the imaginary parts in the
+    !!          array wi(1:n0).
+    !!          the procedure fails if any eigenvalue takes more than
+    !!          30 iterations.
 
     implicit none
 
     integer,intent(in) :: n0
     real(wp) :: h(n0,n0)
-    real(wp) :: wr(n0) , wi(n0)
+    real(wp) :: wr(n0)
+    real(wp) :: wi(n0)
     integer :: cnt(n0)
     integer,intent(out) :: istatus
 
@@ -1469,12 +1471,12 @@ subroutine balance_companion(n,a)
     its = 0
     na = n - 1
     ! look for single small sub-diagonal element
-200  do l = n , 2 , -1
+200 do l = n , 2 , -1
        if ( abs(h(l,l-1))<=eps*(abs(h(l-1,l-1))+abs(h(l,l))) ) goto 300
     enddo
     l = 1
 
-300  x = h(n,n)
+300 x = h(n,n)
     if ( l==n ) then
        ! one root found
        wr(n) = x + t
@@ -1539,12 +1541,12 @@ subroutine balance_companion(n,a)
              p = p/s
              q = q/s
              r = r/s
-             if ( m==l ) goto 320
+             if ( m==l ) exit
              if ( abs(h(m,m-1))*(abs(q)+abs(r))<=eps*abs(p) &
-                  *(abs(h(m-1,m-1))+abs(z)+abs(h(m+1,m+1))) ) goto 320
+                  *(abs(h(m-1,m-1))+abs(z)+abs(h(m+1,m+1))) ) exit
           enddo
 
-320       do i = m + 2 , n
+          do i = m + 2 , n
              h(i,i-2) = 0.0_wp
           enddo
           do i = m + 3 , n
@@ -1562,7 +1564,7 @@ subroutine balance_companion(n,a)
                    r = 0.0_wp
                 endif
                 x = abs(p) + abs(q) + abs(r)
-                if ( x==0.0_wp ) goto 340
+                if ( x==0.0_wp ) cycle
                 p = p/x
                 q = q/x
                 r = r/x
@@ -1605,8 +1607,7 @@ subroutine balance_companion(n,a)
                 h(i,k+1) = h(i,k+1) - p*q
                 h(i,k) = h(i,k) - p
              enddo
-
-340        enddo
+           enddo
           goto 200
        endif
     endif
@@ -1621,7 +1622,7 @@ subroutine balance_companion(n,a)
 !  Evaluate a complex polynomial and its derivatives.
 !  Optionally compute error bounds for these values.
 !
-!***REVISION HISTORY  (YYMMDD)
+!### REVISION HISTORY  (YYMMDD)
 !  * 810223  DATE WRITTEN
 !  * 890531  Changed all specific intrinsics to generic.  (WRB)
 !  * 890831  Modified array declarations.  (WRB)
@@ -1689,7 +1690,7 @@ subroutine balance_companion(n,a)
 !  Find the zeros of a polynomial with complex coefficients:
 !  `P(Z)= A(1)*Z**N + A(2)*Z**(N-1) +...+ A(N+1)`
 !
-!***REVISION HISTORY  (YYMMDD)
+!### REVISION HISTORY  (YYMMDD)
 !  * 810223  DATE WRITTEN. Kahaner, D. K., (NBS)
 !  * 890531  Changed all specific intrinsics to generic.  (WRB)
 !  * 890531  REVISION DATE from Version 3.2
@@ -1839,7 +1840,7 @@ subroutine cpzero(in,a,r,t,iflg,s)
 !  Find the zeros of a polynomial with real coefficients:
 !  `P(X)= A(1)*X**N + A(2)*X**(N-1) +...+ A(N+1)`
 !
-!***REVISION HISTORY  (YYMMDD)
+!### REVISION HISTORY  (YYMMDD)
 !  * 810223  DATE WRITTEN. Kahaner, D. K., (NBS)
 !  * 890206  REVISION DATE from Version 3.2
 !  * 891214  Prologue converted to Version 4.0 format.  (BAB)
@@ -1887,6 +1888,350 @@ subroutine cpzero(in,a,r,t,iflg,s)
     call cpzero(n,t,r,t(n+2),iflg,s)
 
     end subroutine rpzero
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  This routine computes all zeros of a polynomial of degree NDEG
+!  with real coefficients by computing the eigenvalues of the
+!  companion matrix.
+!
+!### REVISION HISTORY  (YYMMDD)
+!
+!  * 800601  DATE WRITTEN. Vandevender, W. H., (SNLA)
+!  * 890505  REVISION DATE from Version 3.2
+!  * 891214  Prologue converted to Version 4.0 format.  (BAB)
+!  * 900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!  * 911010  Code reworked and simplified.  (RWC and WRB)
+!  * Jacob Williams, 9/13/2022 : modernized this routine
+
+    subroutine rpqr79(ndeg,coeff,root,ierr)
+
+    implicit none
+
+    integer,intent(in) :: ndeg !! degree of polynomial
+    real(wp),intent(in) :: coeff(*) !! `NDEG+1` coefficients in descending order.  i.e.,
+                                    !! `P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+    complex(wp),intent(out) :: root(*) !! `NDEG` vector of roots
+    integer,intent(out) :: ierr !! Output Error Code
+                                !!
+                                !!### Normal Code:
+                                !!
+                                !!  * 0 -- means the roots were computed.
+                                !!
+                                !!### Abnormal Codes
+                                !!
+                                !!  * 1 -- more than 30 QR iterations on some eigenvalue of the
+                                !!      companion matrix
+                                !!  * 2 -- COEFF(1)=0.0
+                                !!  * 3 -- NDEG is invalid (less than or equal to 0)
+
+    real(wp) :: scale
+    integer :: k , kh , kwr , kwi , kcol
+    integer :: km1 , kwend
+    real(wp),dimension(:),allocatable :: work !! work array of dimension at least `NDEG*(NDEG+2)`
+
+    ierr = 0
+    if ( abs(coeff(1))==0.0_wp ) then
+        ierr = 2
+        write(*,*) 'leading coefficient is zero.'
+        return
+    endif
+
+    if ( ndeg<=0 ) then
+        ierr = 3
+        write(*,*) 'degree invalid.'
+        return
+    endif
+
+    if ( ndeg==1 ) then
+        root(1) = cmplx(-coeff(2)/coeff(1),0.0_wp, wp)
+        return
+    endif
+
+    allocate(work(ndeg*(ndeg+2))) ! work array
+
+    scale = 1.0_wp/coeff(1)
+    kh = 1
+    kwr = kh + ndeg*ndeg
+    kwi = kwr + ndeg
+    kwend = kwi + ndeg - 1
+
+    do k = 1 , kwend
+        work(k) = 0.0_wp
+    enddo
+
+    do k = 1 , ndeg
+        kcol = (k-1)*ndeg + 1
+        work(kcol) = -coeff(k+1)*scale
+        if ( k/=ndeg ) work(kcol+k) = 1.0_wp
+    enddo
+
+    call hqr(ndeg,ndeg,1,ndeg,work(kh),work(kwr),work(kwi),ierr)
+
+    if ( ierr/=0 ) then
+        ierr = 1
+        write(*,*) 'no convergence in 30 qr iterations.'
+        return
+    endif
+
+    do k = 1 , ndeg
+        km1 = k - 1
+        root(k) = cmplx(work(kwr+km1),work(kwi+km1),wp)
+    enddo
+
+    end subroutine rpqr79
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  This subroutine finds the eigenvalues of a real
+!  upper hessenberg matrix by the qr method.
+!
+!### Reference
+!  * this subroutine is a translation of the algol procedure hqr,
+!    num. math. 14, 219-231(1970) by martin, peters, and wilkinson.
+!    handbook for auto. comp., vol.ii-linear algebra, 359-371(1971).
+!
+!### History
+!  * this version dated september 1989.
+!    RESTORED CORRECT INDICES OF LOOPS (200,210,230,240). (9/29/89 BSG).
+!    questions and comments should be directed to burton s. garbow,
+!    mathematics and computer science div, argonne national laboratory
+!  * Jacob Williams, 9/13/2022 : modernized this routine
+!
+!@note This routine is from [EISPACK](https://netlib.org/eispack/hqr.f)
+
+    subroutine hqr(nm,n,low,igh,h,wr,wi,ierr)
+
+    implicit none
+
+    integer,intent(in) :: nm !! must be set to the row dimension of two-dimensional
+                             !! array parameters as declared in the calling program
+                             !! dimension statement.
+    integer,intent(in) :: n !! order of the matrix
+    integer,intent(in) :: low   !! low and igh are integers determined by the balancing
+                                !! subroutine  balanc.  if  balanc  has not been used,
+                                !! set low=1, igh=n.
+    integer,intent(in) :: igh   !! low and igh are integers determined by the balancing
+                                !! subroutine  balanc.  if  balanc  has not been used,
+                                !! set low=1, igh=n.
+    real(wp),intent(inout) :: h(nm,n) !! On input: contains the upper hessenberg matrix.  information about
+                                      !! the transformations used in the reduction to hessenberg
+                                      !! form by  elmhes  or  orthes, if performed, is stored
+                                      !! in the remaining triangle under the hessenberg matrix.
+                                      !!
+                                      !! On output: has been destroyed.  therefore, it must be saved
+                                      !! before calling `hqr` if subsequent calculation and
+                                      !! back transformation of eigenvectors is to be performed.
+    real(wp),intent(out) :: wr(n) !! the real parts of the eigenvalues.  the eigenvalues
+                                  !! are unordered except that complex conjugate pairs
+                                  !! of values appear consecutively with the eigenvalue
+                                  !! having the positive imaginary part first.  if an
+                                  !! error exit is made, the eigenvalues should be correct
+                                  !! for indices ierr+1,...,n.
+    real(wp),intent(out) :: wi(n) !! the imaginary parts of the eigenvalues.  the eigenvalues
+                                  !! are unordered except that complex conjugate pairs
+                                  !! of values appear consecutively with the eigenvalue
+                                  !! having the positive imaginary part first.  if an
+                                  !! error exit is made, the eigenvalues should be correct
+                                  !! for indices ierr+1,...,n.
+    integer,intent(out) :: ierr !! is set to:
+                                !!
+                                !!  * zero -- for normal return,
+                                !!  * j -- if the limit of 30*n iterations is exhausted
+                                !!    while the j-th eigenvalue is being sought.
+
+    integer :: i , j , k , l , m , en , ll , mm , na , &
+               itn , its , mp2 , enm2
+    real(wp) :: p , q , r , s , t , w , x , y , zz , norm , &
+                tst1 , tst2
+    logical :: notlas
+
+    ierr = 0
+    norm = 0.0_wp
+    k = 1
+
+    ! store roots isolated by balance and compute matrix norm
+    do i = 1 , n
+        do j = k , n
+            norm = norm + abs(h(i,j))
+        enddo
+        k = i
+        if ( i<low .or. i>igh ) then
+            wr(i) = h(i,i)
+            wi(i) = 0.0_wp
+        endif
+    enddo
+
+    en = igh
+    t = 0.0_wp
+    itn = 30*n
+
+    do
+        ! search for next eigenvalues
+        if ( en<low ) return
+        its = 0
+        na = en - 1
+        enm2 = na - 1
+        do
+            ! look for single small sub-diagonal element
+            ! for l=en step -1 until low do --
+            do ll = low , en
+                l = en + low - ll
+                if ( l==low ) exit
+                s = abs(h(l-1,l-1)) + abs(h(l,l))
+                if ( s==0.0_wp ) s = norm
+                tst1 = s
+                tst2 = tst1 + abs(h(l,l-1))
+                if ( tst2==tst1 ) exit
+            enddo
+            ! form shift
+            x = h(en,en)
+            if ( l==en ) then
+                ! one root found
+                wr(en) = x + t
+                wi(en) = 0.0_wp
+                en = na
+            else
+                y = h(na,na)
+                w = h(en,na)*h(na,en)
+                if ( l==na ) then
+                    ! two roots found
+                    p = (y-x)/2.0_wp
+                    q = p*p + w
+                    zz = sqrt(abs(q))
+                    x = x + t
+                    if ( q<0.0_wp ) then
+                        ! complex pair
+                        wr(na) = x + p
+                        wr(en) = x + p
+                        wi(na) = zz
+                        wi(en) = -zz
+                    else
+                        ! real pair
+                        zz = p + sign(zz,p)
+                        wr(na) = x + zz
+                        wr(en) = wr(na)
+                        if ( zz/=0.0_wp ) wr(en) = x - w/zz
+                        wi(na) = 0.0_wp
+                        wi(en) = 0.0_wp
+                    endif
+                    en = enm2
+                elseif ( itn==0 ) then
+                    ! set error -- all eigenvalues have not
+                    ! converged after 30*n iterations
+                    ierr = en
+                    return
+                else
+                    if ( its==10 .or. its==20 ) then
+                        ! form exceptional shift
+                        t = t + x
+                        do i = low , en
+                            h(i,i) = h(i,i) - x
+                        enddo
+                        s = abs(h(en,na)) + abs(h(na,enm2))
+                        x = 0.75_wp*s
+                        y = x
+                        w = -0.4375_wp*s*s
+                    endif
+                    its = its + 1
+                    itn = itn - 1
+                    ! look for two consecutive small
+                    ! sub-diagonal elements.
+                    ! for m=en-2 step -1 until l do --
+                    do mm = l , enm2
+                        m = enm2 + l - mm
+                        zz = h(m,m)
+                        r = x - zz
+                        s = y - zz
+                        p = (r*s-w)/h(m+1,m) + h(m,m+1)
+                        q = h(m+1,m+1) - zz - r - s
+                        r = h(m+2,m+1)
+                        s = abs(p) + abs(q) + abs(r)
+                        p = p/s
+                        q = q/s
+                        r = r/s
+                        if ( m==l ) exit
+                        tst1 = abs(p)*(abs(h(m-1,m-1))+abs(zz)+abs(h(m+1,m+1)))
+                        tst2 = tst1 + abs(h(m,m-1))*(abs(q)+abs(r))
+                        if ( tst2==tst1 ) exit
+                    enddo
+
+                    mp2 = m + 2
+
+                    do i = mp2 , en
+                        h(i,i-2) = 0.0_wp
+                        if ( i/=mp2 ) h(i,i-3) = 0.0_wp
+                    enddo
+                    ! double qr step involving rows l to en and
+                    ! columns m to en
+                    do k = m , na
+                        notlas = k/=na
+                        if ( k/=m ) then
+                            p = h(k,k-1)
+                            q = h(k+1,k-1)
+                            r = 0.0_wp
+                            if ( notlas ) r = h(k+2,k-1)
+                            x = abs(p) + abs(q) + abs(r)
+                            if ( x==0.0_wp ) cycle
+                            p = p/x
+                            q = q/x
+                            r = r/x
+                        endif
+                        s = sign(sqrt(p*p+q*q+r*r),p)
+                        if ( k==m ) then
+                            if ( l/=m ) h(k,k-1) = -h(k,k-1)
+                        else
+                            h(k,k-1) = -s*x
+                        endif
+                        p = p + s
+                        x = p/s
+                        y = q/s
+                        zz = r/s
+                        q = q/p
+                        r = r/p
+                        if ( notlas ) then
+                            ! row modification
+                            do j = k , en
+                                p = h(k,j) + q*h(k+1,j) + r*h(k+2,j)
+                                h(k,j) = h(k,j) - p*x
+                                h(k+1,j) = h(k+1,j) - p*y
+                                h(k+2,j) = h(k+2,j) - p*zz
+                            enddo
+                            j = min(en,k+3)
+                            ! column modification
+                            do i = l , j
+                                p = x*h(i,k) + y*h(i,k+1) + zz*h(i,k+2)
+                                h(i,k) = h(i,k) - p
+                                h(i,k+1) = h(i,k+1) - p*q
+                                h(i,k+2) = h(i,k+2) - p*r
+                            enddo
+                        else
+                            ! row modification
+                            do j = k , en
+                                p = h(k,j) + q*h(k+1,j)
+                                h(k,j) = h(k,j) - p*x
+                                h(k+1,j) = h(k+1,j) - p*y
+                            enddo
+                            j = min(en,k+3)
+                            ! column modification
+                            do i = l , j
+                                p = x*h(i,k) + y*h(i,k+1)
+                                h(i,k) = h(i,k) - p
+                                h(i,k+1) = h(i,k+1) - p*q
+                            enddo
+                        endif
+                    enddo
+                    cycle
+                endif
+            endif
+            exit
+        end do
+
+    end do
+
+    end subroutine hqr
 !*****************************************************************************************
 
 !*****************************************************************************************

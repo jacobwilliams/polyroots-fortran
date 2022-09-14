@@ -5,7 +5,7 @@
     program rpoly_test
 
     use iso_fortran_env
-    use polyroots_module, only: wp => polyroots_module_rk, rpoly, qr_algeq_solver, rpzero
+    use polyroots_module, only: wp => polyroots_module_rk, rpoly, qr_algeq_solver, rpzero, rpqr79
 
     implicit none
 
@@ -44,6 +44,15 @@
     call rpzero(degree,p,r,t,istatus,s)
     if (istatus/=0) then
         error stop ' ** failure by rpzero **'
+    else
+        write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
+                                    (real(r(i),wp), aimag(r(i)), i=1,degree)
+    end if
+
+    write(*, '(/A)') 'rpqr79 example 1. polynomial with zeros 1,2,...,10.'
+    call rpqr79(degree,p,r,istatus)
+    if (istatus/=0) then
+        error stop ' ** failure by rpqr79 **'
     else
         write(*, '(a/ (2g23.15))') ' real part           imaginary part',  &
                                     (real(r(i),wp), aimag(r(i)), i=1,degree)
