@@ -16,7 +16,7 @@ A modern Fortran library for finding the roots of polynomials.
 
 ## Methods
 
-Method name | Polynomial type | Coefficients | Roots | Description
+Method name | Polynomial type | Coefficients | Roots | Reference
 --- | --- | --- | --- | ---
 [`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub](https://dl.acm.org/doi/10.1145/355637.355643)
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
