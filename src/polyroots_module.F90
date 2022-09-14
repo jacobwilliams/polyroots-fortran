@@ -1232,7 +1232,7 @@ contains
 
 !*****************************************************************************************
 !>
-!  Solve the real coefficient monic algebraic equation by the qr-method.
+!  Solve the real coefficient algebraic equation by the qr-method.
 !
 !### Reference
 !  * [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib
@@ -1243,8 +1243,7 @@ contains
     implicit none
 
     integer,intent(in) :: n !! degree of the monic polynomial.
-    real(wp),intent(in) :: c(0:n-1) !! non-principal coefficients of the polynomial.
-                                    !! `i`-th degree coefficients is stored in `c(i)`.
+    real(wp),intent(in) :: c(n+1) !! coefficients of the polynomial. in order of decreasing powers.
     real(wp),intent(out) :: zr(n) !! real part of output roots
     real(wp),intent(out) :: zi(n) !! imaginary part of output roots
     real(wp),intent(out) :: detil !! accuracy hint.
@@ -1297,27 +1296,23 @@ contains
 
 subroutine build_companion(n,a,c)
     !!  build the companion matrix of the polynomial.
+    !!  (this was modified to allow for non-monic polynomials)
     implicit none
 
     integer,intent(in)   :: n
     real(wp),intent(out) :: a(n,n)
-    real(wp),intent(in)  :: c(0:n-1) !! coefficients in order of decreasing powers
+    real(wp),intent(in)  :: c(n+1) !! coefficients in order of decreasing powers
 
-    integer i , j
+    integer :: i !! counter
 
-    do j = 1 , n
-       do i = 1 , n
-          a(i,j) = 0.0_wp
-       enddo
-    enddo
-
-    do i = 2 , n
-       a(i,i-1) = 1.0_wp
-    enddo
-
-    do i = 1 , n
-       a(i,n) = -c(i-1)
-    enddo
+    ! create the companion matrix
+    a = 0.0_wp
+    do i = 1, n-1
+        a(i,i+1) = 1.0_wp
+    end do
+    do i = n,1,-1
+        a(n,n-i+1) = -c(i+1) / c(1)
+    end do
 
 end subroutine build_companion
 
@@ -1332,8 +1327,9 @@ subroutine balance_companion(n,a)
     !!  note: the only non-zero elements of the companion matrix are touched.
 
     implicit none
+
     integer,intent(in) :: n
-    real(wp) :: a(n,n)
+    real(wp),intent(inout) :: a(n,n)
 
     integer,parameter :: b = radix(1.0_wp) !! base of the floating point representation on the machine
     integer,parameter :: b2 = b**2
