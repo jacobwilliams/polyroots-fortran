@@ -57,6 +57,7 @@ module polyroots_module
    ! utility routines:
    public :: dcbrt
    public :: cpevl
+   public :: newton_root_polish
 
 contains
 !*****************************************************************************************
@@ -2752,6 +2753,116 @@ subroutine cpzero(in,a,r,t,iflg,s)
     endif
 
     end function pythag
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  "Polish" a root using a complex Newton Raphson method.
+!  This routine will perform a Newton iteration and update the roots only if they improve,
+!  otherwise, they are left as is.
+!
+!### History
+!  * Jacob Williams, 9/15/2023, created this routine.
+
+    subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
+
+    implicit none
+
+    integer, intent(in)     :: n         !! degree of polynomial
+    real(wp), intent(in)    :: p(n+1)    !! vector of coefficients in order of decreasing powers
+    real(wp), intent(inout) :: zr        !! output vector of real parts of the zeros
+    real(wp), intent(inout) :: zi        !! output vector of imaginary parts of the zeros
+    real(wp), intent(in)    :: ftol      !! convergence tolerance for the root
+    real(wp), intent(in)    :: ztol      !! convergence tolerance for `x`
+    integer, intent(in)     :: maxiter   !! maximum number of iterations
+    integer, intent(out)    :: istat     !! status flag:
+                                         !!
+                                         !! * 0  = converged in `f`
+                                         !! * 1  = converged in `x`
+                                         !! * -1 = singular
+                                         !! * -2 = max iterations reached
+
+    complex(wp) :: z, f, z_prev, z_best, f_best, dfdx
+    integer :: i !! counter
+
+    real(wp),parameter :: alpha = 1.0_wp !! newton step size
+
+    ! first evaluate initial point:
+    z = cmplx(zr, zi, wp)
+    call func(z,f,dfdx)
+
+    ! initialize:
+    istat = 0
+    z_prev = z
+    z_best = z
+    f_best = f
+
+    main : do i = 1, maxiter
+
+        if (i>1) call func(z,f,dfdx)
+        if (abs(f)<abs(f_best)) then
+            ! best so far
+            zr = real(z, wp)
+            zi = aimag(z)
+            z_best = z
+            f_best = f
+        end if
+        if (abs(f)<=ftol) exit main
+
+        if (i == maxiter) then ! max iterations reached
+            istat = -2
+            exit main
+        end if
+
+        if (dfdx==0.0_wp) then  ! can't proceed
+            istat = -1
+            exit main
+        end if
+
+        ! Newton correction for next step:
+        z = z - alpha * ( f / dfdx )
+
+        if (abs(z-z_prev)<=ztol) then
+            ! convergence in x. try this point and see if there is any improvement
+            istat = 1
+            call func(z,f,dfdx)
+            if (abs(f)<abs(f_best)) then ! best so far
+                zr = real(z, wp)
+                zi = aimag(z)
+            end if
+            exit main
+        end if
+        z_prev = z
+
+    end do main
+
+    contains
+
+        subroutine func(x,f,dfdx)
+
+            !! evaluate the polynomial:
+            !! `f = p(1)*x**n + p(2)*x**(n-1) + ... + p(n)*x + p(n+1)`
+            !! and its derivative using Horner's Rule.
+            !!
+            !! See: "Roundoff in polynomial evaluation", W. Kahan, 1986
+            !! https://rosettacode.org/wiki/Horner%27s_rule_for_polynomial_evaluation#Fortran
+
+            complex(wp),intent(in)  :: x
+            complex(wp),intent(out) :: f    !! function value at x
+            complex(wp),intent(out) :: dfdx !! function derivative at x
+
+            integer :: i !! counter
+
+            f = p(1)
+            dfdx = 0.0_wp
+            do i = 2, n+1
+                dfdx = dfdx * x + f
+                f = f * x + p(i)
+            end do
+
+        end subroutine func
+
+    end subroutine newton_root_polish
 !*****************************************************************************************
 
 !*****************************************************************************************
