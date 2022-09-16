@@ -106,7 +106,10 @@ The polyroots-fortran source code and related files and documentation are distri
 * [What is a Companion Matrix | Nick Higham](https://nhigham.com/2021/03/23/what-is-a-companion-matrix/)
 * [19 Dubious Ways to Compute the Zeros of a Polynomial | Cleve's Corner](https://blogs.mathworks.com/cleve/2016/06/27/19-dubious-ways-to-compute-the-zeros-of-a-polynomial/)
 * [New Progress in Polynomial Root-finding | Victor Y. Pan](https://arxiv.org/pdf/1805.12042.pdf)
-* [pa03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
+* [PA03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
+* [PA05](https://www.hsl.rl.ac.uk/archive/specs/pa05.pdf) HSL Archive code for computing all the roots of a quartic polynomial
+* [PA16](https://www.hsl.rl.ac.uk/catalogue/pa16.html), [PA17](https://www.hsl.rl.ac.uk/catalogue/pa17.html) HSL codes for computing zeros of polynomials using method of Madsen and Reid
+* `POLZEROS` - Polynomial zeros using Aberth's method, [_Numer Algor_ **13**, 179–200 (1996).](https://doi.org/10.1007/BF02207694) Fortran source code at Netlib: [`numeralgo/na10`](https://netlib.org/numeralgo/na10), several versions provided also by [Alan Miller](https://jblevins.org/mirror/amiller/)   
 
 ## See also
 
