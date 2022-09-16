@@ -57,6 +57,7 @@ module polyroots_module
    ! utility routines:
    public :: dcbrt
    public :: cpevl
+   public :: newton_root_polish
 
 contains
 !*****************************************************************************************
@@ -1733,11 +1734,8 @@ subroutine cpzero(in,a,r,t,iflg,s)
 
     if ( in<=0 .or. abs(a(1))==0.0_wp ) then
         iflg = 1
-        return
     else
-
         ! check for easily obtained zeros
-
         n = in
         n1 = n + 1
         if ( iflg==0 ) then
@@ -1753,29 +1751,29 @@ subroutine cpzero(in,a,r,t,iflg,s)
                 imax = n + 2
                 t(n1) = abs(t(n1))
                 do i = 2 , n1
-                t(n+i) = -abs(t(n+2-i))
-                if ( real(t(n+i),wp)<real(t(imax),wp) ) imax = n + i
+                    t(n+i) = -abs(t(n+2-i))
+                    if ( real(t(n+i),wp)<real(t(imax),wp) ) imax = n + i
                 enddo
                 x = (-real(t(imax),wp)/real(t(n1),wp))**(1.0_wp/(imax-n1))
                 do
-                x = 2.0_wp*x
-                call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
-                pn = ctmp(1)
-                if ( real(pn,wp)>=0.0_wp ) exit
+                    x = 2.0_wp*x
+                    call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                    pn = ctmp(1)
+                    if ( real(pn,wp)>=0.0_wp ) exit
                 end do
                 u = 0.5_wp*x
                 v = x
-            do
-                x = 0.5_wp*(u+v)
-                call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
-                pn = ctmp(1)
-                if ( real(pn,wp)>0.0_wp ) v = x
-                if ( real(pn,wp)<=0.0_wp ) u = x
-                if ( (v-u)<=0.001_wp*(1.0_wp+v) ) exit
-            end do
+                do
+                    x = 0.5_wp*(u+v)
+                    call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                    pn = ctmp(1)
+                    if ( real(pn,wp)>0.0_wp ) v = x
+                    if ( real(pn,wp)<=0.0_wp ) u = x
+                    if ( (v-u)<=0.001_wp*(1.0_wp+v) ) exit
+                end do
                 do i = 1 , n
-                u = (pi/n)*(2*i-1.5_wp)
-                r(i) = max(x,0.001_wp*abs(temp))*cmplx(cos(u),sin(u),wp) + temp
+                    u = (pi/n)*(2*i-1.5_wp)
+                    r(i) = max(x,0.001_wp*abs(temp))*cmplx(cos(u),sin(u),wp) + temp
                 enddo
             else
                 r(n) = 0.0_wp
@@ -1791,44 +1789,43 @@ subroutine cpzero(in,a,r,t,iflg,s)
         do nit = 1 , nmax
             do i = 1 , n
                 if ( nit==1 .or. abs(t(i))/=0.0_wp ) then
-                call cpevl(n,0,a,r(i),ctmp,btmp,.true.)
-                pn = ctmp(1)
-                temp = btmp(1)
-                if ( abs(real(pn,wp))+abs(aimag(pn))>real(temp,wp)+aimag(temp) ) then
-                    temp = a(1)
-                    do j = 1 , n
-                        if ( j/=i ) temp = temp*(r(i)-r(j))
-                    enddo
-                    t(i) = pn/temp
-                else
-                    t(i) = 0.0_wp
-                    nr = nr + 1
-                endif
+                    call cpevl(n,0,a,r(i),ctmp,btmp,.true.)
+                    pn = ctmp(1)
+                    temp = btmp(1)
+                    if ( abs(real(pn,wp))+abs(aimag(pn))>real(temp,wp)+aimag(temp) ) then
+                        temp = a(1)
+                        do j = 1 , n
+                            if ( j/=i ) temp = temp*(r(i)-r(j))
+                        enddo
+                        t(i) = pn/temp
+                    else
+                        t(i) = 0.0_wp
+                        nr = nr + 1
+                    endif
                 endif
             enddo
             do i = 1 , n
                 r(i) = r(i) - t(i)
             enddo
-            if ( nr==n ) goto 100
+            if ( nr==n ) then
+                ! calculate error bounds for zeros
+                do nr = 1 , n
+                    call cpevl(n,n,a,r(nr),t,t(n+2),.true.)
+                    x = abs(cmplx(abs(real(t(1),wp)),abs(aimag(t(1))),wp)+t(n+2))
+                    s(nr) = 0.0_wp
+                    do i = 1 , n
+                        x = x*real(n1-i,wp)/i
+                        temp = cmplx(max(abs(real(t(i+1),wp))-real(t(n1+i),wp),0.0_wp), &
+                                max(abs(aimag(t(i+1)))-aimag(t(n1+i)),0.0_wp), wp)
+                        s(nr) = max(s(nr),(abs(temp)/x)**(1.0_wp/i))
+                    enddo
+                    s(nr) = 1.0_wp/s(nr)
+                enddo
+                return
+            end if
         enddo
-        ! error exit
-        iflg = 2
-        return
+        iflg = 2  ! error exit
     endif
-
-  ! calculate error bounds for zeros
-100  do nr = 1 , n
-        call cpevl(n,n,a,r(nr),t,t(n+2),.true.)
-        x = abs(cmplx(abs(real(t(1),wp)),abs(aimag(t(1))),wp)+t(n+2))
-        s(nr) = 0.0_wp
-        do i = 1 , n
-            x = x*real(n1-i,wp)/i
-            temp = cmplx(max(abs(real(t(i+1),wp))-real(t(n1+i),wp),0.0_wp), &
-                    max(abs(aimag(t(i+1)))-aimag(t(n1+i)),0.0_wp), wp)
-            s(nr) = max(s(nr),(abs(temp)/x)**(1.0_wp/i))
-        enddo
-        s(nr) = 1.0_wp/s(nr)
-    enddo
 
     end subroutine cpzero
 !*****************************************************************************************
@@ -1920,14 +1917,13 @@ subroutine cpzero(in,a,r,t,iflg,s)
                                 !!### Abnormal Codes
                                 !!
                                 !!  * 1 -- more than 30 QR iterations on some eigenvalue of the
-                                !!      companion matrix
+                                !!    companion matrix
                                 !!  * 2 -- COEFF(1)=0.0
                                 !!  * 3 -- NDEG is invalid (less than or equal to 0)
 
     real(wp) :: scale
-    integer :: k , kh , kwr , kwi , kcol
-    integer :: km1 , kwend
-    real(wp),dimension(:),allocatable :: work !! work array of dimension at least `NDEG*(NDEG+2)`
+    integer :: k , kh , kwr , kwi , kcol, km1 , kwend
+    real(wp),dimension(:),allocatable :: work !! work array of dimension `NDEG*(NDEG+2)`
 
     ierr = 0
     if ( abs(coeff(1))==0.0_wp ) then
@@ -2752,6 +2748,116 @@ subroutine cpzero(in,a,r,t,iflg,s)
     endif
 
     end function pythag
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  "Polish" a root using a complex Newton Raphson method.
+!  This routine will perform a Newton iteration and update the roots only if they improve,
+!  otherwise, they are left as is.
+!
+!### History
+!  * Jacob Williams, 9/15/2023, created this routine.
+
+    subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
+
+    implicit none
+
+    integer, intent(in)     :: n         !! degree of polynomial
+    real(wp), intent(in)    :: p(n+1)    !! vector of coefficients in order of decreasing powers
+    real(wp), intent(inout) :: zr        !! output vector of real parts of the zeros
+    real(wp), intent(inout) :: zi        !! output vector of imaginary parts of the zeros
+    real(wp), intent(in)    :: ftol      !! convergence tolerance for the root
+    real(wp), intent(in)    :: ztol      !! convergence tolerance for `x`
+    integer, intent(in)     :: maxiter   !! maximum number of iterations
+    integer, intent(out)    :: istat     !! status flag:
+                                         !!
+                                         !! * 0  = converged in `f`
+                                         !! * 1  = converged in `x`
+                                         !! * -1 = singular
+                                         !! * -2 = max iterations reached
+
+    complex(wp) :: z, f, z_prev, z_best, f_best, dfdx
+    integer :: i !! counter
+
+    real(wp),parameter :: alpha = 1.0_wp !! newton step size
+
+    ! first evaluate initial point:
+    z = cmplx(zr, zi, wp)
+    call func(z,f,dfdx)
+
+    ! initialize:
+    istat = 0
+    z_prev = z
+    z_best = z
+    f_best = f
+
+    main : do i = 1, maxiter
+
+        if (i>1) call func(z,f,dfdx)
+        if (abs(f)<abs(f_best)) then
+            ! best so far
+            zr = real(z, wp)
+            zi = aimag(z)
+            z_best = z
+            f_best = f
+        end if
+        if (abs(f)<=ftol) exit main
+
+        if (i == maxiter) then ! max iterations reached
+            istat = -2
+            exit main
+        end if
+
+        if (dfdx==0.0_wp) then  ! can't proceed
+            istat = -1
+            exit main
+        end if
+
+        ! Newton correction for next step:
+        z = z - alpha * ( f / dfdx )
+
+        if (abs(z-z_prev)<=ztol) then
+            ! convergence in x. try this point and see if there is any improvement
+            istat = 1
+            call func(z,f,dfdx)
+            if (abs(f)<abs(f_best)) then ! best so far
+                zr = real(z, wp)
+                zi = aimag(z)
+            end if
+            exit main
+        end if
+        z_prev = z
+
+    end do main
+
+    contains
+
+        subroutine func(x,f,dfdx)
+
+            !! evaluate the polynomial:
+            !! `f = p(1)*x**n + p(2)*x**(n-1) + ... + p(n)*x + p(n+1)`
+            !! and its derivative using Horner's Rule.
+            !!
+            !! See: "Roundoff in polynomial evaluation", W. Kahan, 1986
+            !! https://rosettacode.org/wiki/Horner%27s_rule_for_polynomial_evaluation#Fortran
+
+            complex(wp),intent(in)  :: x
+            complex(wp),intent(out) :: f    !! function value at x
+            complex(wp),intent(out) :: dfdx !! function derivative at x
+
+            integer :: i !! counter
+
+            f = p(1)
+            dfdx = 0.0_wp
+            do i = 2, n+1
+                dfdx = dfdx * x + f
+                f = f * x + p(i)
+            end do
+
+        end subroutine func
+
+    end subroutine newton_root_polish
 !*****************************************************************************************
 
 !*****************************************************************************************

@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1723 statements</a>
+    title="100.0% of total for modules and submodules.">1785 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -137,6 +137,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
     </div>
   </div>
 </div>
@@ -212,6 +213,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
     </div>
   </div>
 </div>
@@ -741,7 +743,7 @@ if these are known. On output: ith zero.</p></td>
 <h3>Abnormal Codes</h3>
 <ul>
 <li>1 -- more than 30 QR iterations on some eigenvalue of the
-      companion matrix</li>
+    companion matrix</li>
 <li>2 -- COEFF(1)=0.0</li>
 <li>3 -- NDEG is invalid (less than or equal to 0)</li>
 </ul></td>
@@ -1123,6 +1125,78 @@ for indices <code>ierr+1,...,n</code>.</p></td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>ci</strong></td><td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-newton_root_polish"></span><h3>public subroutine <a href='../proc/newton_root_polish.html'>newton_root_polish</a>(n, p, zr, zi, ftol, ztol, maxiter, istat)</h3></div>
+  <div class="panel-body">
+       
+<p>"Polish" a root using a complex Newton Raphson method.
+  This routine will perform a Newton iteration and update the roots only if they improve,
+  otherwise, they are left as is.</p><a href="../proc/newton_root_polish.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>p</strong>(n+1)</td><td><p>vector of coefficients in order of decreasing powers</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zr</strong></td><td><p>output vector of real parts of the zeros</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zi</strong></td><td><p>output vector of imaginary parts of the zeros</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ftol</strong></td><td><p>convergence tolerance for the root</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ztol</strong></td><td><p>convergence tolerance for <code>x</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>maxiter</strong></td><td><p>maximum number of iterations</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>istat</strong></td><td><p>status flag:</p>
+<ul>
+<li>0  = converged in <code>f</code></li>
+<li>1  = converged in <code>x</code></li>
+<li>-1 = singular</li>
+<li>-2 = max iterations reached</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
