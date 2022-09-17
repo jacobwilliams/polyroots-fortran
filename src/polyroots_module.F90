@@ -71,17 +71,20 @@ contains
 ! * code converted using to_f90 by alan miller, 2003-06-02
 ! * Jacob Williams, 9/13/2022 : modernized this code
 
-    subroutine rpoly(op, degree, zeror, zeroi, fail)
+    subroutine rpoly(op, degree, zeror, zeroi, istat)
 
       implicit none
 
       real(wp), intent(in)    :: op(:) !! vector of coefficients in order of decreasing powers
-      integer, intent(inout)  :: degree !! degree of polynomial
+      integer, intent(in)     :: degree !! degree of polynomial
       real(wp), intent(out)   :: zeror(:) !! output vector of real parts of the zeros
       real(wp), intent(out)   :: zeroi(:) !! output vector of imaginary parts of the zeros
-      logical, intent(out)    :: fail !! true only if leading coefficient is zero
-                                      !! or if rpoly has found fewer than degree zeros.
-                                      !! in the latter case degree is reset to the number of zeros found.
+      integer, intent(out)    :: istat !! status output:
+                                       !!
+                                       !! * 0 : success
+                                       !! * -1 : leading coefficient is zero
+                                       !! * -2 : no roots found
+                                       !! * >0 : the number of zeros found
 
       ! these were formerly in a common block:
       real(wp), allocatable   :: p(:), qp(:), k(:), qk(:), svk(:)
@@ -111,14 +114,13 @@ contains
       ! initialization of constants for shift rotation
       xx = sqrthalf
       yy = -xx
-      fail = .false.
+      istat = 0
       n = degree
       nn = n + 1
 
       ! algorithm fails if the leading coefficient is zero.
       if (op(1) == 0.0_wp) then
-         fail = .true.
-         degree = 0
+         istat = -1
          return
       end if
 
@@ -305,8 +307,8 @@ contains
       end do main
 
       ! return with failure if no convergence with 20 shifts
-      fail = .true.
-      degree = degree - n
+      istat = degree - n
+      if (istat==0) istat = -2  ! if not roots found
 
    contains
 
@@ -1248,7 +1250,12 @@ contains
     real(wp),intent(out) :: zr(n) !! real part of output roots
     real(wp),intent(out) :: zi(n) !! imaginary part of output roots
     real(wp),intent(out) :: detil !! accuracy hint.
-    integer,intent(out) :: istatus !! return code from `hqr_eigen_hessenberg`
+    integer,intent(out) :: istatus !! return code:
+                                   !!
+                                   !! * -1 : degree <= 0
+                                   !! * -2 : leading coefficient `c(1)` is zero
+                                   !! * 0 : success
+                                   !! * otherwise, the return code from `hqr_eigen_hessenberg`
 
     real(wp),allocatable :: a(:,:) !! work matrix
     integer ,allocatable :: cnt(:) !! work area for counting the qr-iterations
@@ -1256,11 +1263,16 @@ contains
     integer :: iter
     real(wp) :: afnorm
 
+    ! check for invalid arguments
     if ( n<=0 ) then
-       ! invalid arguments
-       istatus = 3
+       istatus = -1
        return
     endif
+    if (c(1) == 0.0_wp) then
+        ! leading coefficient is zero.
+        istatus = -2
+        return
+    end if
 
     allocate(a(n,n))
     allocate(cnt(n))
@@ -1278,10 +1290,10 @@ contains
     call hqr_eigen_hessenberg(n,a,zr,zi,cnt,istatus)
     if ( istatus/=0 ) then
         write(*,'(A,1X,I4)')  'abnormal from hqr_eigen_hessenberg. istatus=' , istatus
-       if ( istatus==1 ) write(*,'(A)') 'matrix is completely zero.'
-       if ( istatus==2 ) write(*,'(A)') 'qr iteration does not converged.'
-       if ( istatus>3 )  write(*,'(A)') 'arguments violate the condition.'
-       return
+        if ( istatus==1 ) write(*,'(A)') 'matrix is completely zero.'
+        if ( istatus==2 ) write(*,'(A)') 'qr iteration does not converged.'
+        if ( istatus>3 )  write(*,'(A)') 'arguments violate the condition.'
+        return
     endif
 
     ! count the total qr iteration.

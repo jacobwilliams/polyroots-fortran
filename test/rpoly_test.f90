@@ -18,7 +18,6 @@
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
     real(wp) :: detil
-    logical :: fail
 
     !--------------------------------------
 
@@ -90,21 +89,24 @@
 
         write(*, '(A,1x,i3)') 'rpoly'
         write(*, '(a)') '  real part               imaginary part         root'
-        call rpoly(p, degree, zr, zi, fail)
-        if (fail) error stop ' ** failure by rpoly **'
+        call rpoly(p, degree, zr, zi, istatus)
+        if (istatus/=0) then
+            write(*,*) "rpoly istatus = ", istatus
+            error stop ' ** failure in rpoly **'
+        end if
         call check_results(zr, zi, degree)
 
         write(*, '(/A,1x,i3)') 'rpzero'
         write(*, '(a)') '  real part               imaginary part         root'
         istatus = 0 ! no estimates input
         call rpzero(degree,p,r,t,istatus,s)
-        if (istatus/=0) error stop ' ** failure by rpzero **'
+        if (istatus/=0) error stop ' ** failure in rpzero **'
         call check_results(real(r,wp), aimag(r), degree)
 
         write(*, '(/A,1x,i3)') 'rpqr79'
         write(*, '(a)') '  real part               imaginary part         root'
         call rpqr79(degree,p,r,istatus)
-        if (istatus/=0) error stop ' ** failure by rpqr79 **'
+        if (istatus/=0) error stop ' ** failure in rpqr79 **'
         call check_results(real(r,wp), aimag(r), degree)
 
         ! for now, just test this one with the real coefficients only:
@@ -114,12 +116,13 @@
             cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
         end do
         call cpqr79(degree,cp,r,istatus)
-        if (istatus/=0) error stop ' ** failure by cpqr79 **'
+        if (istatus/=0) error stop ' ** failure in cpqr79 **'
         call check_results(real(r,wp), aimag(r), degree)
 
         write(*, '(/A,1x,i3)') 'qr_algeq_solver'
         write(*, '(a)') '  real part               imaginary part         root'
         call qr_algeq_solver(degree,p,zr,zi,detil,istatus)
+        if (istatus/=0) error stop ' ** failure in qr_algeq_solver **'
         call check_results(zr, zi, degree)
 
         if (wp /= REAL128) then
