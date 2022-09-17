@@ -1478,7 +1478,7 @@ subroutine balance_companion(n,a)
 
     integer :: i , j , k , l , m , na , its
     real(wp) :: p , q , r , s , t , w , x , y , z
-    logical :: notlast
+    logical :: notlast, found
     integer :: n
 
     ! note: n is changing in this subroutine.
@@ -1486,151 +1486,164 @@ subroutine balance_companion(n,a)
     istatus = 0
     t = 0.0_wp
 
-100 if ( n==0 ) return
+    main : do
 
-    its = 0
-    na = n - 1
-    ! look for single small sub-diagonal element
-200 do l = n , 2 , -1
-       if ( abs(h(l,l-1))<=eps*(abs(h(l-1,l-1))+abs(h(l,l))) ) goto 300
-    enddo
-    l = 1
+        if ( n==0 ) return
 
-300 x = h(n,n)
-    if ( l==n ) then
-       ! one root found
-       wr(n) = x + t
-       wi(n) = 0.0_wp
-       cnt(n) = its
-       n = na
-       goto 100
-    else
-       y = h(na,na)
-       w = h(n,na)*h(na,n)
-       if ( l==na ) then
-          ! comment: two roots found
-          p = (y-x)/2
-          q = p**2 + w
-          y = sqrt(abs(q))
-          cnt(n) = -its
-          cnt(na) = its
-          x = x + t
-          if ( q>0.0_wp ) then
-             ! real pair
-             if ( p<0.0_wp ) y = -y
-             y = p + y
-             wr(na) = x + y
-             wr(n) = x - w/y
-             wi(na) = 0.0_wp
-             wi(n) = 0.0_wp
-          else
-            ! complex pair
-             wr(na) = x + p
-             wr(n) = x + p
-             wi(na) = y
-             wi(n) = -y
-          endif
-          n = n - 2
-          goto 100
-       else
-          if ( its==30 ) then
-             istatus = 1
-             return
-          endif
-          if ( its==10 .or. its==20 ) then
-             ! form exceptional shift
-             t = t + x
-             do i = 1 , n
-                h(i,i) = h(i,i) - x
-             enddo
-             s = abs(h(n,na)) + abs(h(na,n-2))
-             y = 0.75_wp*s
-             x = y
-             w = -0.4375_wp*s**2
-          endif
-          its = its + 1
-          ! look for two consecutive small sub-diagonal elements
-          do m = n - 2 , l , -1
-             z = h(m,m)
-             r = x - z
-             s = y - z
-             p = (r*s-w)/h(m+1,m) + h(m,m+1)
-             q = h(m+1,m+1) - z - r - s
-             r = h(m+2,m+1)
-             s = abs(p) + abs(q) + abs(r)
-             p = p/s
-             q = q/s
-             r = r/s
-             if ( m==l ) exit
-             if ( abs(h(m,m-1))*(abs(q)+abs(r))<=eps*abs(p) &
-                  *(abs(h(m-1,m-1))+abs(z)+abs(h(m+1,m+1))) ) exit
-          enddo
+        its = 0
+        na = n - 1
 
-          do i = m + 2 , n
-             h(i,i-2) = 0.0_wp
-          enddo
-          do i = m + 3 , n
-             h(i,i-3) = 0.0_wp
-          enddo
-          ! double qr step involving rows l to n and columns m to n
-          do k = m , na
-             notlast = (k/=na)
-             if ( k/=m ) then
-                p = h(k,k-1)
-                q = h(k+1,k-1)
-                if ( notlast ) then
-                   r = h(k+2,k-1)
+        do
+
+            ! look for single small sub-diagonal element
+            found = .false.
+            do l = n , 2 , -1
+                if ( abs(h(l,l-1))<=eps*(abs(h(l-1,l-1))+abs(h(l,l))) ) then
+                    found = .true.
+                    exit
+                end if
+            enddo
+            if (.not. found) l = 1
+
+            x = h(n,n)
+            if ( l==n ) then
+                ! one root found
+                wr(n) = x + t
+                wi(n) = 0.0_wp
+                cnt(n) = its
+                n = na
+                cycle main
+            else
+                y = h(na,na)
+                w = h(n,na)*h(na,n)
+                if ( l==na ) then
+                    ! comment: two roots found
+                    p = (y-x)/2
+                    q = p**2 + w
+                    y = sqrt(abs(q))
+                    cnt(n) = -its
+                    cnt(na) = its
+                    x = x + t
+                    if ( q>0.0_wp ) then
+                        ! real pair
+                        if ( p<0.0_wp ) y = -y
+                        y = p + y
+                        wr(na) = x + y
+                        wr(n) = x - w/y
+                        wi(na) = 0.0_wp
+                        wi(n) = 0.0_wp
+                    else
+                        ! complex pair
+                        wr(na) = x + p
+                        wr(n) = x + p
+                        wi(na) = y
+                        wi(n) = -y
+                    endif
+                    n = n - 2
+                    cycle main
                 else
-                   r = 0.0_wp
+                    if ( its==30 ) then
+                        istatus = 1
+                        return
+                    endif
+                    if ( its==10 .or. its==20 ) then
+                        ! form exceptional shift
+                        t = t + x
+                        do i = 1 , n
+                            h(i,i) = h(i,i) - x
+                        enddo
+                        s = abs(h(n,na)) + abs(h(na,n-2))
+                        y = 0.75_wp*s
+                        x = y
+                        w = -0.4375_wp*s**2
+                    endif
+                    its = its + 1
+                    ! look for two consecutive small sub-diagonal elements
+                    do m = n - 2 , l , -1
+                        z = h(m,m)
+                        r = x - z
+                        s = y - z
+                        p = (r*s-w)/h(m+1,m) + h(m,m+1)
+                        q = h(m+1,m+1) - z - r - s
+                        r = h(m+2,m+1)
+                        s = abs(p) + abs(q) + abs(r)
+                        p = p/s
+                        q = q/s
+                        r = r/s
+                        if ( m==l ) exit
+                        if ( abs(h(m,m-1))*(abs(q)+abs(r))<=eps*abs(p) &
+                            *(abs(h(m-1,m-1))+abs(z)+abs(h(m+1,m+1))) ) exit
+                    enddo
+
+                    do i = m + 2 , n
+                        h(i,i-2) = 0.0_wp
+                    enddo
+                    do i = m + 3 , n
+                        h(i,i-3) = 0.0_wp
+                    enddo
+                    ! double qr step involving rows l to n and columns m to n
+                    do k = m , na
+                        notlast = (k/=na)
+                        if ( k/=m ) then
+                            p = h(k,k-1)
+                            q = h(k+1,k-1)
+                            if ( notlast ) then
+                                r = h(k+2,k-1)
+                            else
+                                r = 0.0_wp
+                            endif
+                            x = abs(p) + abs(q) + abs(r)
+                            if ( x==0.0_wp ) cycle
+                            p = p/x
+                            q = q/x
+                            r = r/x
+                        endif
+                        s = sqrt(p**2+q**2+r**2)
+                        if ( p<0.0_wp ) s = -s
+                        if ( k/=m ) then
+                            h(k,k-1) = -s*x
+                        elseif ( l/=m ) then
+                            h(k,k-1) = -h(k,k-1)
+                        endif
+                        p = p + s
+                        x = p/s
+                        y = q/s
+                        z = r/s
+                        q = q/p
+                        r = r/p
+                        ! row modification
+                        do j = k , n
+                            p = h(k,j) + q*h(k+1,j)
+                            if ( notlast ) then
+                                p = p + r*h(k+2,j)
+                                h(k+2,j) = h(k+2,j) - p*z
+                            endif
+                            h(k+1,j) = h(k+1,j) - p*y
+                            h(k,j) = h(k,j) - p*x
+                        enddo
+                        if ( k+3<n ) then
+                            j = k + 3
+                        else
+                            j = n
+                        endif
+                        ! column modification;
+                        do i = l , j
+                            p = x*h(i,k) + y*h(i,k+1)
+                            if ( notlast ) then
+                                p = p + z*h(i,k+2)
+                                h(i,k+2) = h(i,k+2) - p*r
+                            endif
+                            h(i,k+1) = h(i,k+1) - p*q
+                            h(i,k) = h(i,k) - p
+                        enddo
+                    enddo
+                    cycle
                 endif
-                x = abs(p) + abs(q) + abs(r)
-                if ( x==0.0_wp ) cycle
-                p = p/x
-                q = q/x
-                r = r/x
-             endif
-             s = sqrt(p**2+q**2+r**2)
-             if ( p<0.0_wp ) s = -s
-             if ( k/=m ) then
-                h(k,k-1) = -s*x
-             elseif ( l/=m ) then
-                h(k,k-1) = -h(k,k-1)
-             endif
-             p = p + s
-             x = p/s
-             y = q/s
-             z = r/s
-             q = q/p
-             r = r/p
-             ! row modification
-             do j = k , n
-                p = h(k,j) + q*h(k+1,j)
-                if ( notlast ) then
-                   p = p + r*h(k+2,j)
-                   h(k+2,j) = h(k+2,j) - p*z
-                endif
-                h(k+1,j) = h(k+1,j) - p*y
-                h(k,j) = h(k,j) - p*x
-             enddo
-             if ( k+3<n ) then
-                j = k + 3
-             else
-                j = n
-             endif
-             ! column modification;
-             do i = l , j
-                p = x*h(i,k) + y*h(i,k+1)
-                if ( notlast ) then
-                   p = p + z*h(i,k+2)
-                   h(i,k+2) = h(i,k+2) - p*r
-                endif
-                h(i,k+1) = h(i,k+1) - p*q
-                h(i,k) = h(i,k) - p
-             enddo
-           enddo
-          goto 200
-       endif
-    endif
+            endif
+
+        end do
+
+    end do main
 
     end subroutine hqr_eigen_hessenberg
 
