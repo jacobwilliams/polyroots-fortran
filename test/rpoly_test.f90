@@ -76,6 +76,10 @@
             ! a case where 1 is an obvious root
             call allocate_arrays(5)
             p = [8,-8,16,-16,8,-8]
+        case(12)
+            call allocate_arrays(3)
+            p = [ -8.0e18_wp,3.0e12_wp,5.0e6_wp,1.0_wp]
+
         case default
             ! random coefficients
             call allocate_arrays(get_random_integer_number(3,max_degree))
