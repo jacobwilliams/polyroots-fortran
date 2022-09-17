@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="15.9% of total for procedures.">280 statements</a>
+    title="16.1% of total for procedures.">284 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -160,7 +160,13 @@
   <td><span class="anchor" id="variable-istatus"></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>istatus</strong></td><td><p>return code from <code>hqr_eigen_hessenberg</code></p></td>
+  <td><strong>istatus</strong></td><td><p>return code:</p>
+<ul>
+<li>-1 : degree &lt;= 0</li>
+<li>-2 : leading coefficient <code>c(1)</code> is zero</li>
+<li>0 : success</li>
+<li>otherwise, the return code from <code>hqr_eigen_hessenberg</code></li>
+</ul></td>
 </tr>
 </tbody>
 </table>
@@ -200,7 +206,12 @@
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zr</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">!! real part of output roots</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">!! imaginary part of output roots</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">detil</span><span class="w"> </span><span class="c">!! accuracy hint.</span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">istatus</span><span class="w"> </span><span class="c">!! return code from `hqr_eigen_hessenberg`</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">istatus</span><span class="w"> </span><span class="c">!! return code:</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!! * -1 : degree &lt;= 0</span>
+<span class="w">                                   </span><span class="c">!! * -2 : leading coefficient `c(1)` is zero</span>
+<span class="w">                                   </span><span class="c">!! * 0 : success</span>
+<span class="w">                                   </span><span class="c">!! * otherwise, the return code from `hqr_eigen_hessenberg`</span>
 
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(:,:)</span><span class="w"> </span><span class="c">!! work matrix</span>
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="p">,</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cnt</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! work area for counting the qr-iterations</span>
@@ -208,11 +219,16 @@
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w"></span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">afnorm</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
-<span class="w">       </span><span class="c">! invalid arguments</span>
-<span class="w">       </span><span class="n">istatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">    </span><span class="c">! check for invalid arguments</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">       </span><span class="n">istatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
 <span class="w">       </span><span class="k">return</span>
 <span class="k">    endif</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
+<span class="w">        </span><span class="c">! leading coefficient is zero.</span>
+<span class="w">        </span><span class="n">istatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
 
 <span class="k">    allocate</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span><span class="w"></span>
 <span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">cnt</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"></span>
@@ -230,10 +246,10 @@
 <span class="w">    </span><span class="k">call </span><span class="n">hqr_eigen_hessenberg</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">zr</span><span class="p">,</span><span class="n">zi</span><span class="p">,</span><span class="n">cnt</span><span class="p">,</span><span class="n">istatus</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">/=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
 <span class="k">        write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A,1X,I4)&#39;</span><span class="p">)</span><span class="w">  </span><span class="s1">&#39;abnormal from hqr_eigen_hessenberg. istatus=&#39;</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">istatus</span><span class="w"></span>
-<span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;matrix is completely zero.&#39;</span><span class="w"></span>
-<span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">==</span><span class="mi">2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;qr iteration does not converged.&#39;</span><span class="w"></span>
-<span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">&gt;</span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;arguments violate the condition.&#39;</span><span class="w"></span>
-<span class="w">       </span><span class="k">return</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;matrix is completely zero.&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">==</span><span class="mi">2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;qr iteration does not converged.&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">istatus</span><span class="o">&gt;</span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;arguments violate the condition.&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span>
 <span class="k">    endif</span><span class="w"></span>
 
 <span class="w">    </span><span class="c">! count the total qr iteration.</span>

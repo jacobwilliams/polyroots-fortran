@@ -75,7 +75,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1785 statements</a>
+    title="100.0% of total for modules and submodules.">1788 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -319,7 +319,7 @@
     <section>
     <h2>Subroutines</h2>
       <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-rpoly"></span><h3>public subroutine <a href='../proc/rpoly.html'>rpoly</a>(op, degree, zeror, zeroi, fail)</h3></div>
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rpoly"></span><h3>public subroutine <a href='../proc/rpoly.html'>rpoly</a>(op, degree, zeror, zeroi, istat)</h3></div>
   <div class="panel-body">
        
 <p>Finds the zeros of a general real polynomial using the jenkins &amp; traub algorithm</p><a href="../proc/rpoly.html" class="pull-right"><emph>Read more&hellip;</emph></a>
@@ -335,7 +335,7 @@
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
-<td>intent(inout)</td>
+<td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>degree</strong></td><td><p>degree of polynomial</p></td>
 </tr>
@@ -352,12 +352,20 @@
   <td><strong>zeroi</strong>(:)</td><td><p>output vector of imaginary parts of the zeros</p></td>
 </tr>
 <tr>
-  <td><span class="anchor" ></span>logical,</td>
+  <td><span class="anchor" ></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>fail</strong></td><td><p>true only if leading coefficient is zero
-or if rpoly has found fewer than degree zeros.
-in the latter case degree is reset to the number of zeros found.</p></td>
+  <td><strong>istat</strong></td><td><p>status output:</p>
+<ul>
+<li>0 : success</li>
+<li>-1 : leading coefficient is zero</li>
+<li>-2 : no roots found</li>
+<li>
+<blockquote>
+<p>0 : the number of zeros found</p>
+</blockquote>
+</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
@@ -479,7 +487,13 @@ in the latter case degree is reset to the number of zeros found.</p></td>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>istatus</strong></td><td><p>return code from <code>hqr_eigen_hessenberg</code></p></td>
+  <td><strong>istatus</strong></td><td><p>return code:</p>
+<ul>
+<li>-1 : degree &lt;= 0</li>
+<li>-2 : leading coefficient <code>c(1)</code> is zero</li>
+<li>0 : success</li>
+<li>otherwise, the return code from <code>hqr_eigen_hessenberg</code></li>
+</ul></td>
 </tr>
 </tbody>
 </table>
