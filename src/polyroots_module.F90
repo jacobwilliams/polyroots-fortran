@@ -324,7 +324,7 @@ contains
          real(wp) :: svu, svv, ui, vi, s, betas, betav, oss, ovv, &
                      ss, vv, ts, tv, ots, otv, tvv, tss
          integer  :: type, j, iflag
-         logical  :: vpass, spass, vtry, stry
+         logical  :: vpass, spass, vtry, stry, skip
 
          nz = 0
          betav = 0.25_wp
@@ -373,43 +373,52 @@ contains
                   ! choose iteration according to the fastest converging sequence
                   vtry = .false.
                   stry = .false.
-                  if (spass .and. ((.not. vpass) .or. tss < tvv)) go to 40
+                  skip = (spass .and. ((.not. vpass) .or. tss < tvv))
 
-20                call quadit(ui, vi, nz)
-                  if (nz > 0) return
+                  do
+                    do
 
-                  ! quadratic iteration has failed. flag that it has
-                  ! been tried and decrease the convergence criterion.
-                  vtry = .true.
-                  betav = betav * 0.25_wp
+                      if (.not. skip) then
+                        call quadit(ui, vi, nz)
+                        if (nz > 0) return
 
-                  ! try linear iteration if it has not been tried and
-                  ! the s sequence is converging
-                  if (stry .or. (.not. spass)) go to 50
-                  k(1:n) = svk(1:n)
-40                call realit(s, nz, iflag)
-                  if (nz > 0) return
+                        ! quadratic iteration has failed. flag that it has
+                        ! been tried and decrease the convergence criterion.
+                        vtry = .true.
+                        betav = betav * 0.25_wp
 
-                  ! linear iteration has failed.  flag that it has been
-                  ! tried and decrease the convergence criterion
-                  stry = .true.
-                  betas = betas * 0.25_wp
-                  if (iflag /= 0) then
-                     ! if linear iteration signals an almost double real
-                     ! zero attempt quadratic interation
-                     ui = -(s + s)
-                     vi = s*s
-                     go to 20
-                  end if
+                        ! try linear iteration if it has not been tried and
+                        ! the s sequence is converging
+                        if (stry .or. (.not. spass)) exit
+                        k(1:n) = svk(1:n)
+                      end if
 
-                  ! restore variables
-50                u = svu
-                  v = svv
-                  k(1:n) = svk(1:n)
+                      call realit(s, nz, iflag)
+                      if (nz > 0) return
 
-                  ! try quadratic iteration if it has not been tried
-                  ! and the v sequence is converging
-                  if (vpass .and. (.not. vtry)) go to 20
+                      ! linear iteration has failed.  flag that it has been
+                      ! tried and decrease the convergence criterion
+                      stry = .true.
+                      betas = betas * 0.25_wp
+                      if (iflag == 0) exit
+
+                      ! if linear iteration signals an almost double real
+                      ! zero attempt quadratic interation
+                      ui = -(s + s)
+                      vi = s*s
+
+                    end do
+
+                    ! restore variables
+                    u = svu
+                    v = svv
+                    k(1:n) = svk(1:n)
+
+                    ! try quadratic iteration if it has not been tried
+                    ! and the v sequence is converging
+                    if (.not.(vpass .and. (.not. vtry))) exit
+
+                  end do
 
                   ! recompute qp and scalar values to continue the second stage
                   call quadsd(nn, u, v, p, qp, a, b)
