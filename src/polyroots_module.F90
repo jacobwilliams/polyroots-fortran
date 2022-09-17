@@ -1773,48 +1773,50 @@ subroutine cpzero(in,a,r,t,iflg,s)
         n = in
         n1 = n + 1
         if ( iflg==0 ) then
-20         n1 = n + 1
-            if ( n<=1 ) then
-                r(1) = -a(2)/a(1)
-                s(1) = 0.0_wp
-                return
-            elseif ( abs(a(n1))/=0.0_wp ) then
-                ! if initial estimates for zeros not given, find some
-                temp = -a(2)/(a(1)*n)
-                call cpevl(n,n,a,temp,t,t,.false.)
-                imax = n + 2
-                t(n1) = abs(t(n1))
-                do i = 2 , n1
-                    t(n+i) = -abs(t(n+2-i))
-                    if ( real(t(n+i),wp)<real(t(imax),wp) ) imax = n + i
-                enddo
-                x = (-real(t(imax),wp)/real(t(n1),wp))**(1.0_wp/(imax-n1))
-                do
-                    x = 2.0_wp*x
-                    call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
-                    pn = ctmp(1)
-                    if ( real(pn,wp)>=0.0_wp ) exit
-                end do
-                u = 0.5_wp*x
-                v = x
-                do
-                    x = 0.5_wp*(u+v)
-                    call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
-                    pn = ctmp(1)
-                    if ( real(pn,wp)>0.0_wp ) v = x
-                    if ( real(pn,wp)<=0.0_wp ) u = x
-                    if ( (v-u)<=0.001_wp*(1.0_wp+v) ) exit
-                end do
-                do i = 1 , n
-                    u = (pi/n)*(2*i-1.5_wp)
-                    r(i) = max(x,0.001_wp*abs(temp))*cmplx(cos(u),sin(u),wp) + temp
-                enddo
-            else
-                r(n) = 0.0_wp
-                s(n) = 0.0_wp
-                n = n - 1
-                goto 20
-            endif
+            do
+                n1 = n + 1
+                if ( n<=1 ) then
+                    r(1) = -a(2)/a(1)
+                    s(1) = 0.0_wp
+                    return
+                elseif ( abs(a(n1))/=0.0_wp ) then
+                    ! if initial estimates for zeros not given, find some
+                    temp = -a(2)/(a(1)*n)
+                    call cpevl(n,n,a,temp,t,t,.false.)
+                    imax = n + 2
+                    t(n1) = abs(t(n1))
+                    do i = 2 , n1
+                        t(n+i) = -abs(t(n+2-i))
+                        if ( real(t(n+i),wp)<real(t(imax),wp) ) imax = n + i
+                    enddo
+                    x = (-real(t(imax),wp)/real(t(n1),wp))**(1.0_wp/(imax-n1))
+                    do
+                        x = 2.0_wp*x
+                        call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                        pn = ctmp(1)
+                        if ( real(pn,wp)>=0.0_wp ) exit
+                    end do
+                    u = 0.5_wp*x
+                    v = x
+                    do
+                        x = 0.5_wp*(u+v)
+                        call cpevl(n,0,t(n1),cmplx(x,0.0_wp,wp),ctmp,btmp,.false.)
+                        pn = ctmp(1)
+                        if ( real(pn,wp)>0.0_wp ) v = x
+                        if ( real(pn,wp)<=0.0_wp ) u = x
+                        if ( (v-u)<=0.001_wp*(1.0_wp+v) ) exit
+                    end do
+                    do i = 1 , n
+                        u = (pi/n)*(2*i-1.5_wp)
+                        r(i) = max(x,0.001_wp*abs(temp))*cmplx(cos(u),sin(u),wp) + temp
+                    enddo
+                    exit
+                else
+                    r(n) = 0.0_wp
+                    s(n) = 0.0_wp
+                    n = n - 1
+                endif
+            end do
         endif
 
         ! main iteration loop starts here
@@ -2520,14 +2522,14 @@ subroutine cpzero(in,a,r,t,iflg,s)
                 hr(i,i-1) = norm
                 hi(i,i-1) = 0.0_wp
                 do j = i , igh
-                si = yr*hi(i,j) - yi*hr(i,j)
-                hr(i,j) = yr*hr(i,j) + yi*hi(i,j)
-                hi(i,j) = si
+                    si = yr*hi(i,j) - yi*hr(i,j)
+                    hr(i,j) = yr*hr(i,j) + yi*hi(i,j)
+                    hi(i,j) = si
                 enddo
                 do j = low , ll
-                si = yr*hi(j,i) + yi*hr(j,i)
-                hr(j,i) = yr*hr(j,i) - yi*hi(j,i)
-                hi(j,i) = si
+                    si = yr*hi(j,i) + yi*hr(j,i)
+                    hr(j,i) = yr*hr(j,i) - yi*hi(j,i)
+                    hi(j,i) = si
                 enddo
             endif
         enddo
@@ -2545,132 +2547,140 @@ subroutine cpzero(in,a,r,t,iflg,s)
     ti = 0.0_wp
     itn = 30*n
 
-    ! search for next eigenvalue
-100 if ( en<low ) return
-    its = 0
-    enm1 = en - 1
+    main : do
 
-    ! look for single small sub-diagonal element
-    ! for l=en step -1 until low d0 --
-200 do ll = low , en
-        l = en + low - ll
-        if ( l==low ) exit
-        tst1 = abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) + abs(hr(l,l)) + abs(hi(l,l))
-        tst2 = tst1 + abs(hr(l,l-1))
-        if ( tst2==tst1 ) exit
-    enddo
+        if ( en<low ) return
 
-    ! form shift
-    if ( l==en ) then
-        ! a root found
-        wr(en) = hr(en,en) + tr
-        wi(en) = hi(en,en) + ti
-        en = enm1
-        goto 100
-    elseif ( itn==0 ) then
-        ! set error -- all eigenvalues have not
-        !              converged after 30*n iterations
-        ierr = en
-    else
-        if ( its==10 .or. its==20 ) then
-            ! form exceptional shift
-            sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
-            si = 0.0_wp
-        else
-            sr = hr(en,en)
-            si = hi(en,en)
-            xr = hr(enm1,en)*hr(en,enm1)
-            xi = hi(enm1,en)*hr(en,enm1)
-            if ( xr/=0.0_wp .or. xi/=0.0_wp ) then
-                yr = (hr(enm1,enm1)-sr)/2.0_wp
-                yi = (hi(enm1,enm1)-si)/2.0_wp
-                call csroot(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,zzr,zzi)
-                if ( yr*zzr+yi*zzi<0.0_wp ) then
-                    zzr = -zzr
-                    zzi = -zzi
+        ! search for next eigenvalue
+        its = 0
+        enm1 = en - 1
+
+        do
+
+            ! look for single small sub-diagonal element
+            ! for l=en step -1 until low d0 --
+            do ll = low , en
+                l = en + low - ll
+                if ( l==low ) exit
+                tst1 = abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) + abs(hr(l,l)) + abs(hi(l,l))
+                tst2 = tst1 + abs(hr(l,l-1))
+                if ( tst2==tst1 ) exit
+            enddo
+
+            ! form shift
+            if ( l==en ) then
+                ! a root found
+                wr(en) = hr(en,en) + tr
+                wi(en) = hi(en,en) + ti
+                en = enm1
+                cycle main
+            elseif ( itn==0 ) then
+                ! set error -- all eigenvalues have not converged after 30*n iterations
+                ierr = en
+                return
+            else
+                if ( its==10 .or. its==20 ) then
+                    ! form exceptional shift
+                    sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
+                    si = 0.0_wp
+                else
+                    sr = hr(en,en)
+                    si = hi(en,en)
+                    xr = hr(enm1,en)*hr(en,enm1)
+                    xi = hi(enm1,en)*hr(en,enm1)
+                    if ( xr/=0.0_wp .or. xi/=0.0_wp ) then
+                        yr = (hr(enm1,enm1)-sr)/2.0_wp
+                        yi = (hi(enm1,enm1)-si)/2.0_wp
+                        call csroot(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,zzr,zzi)
+                        if ( yr*zzr+yi*zzi<0.0_wp ) then
+                            zzr = -zzr
+                            zzi = -zzi
+                        endif
+                        call cdiv(xr,xi,yr+zzr,yi+zzi,xr,xi)
+                        sr = sr - xr
+                        si = si - xi
+                    endif
                 endif
-                call cdiv(xr,xi,yr+zzr,yi+zzi,xr,xi)
-                sr = sr - xr
-                si = si - xi
+
+                do i = low , en
+                    hr(i,i) = hr(i,i) - sr
+                    hi(i,i) = hi(i,i) - si
+                enddo
+
+                tr = tr + sr
+                ti = ti + si
+                its = its + 1
+                itn = itn - 1
+                ! reduce to triangle (rows)
+                lp1 = l + 1
+
+                do i = lp1 , en
+                    sr = hr(i,i-1)
+                    hr(i,i-1) = 0.0_wp
+                    norm = pythag(pythag(hr(i-1,i-1),hi(i-1,i-1)),sr)
+                    xr = hr(i-1,i-1)/norm
+                    wr(i-1) = xr
+                    xi = hi(i-1,i-1)/norm
+                    wi(i-1) = xi
+                    hr(i-1,i-1) = norm
+                    hi(i-1,i-1) = 0.0_wp
+                    hi(i,i-1) = sr/norm
+
+                    do j = i , en
+                        yr = hr(i-1,j)
+                        yi = hi(i-1,j)
+                        zzr = hr(i,j)
+                        zzi = hi(i,j)
+                        hr(i-1,j) = xr*yr + xi*yi + hi(i,i-1)*zzr
+                        hi(i-1,j) = xr*yi - xi*yr + hi(i,i-1)*zzi
+                        hr(i,j) = xr*zzr - xi*zzi - hi(i,i-1)*yr
+                        hi(i,j) = xr*zzi + xi*zzr - hi(i,i-1)*yi
+                    enddo
+
+                enddo
+
+                si = hi(en,en)
+                if ( si/=0.0_wp ) then
+                    norm = pythag(hr(en,en),si)
+                    sr = hr(en,en)/norm
+                    si = si/norm
+                    hr(en,en) = norm
+                    hi(en,en) = 0.0_wp
+                endif
+                ! inverse operation (columns)
+                do j = lp1 , en
+                    xr = wr(j-1)
+                    xi = wi(j-1)
+
+                    do i = l , j
+                        yr = hr(i,j-1)
+                        yi = 0.0_wp
+                        zzr = hr(i,j)
+                        zzi = hi(i,j)
+                        if ( i/=j ) then
+                            yi = hi(i,j-1)
+                            hi(i,j-1) = xr*yi + xi*yr + hi(j,j-1)*zzi
+                        endif
+                        hr(i,j-1) = xr*yr - xi*yi + hi(j,j-1)*zzr
+                        hr(i,j) = xr*zzr + xi*zzi - hi(j,j-1)*yr
+                        hi(i,j) = xr*zzi - xi*zzr - hi(j,j-1)*yi
+                    enddo
+
+                enddo
+
+                if ( si/=0.0_wp ) then
+                    do i = l , en
+                        yr = hr(i,en)
+                        yi = hi(i,en)
+                        hr(i,en) = sr*yr - si*yi
+                        hi(i,en) = sr*yi + si*yr
+                    enddo
+                endif
             endif
-        endif
 
-        do i = low , en
-            hr(i,i) = hr(i,i) - sr
-            hi(i,i) = hi(i,i) - si
-        enddo
+        end do
 
-        tr = tr + sr
-        ti = ti + si
-        its = its + 1
-        itn = itn - 1
-        ! reduce to triangle (rows)
-        lp1 = l + 1
-
-        do i = lp1 , en
-            sr = hr(i,i-1)
-            hr(i,i-1) = 0.0_wp
-            norm = pythag(pythag(hr(i-1,i-1),hi(i-1,i-1)),sr)
-            xr = hr(i-1,i-1)/norm
-            wr(i-1) = xr
-            xi = hi(i-1,i-1)/norm
-            wi(i-1) = xi
-            hr(i-1,i-1) = norm
-            hi(i-1,i-1) = 0.0_wp
-            hi(i,i-1) = sr/norm
-
-            do j = i , en
-                yr = hr(i-1,j)
-                yi = hi(i-1,j)
-                zzr = hr(i,j)
-                zzi = hi(i,j)
-                hr(i-1,j) = xr*yr + xi*yi + hi(i,i-1)*zzr
-                hi(i-1,j) = xr*yi - xi*yr + hi(i,i-1)*zzi
-                hr(i,j) = xr*zzr - xi*zzi - hi(i,i-1)*yr
-                hi(i,j) = xr*zzi + xi*zzr - hi(i,i-1)*yi
-            enddo
-
-        enddo
-
-        si = hi(en,en)
-        if ( si/=0.0_wp ) then
-            norm = pythag(hr(en,en),si)
-            sr = hr(en,en)/norm
-            si = si/norm
-            hr(en,en) = norm
-            hi(en,en) = 0.0_wp
-        endif
-        ! inverse operation (columns)
-        do j = lp1 , en
-            xr = wr(j-1)
-            xi = wi(j-1)
-
-            do i = l , j
-                yr = hr(i,j-1)
-                yi = 0.0_wp
-                zzr = hr(i,j)
-                zzi = hi(i,j)
-                if ( i/=j ) then
-                    yi = hi(i,j-1)
-                    hi(i,j-1) = xr*yi + xi*yr + hi(j,j-1)*zzi
-                endif
-                hr(i,j-1) = xr*yr - xi*yi + hi(j,j-1)*zzr
-                hr(i,j) = xr*zzr + xi*zzi - hi(j,j-1)*yr
-                hi(i,j) = xr*zzi - xi*zzr - hi(j,j-1)*yi
-            enddo
-
-        enddo
-
-        if ( si/=0.0_wp ) then
-            do i = l , en
-                yr = hr(i,en)
-                yi = hi(i,en)
-                hr(i,en) = sr*yr - si*yi
-                hi(i,en) = sr*yi + si*yr
-            enddo
-        endif
-        goto 200
-    endif
+    end do main
 
     end subroutine comqr
 !*****************************************************************************************
