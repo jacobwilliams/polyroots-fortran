@@ -10,17 +10,15 @@
     implicit none
 
     integer,parameter :: max_degree = 10
-    integer,parameter :: n_cases = 20 !! number of cases to run
+    integer,parameter :: n_cases = 30 !! number of cases to run
 
-    real(wp),dimension(max_degree+1) :: p, zr, zi, s
-    complex(wp),dimension(max_degree+1) :: r, cp
-    complex(wp),dimension(6*(max_degree+1)) :: t !! work array for [[rpzero]]
+    real(wp),dimension(:),allocatable :: p, zr, zi, s
+    complex(wp),dimension(:),allocatable :: r, cp
+    complex(wp),dimension(:),allocatable :: t !! work array for [[rpzero]]
+    integer :: degree, i, istatus, icase, n
+    integer,dimension(:),allocatable :: seed
     real(wp) :: detil
-    integer :: degree, i, istatus
     logical :: fail
-    integer :: icase
-    integer, allocatable :: seed(:)
-    integer :: n
 
     !--------------------------------------
 
@@ -34,34 +32,60 @@
 
         write(*,'(/A,I2,A)') '--------CASE ', icase, ' ---------'
 
-        if (icase==1) then
-            degree = 10
-            p(1)  = 1._wp
-            p(2)  = -55._wp
-            p(3)  = 1320._wp
-            p(4)  = -18150._wp
-            p(5)  = 157773._wp
-            p(6)  = -902055._wp
-            p(7)  = 3416930._wp
-            p(8)  = -8409500._wp
-            p(9)  = 12753576._wp
-            p(10) = -10628640._wp
-            p(11) = 3628800._wp
-        else
-            degree = get_random_integer_number(3,max_degree)
-            p(1)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(2)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(3)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(4)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(5)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(6)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(7)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(8)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(9)  = get_random_number(-1000.0_wp,1000.0_wp)
-            p(10) = get_random_number(-1000.0_wp,1000.0_wp)
-            p(11) = get_random_number(-1000.0_wp,1000.0_wp)
-        end if
+        select case (icase)
+        case(1)
+            call allocate_arrays(10)
+            p  = [1._wp, &
+                 -55._wp, &
+                 1320._wp, &
+                 -18150._wp, &
+                 157773._wp, &
+                 -902055._wp, &
+                 3416930._wp, &
+                 -8409500._wp, &
+                 12753576._wp, &
+                 -10628640._wp, &
+                 3628800._wp ]
+        case(2)
+            call allocate_arrays(4)
+            p = [1,-3,20,44,54]
+        case(3)
+            call allocate_arrays(6)
+            p = [1,-2,2,1,6,-6,8]
+        case(4)
+            call allocate_arrays(5)
+            p = [1,1,-8,-16,7,15]
+        case(5)
+            call allocate_arrays(5)
+            p = [1,7,5,6,3,2]
+        case(6)
+            call allocate_arrays(5)
+            p = [2,3,6,5,7,1]
+        case(7)
+            call allocate_arrays(6)
+            p = [1,0,-14,0,49,0,-36]
+        case(8)
+            call allocate_arrays(8)
+            p = [1,0,-30,0,273,0,-820,0,576]
+        case(9)
+            call allocate_arrays(4)
+            p = [1,0,0,0,-16]
+        case(10)
+            call allocate_arrays(6)
+            p = [1,-2,2,1,6,-6,8]
+        case(11)
+            ! a case where 1 is an obvious root
+            call allocate_arrays(5)
+            p = [8,-8,16,-16,8,-8]
+        case default
+            ! random coefficients
+            call allocate_arrays(get_random_integer_number(3,max_degree))
+            do i = 1, degree+1
+                p(i)  = get_random_number(-1000.0_wp,1000.0_wp)
+            end do
+        end select
 
+        write(*,'(A,1X,I3)')          ' Degree: ', degree
         write(*,'(A,1X/,*(g23.15/))') ' Coefficients: ', p(1:degree+1)
 
         write(*, '(A,1x,i3)') 'rpoly'
@@ -108,27 +132,33 @@
 
     end do
 
-    !--------------------------------------
-    ! this test provided by larry wigton
-
-    write(*, '(/A)') 'rpoly example 2. a case where 1 is an obvious root.'
-    degree = 5
-    p(1) = 8.0_wp
-    p(2) = -8.0_wp
-    p(3) = 16.0_wp
-    p(4) = -16.0_wp
-    p(5) = 8.0_wp
-    p(6) = -8.0_wp
-
-    call rpoly(p, degree, zr, zi, fail)
-    if (fail) then
-        error stop ' ** failure by rpoly **'
-    else
-        write(*, *) ' real part           imaginary part'
-        write(*, '(2g23.15)') (zr(i), zi(i), i=1,degree)
-    end if
-
     contains
+
+    !********************************************************************
+        subroutine allocate_arrays(d)
+
+        integer,intent(in) :: d
+
+        degree = d
+
+        if (allocated(p))  deallocate(p)
+        if (allocated(zr)) deallocate(zr)
+        if (allocated(zi)) deallocate(zi)
+        if (allocated(s))  deallocate(s)
+        if (allocated(r))  deallocate(r)
+        if (allocated(cp)) deallocate(cp)
+        if (allocated(t))  deallocate(t)
+
+        allocate(p(max_degree+1))
+        allocate(zr(max_degree+1))
+        allocate(zi(max_degree+1))
+        allocate(s(max_degree+1))
+        allocate(r(max_degree+1))
+        allocate(cp(max_degree+1))
+        allocate(t(6*(max_degree+1)))
+
+        end subroutine allocate_arrays
+    !********************************************************************
 
     !*****************************************************************************************
         subroutine check_results(re, im, degree)
