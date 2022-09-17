@@ -1268,8 +1268,7 @@ contains
 
     real(wp),allocatable :: a(:,:) !! work matrix
     integer ,allocatable :: cnt(:) !! work area for counting the qr-iterations
-    integer :: i
-    integer :: iter
+    integer :: i, iter
     real(wp) :: afnorm
 
     ! check for invalid arguments
@@ -1298,7 +1297,7 @@ contains
     ! qr iterations from a.
     call hqr_eigen_hessenberg(n,a,zr,zi,cnt,istatus)
     if ( istatus/=0 ) then
-        write(*,'(A,1X,I4)')  'abnormal from hqr_eigen_hessenberg. istatus=' , istatus
+        write(*,'(A,1X,I4)') 'abnormal return from hqr_eigen_hessenberg. istatus=' , istatus
         if ( istatus==1 ) write(*,'(A)') 'matrix is completely zero.'
         if ( istatus==2 ) write(*,'(A)') 'qr iteration does not converged.'
         if ( istatus>3 )  write(*,'(A)') 'arguments violate the condition.'
@@ -1470,16 +1469,15 @@ subroutine balance_companion(n,a)
     implicit none
 
     integer,intent(in) :: n0
-    real(wp) :: h(n0,n0)
-    real(wp) :: wr(n0)
-    real(wp) :: wi(n0)
-    integer :: cnt(n0)
+    real(wp),intent(inout) :: h(n0,n0)
+    real(wp),intent(out) :: wr(n0)
+    real(wp),intent(out) :: wi(n0)
+    integer,intent(inout) :: cnt(n0)
     integer,intent(out) :: istatus
 
-    integer :: i , j , k , l , m , na , its
+    integer :: i , j , k , l , m , na , its, n
     real(wp) :: p , q , r , s , t , w , x , y , z
     logical :: notlast, found
-    integer :: n
 
     ! note: n is changing in this subroutine.
     n = n0
@@ -1689,8 +1687,6 @@ subroutine balance_companion(n,a)
     integer :: i , j , mini , np1
     complex(wp) :: ci , cim1 , bi , bim1 , t , za , q
 
-    real(wp),parameter :: d1 = real(radix(1.0_wp))**(1-digits(1.0_wp))
-
     za(q) = cmplx(abs(real(q,wp)),abs(aimag(q)),wp)
     np1 = n + 1
     do j = 1 , np1
@@ -1706,10 +1702,10 @@ subroutine balance_companion(n,a)
             if ( kbd ) then
                 if ( j/=1 ) bi = b(i)
                 if ( i/=1 ) bim1 = b(i-1)
-                t = bi + (3.0_wp*d1+4.0_wp*d1*d1)*za(ci)
+                t = bi + (3.0_wp*eps+4.0_wp*eps*eps)*za(ci)
                 r = real(za(z)*cmplx(real(t,wp),-aimag(t), wp), wp)
                 s = aimag(za(z)*t)
-                b(i) = (1.0_wp + 8.0_wp*d1)*(bim1+d1*za(cim1)+cmplx(r,s,wp))
+                b(i) = (1.0_wp + 8.0_wp*eps)*(bim1+eps*za(cim1)+cmplx(r,s,wp))
                 if ( j==1 ) b(i) = 0.0_wp
             endif
         enddo
