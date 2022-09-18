@@ -14,6 +14,7 @@
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -59,6 +60,14 @@
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
                                        </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -75,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">1807 statements</a>
+    title="100.0% of total for modules and submodules.">2237 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -104,18 +113,6 @@
   <div id="vars-0" class="panel-collapse collapse">
     <div class="list-group">
       <a class="list-group-item" href="../module/polyroots_module.html#variable-polyroots_module_rk">polyroots_module_rk</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-wp">wp</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-eps">eps</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-pi">pi</a>
-    </div>
-  </div>
-</div>
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
-  <div id="funcs-0" class="panel-collapse collapse">
-    <div class="list-group">
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbrt">dcbrt</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-pythag">pythag</a>
     </div>
   </div>
 </div>
@@ -127,17 +124,13 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbcrt">dcbcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dqdcrt">dqdcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-qr_algeq_solver">qr_algeq_solver</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
     </div>
   </div>
 </div>
@@ -180,18 +173,6 @@
   <div id="vars-1" class="panel-collapse collapse">
     <div class="list-group">
       <a class="list-group-item" href="../module/polyroots_module.html#variable-polyroots_module_rk">polyroots_module_rk</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-wp">wp</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-eps">eps</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#variable-pi">pi</a>
-    </div>
-  </div>
-</div>
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
-  <div id="funcs-1" class="panel-collapse collapse">
-    <div class="list-group">
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbrt">dcbrt</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-pythag">pythag</a>
     </div>
   </div>
 </div>
@@ -203,17 +184,13 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbcrt">dcbcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dqdcrt">dqdcrt</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-qr_algeq_solver">qr_algeq_solver</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpevl">cpevl</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpzero">cpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-hqr">hqr</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-comqr">comqr</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-csroot">csroot</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-cdiv">cdiv</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
     </div>
   </div>
 </div>
@@ -232,21 +209,6 @@
 <td>public,</td>  <td>parameter</td><td>::</td>
   <td><strong>polyroots_module_rk</strong></td><td> =</td><td>real64</td><td><p>real kind used by this module [8 bytes]</p></td>
 </tr>
-<tr>
-  <td><span class="anchor" id="variable-wp"></span>integer,</td>
-<td>private,</td>  <td>parameter</td><td>::</td>
-  <td><strong>wp</strong></td><td> =</td><td>polyroots_module_rk</td><td><p>local copy of <code>polyroots_module_rk</code> with a shorter name</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-eps"></span>real(kind=wp),</td>
-<td>private,</td>  <td>parameter</td><td>::</td>
-  <td><strong>eps</strong></td><td> =</td><td>epsilon(1.0_wp)</td><td><p>machine epsilon</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-pi"></span>real(kind=wp),</td>
-<td>private,</td>  <td>parameter</td><td>::</td>
-  <td><strong>pi</strong></td><td> =</td><td>acos(-1.0_wp)</td><td></td>
-</tr>
 </tbody>
 </table>
 
@@ -257,64 +219,6 @@
 
     
     
- 
-    <section>
-    <h2>Functions</h2>
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-dcbrt"></span><h3>public pure function <a href='../proc/dcbrt.html'>dcbrt</a>(x)</h3></div>
-  <div class="panel-body">
-       
-<p>Cube root of a real number.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>x</strong></td><td></td>
-</tr>
-</tbody>
-</table>
-
-<h4>Return Value <small>real(kind=wp)</small></h4>  
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-pythag"></span><h3>private pure function <a href='../proc/pythag.html'>pythag</a>(a, b)</h3></div>
-  <div class="panel-body">
-       
-<p>Compute the complex square root of a complex number without
-  destructive overflow or underflow.</p><a href="../proc/pythag.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>a</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>b</strong></td><td></td>
-</tr>
-</tbody>
-</table>
-
-<h4>Return Value <small>real(kind=wp)</small></h4>  
-
-  </div>
-  </div>
-
-    </section>
-    <br>
 
     <section>
     <h2>Subroutines</h2>
@@ -329,9 +233,9 @@
 <tbody>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>op</strong>(:)</td><td><p>vector of coefficients in order of decreasing powers</p></td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(degree+1)</td><td>::</td>
+  <td><strong>op</strong></td><td><p>vector of coefficients in order of decreasing powers</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -341,15 +245,15 @@
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>zeror</strong>(:)</td><td><p>output vector of real parts of the zeros</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(degree)</td><td>::</td>
+  <td><strong>zeror</strong></td><td><p>output vector of real parts of the zeros</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>zeroi</strong>(:)</td><td><p>output vector of imaginary parts of the zeros</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(degree)</td><td>::</td>
+  <td><strong>zeroi</strong></td><td><p>output vector of imaginary parts of the zeros</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -445,7 +349,7 @@
   </div>
 
       <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-qr_algeq_solver"></span><h3>public subroutine <a href='../proc/qr_algeq_solver.html'>qr_algeq_solver</a>(n, c, zr, zi, detil, istatus)</h3></div>
+  <div class="panel-heading codesum"><span class="anchor" id="proc-qr_algeq_solver"></span><h3>public subroutine <a href='../proc/qr_algeq_solver.html'>qr_algeq_solver</a>(n, c, zr, zi, istatus, detil)</h3></div>
   <div class="panel-body">
        
 <p>Solve the real coefficient algebraic equation by the qr-method.</p><a href="../proc/qr_algeq_solver.html" class="pull-right"><emph>Read more&hellip;</emph></a>
@@ -478,12 +382,6 @@
   <td><strong>zi</strong>(n)</td><td><p>imaginary part of output roots</p></td>
 </tr>
 <tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>detil</strong></td><td><p>accuracy hint.</p></td>
-</tr>
-<tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
@@ -495,74 +393,11 @@
 <li>otherwise, the return code from <code>hqr_eigen_hessenberg</code></li>
 </ul></td>
 </tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-cpevl"></span><h3>public subroutine <a href='../proc/cpevl.html'>cpevl</a>(n, m, a, z, c, b, kbd)</h3></div>
-  <div class="panel-body">
-       
-<p>Evaluate a complex polynomial and its derivatives.
-  Optionally compute error bounds for these values.</p><a href="../proc/cpevl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
 <tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>Degree of the polynomial</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>m</strong></td><td><p>Number of derivatives to be calculated:</p>
-<ul>
-<li>M=0 evaluates only the function</li>
-<li>M=1 evaluates the function and first derivative, etc.</li>
-</ul>
-<p>if M &gt; N+1 function and all N derivatives will be calculated.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>a</strong>(*)</td><td><p>vector containing the N+1 coefficients of polynomial.
-A(I) = coefficient of Z**(N+1-I)</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>z</strong></td><td><p>point at which the evaluation is to take place</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>c</strong>(*)</td><td><p>Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
-derivative at Z, I=0,...,M</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>b</strong>(*)</td><td><p>Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
-of C(I) if they were requested. only needed if bounds are to be calculated.
-It is not used otherwise.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>logical,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>kbd</strong></td><td><p>A logical variable, e.g. .TRUE. or .FALSE. which is
-to be set .TRUE. if bounds are to be computed.</p></td>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>detil</strong></td><td><p>accuracy hint.</p></td>
 </tr>
 </tbody>
 </table>
@@ -572,7 +407,7 @@ to be set .TRUE. if bounds are to be computed.</p></td>
   </div>
 
       <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-cpzero"></span><h3>public subroutine <a href='../proc/cpzero.html'>cpzero</a>(in, a, r, t, iflg, s)</h3></div>
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpzero"></span><h3>public subroutine <a href='../proc/cpzero.html'>cpzero</a>(in, a, r, iflg, s)</h3></div>
   <div class="panel-body">
        
 <p>Find the zeros of a polynomial with complex coefficients:
@@ -585,27 +420,21 @@ to be set .TRUE. if bounds are to be computed.</p></td>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>in</strong></td><td><p>degree of P(Z)</p></td>
+  <td><strong>in</strong></td><td><p><code>N</code>, the degree of <code>P(Z)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>a</strong>(*)</td><td><p>complex vector containing coefficients of P(Z),
-A(I) = coefficient of Z**(N+1-i)</p></td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(in+1)</td><td>::</td>
+  <td><strong>a</strong></td><td><p>complex vector containing coefficients of <code>P(Z)</code>,
+<code>A(I)</code> = coefficient of <code>Z**(N+1-i)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>r</strong>(*)</td><td><p>N word complex vector. On input: containing initial estimates for zeros
-if these are known. On output: Ith zero</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp)</td>
-<td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong>(*)</td><td><p><code>4(N+1)</code> word array used for temporary storage</p></td>
+<td>intent(inout),</td>
+  <td></td>  <td>dimension(in)</td><td>::</td>
+  <td><strong>r</strong></td><td><p><code>N</code> word complex vector. On input: containing initial
+estimates for zeros if these are known. On output: Ith zero</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -634,7 +463,7 @@ if these are known. On output: Ith zero</p></td>
   <td><span class="anchor" ></span>real(kind=wp),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>s</strong>(*)</td><td><p>an <code>N</code> word array. S(I) = bound for R(I)</p></td>
+  <td><strong>s</strong>(in)</td><td><p>an <code>N</code> word array. <code>S(I)</code> = bound for <code>R(I)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -644,7 +473,7 @@ if these are known. On output: Ith zero</p></td>
   </div>
 
       <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-rpzero"></span><h3>public subroutine <a href='../proc/rpzero.html'>rpzero</a>(n, a, r, t, iflg, s)</h3></div>
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rpzero"></span><h3>public subroutine <a href='../proc/rpzero.html'>rpzero</a>(n, a, r, iflg, s)</h3></div>
   <div class="panel-body">
        
 <p>Find the zeros of a polynomial with real coefficients:
@@ -657,27 +486,21 @@ if these are known. On output: Ith zero</p></td>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>degree of P(X)</p></td>
+  <td><strong>n</strong></td><td><p>degree of <code>P(X)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>a</strong>(*)</td><td><p>real vector containing coefficients of P(X),
-A(I) = coefficient of X**(N+1-I)</p></td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>a</strong></td><td><p>real vector containing coefficients of <code>P(X)</code>,
+<code>A(I)</code> = coefficient of <code>X**(N+1-I)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>r</strong>(*)</td><td><p>N word complex vector. On Input: containing initial estimates for zeros
+<td>intent(inout),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>r</strong></td><td><p>N word complex vector. On Input: containing initial estimates for zeros
 if these are known. On output: ith zero.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>complex(kind=wp)</td>
-<td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong>(*)</td><td><p><code>6(N+1)</code> word array used for temporary storage</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -704,9 +527,9 @@ if these are known. On output: ith zero.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>s</strong>(*)</td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>s</strong></td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
 </tr>
 </tbody>
 </table>
@@ -734,16 +557,16 @@ if these are known. On output: ith zero.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>coeff</strong>(*)</td><td><p><code>NDEG+1</code> coefficients in descending order.  i.e.,
+<td>intent(in),</td>
+  <td></td>  <td>dimension(ndeg+1)</td><td>::</td>
+  <td><strong>coeff</strong></td><td><p><code>NDEG+1</code> coefficients in descending order.  i.e.,
 <code>P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>root</strong>(*)</td><td><p><code>NDEG</code> vector of roots</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(ndeg)</td><td>::</td>
+  <td><strong>root</strong></td><td><p><code>NDEG</code> vector of roots</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -760,98 +583,6 @@ if these are known. On output: ith zero.</p></td>
     companion matrix</li>
 <li>2 -- COEFF(1)=0.0</li>
 <li>3 -- NDEG is invalid (less than or equal to 0)</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-hqr"></span><h3>private subroutine <a href='../proc/hqr.html'>hqr</a>(nm, n, low, igh, h, wr, wi, ierr)</h3></div>
-  <div class="panel-body">
-       
-<p>This subroutine finds the eigenvalues of a real
-  upper hessenberg matrix by the qr method.</p><a href="../proc/hqr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>nm</strong></td><td><p>must be set to the row dimension of two-dimensional
-array parameters as declared in the calling program
-dimension statement.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>order of the matrix</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>low</strong></td><td><p>low and igh are integers determined by the balancing
-subroutine  balanc.  if  balanc  has not been used,
-set low=1, igh=n.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>igh</strong></td><td><p>low and igh are integers determined by the balancing
-subroutine  balanc.  if  balanc  has not been used,
-set low=1, igh=n.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>h</strong>(nm,n)</td><td><p>On input: contains the upper hessenberg matrix.  information about
-the transformations used in the reduction to hessenberg
-form by  elmhes  or  orthes, if performed, is stored
-in the remaining triangle under the hessenberg matrix.</p>
-<p>On output: has been destroyed.  therefore, it must be saved
-before calling <code>hqr</code> if subsequent calculation and
-back transformation of eigenvectors is to be performed.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wr</strong>(n)</td><td><p>the real parts of the eigenvalues.  the eigenvalues
-are unordered except that complex conjugate pairs
-of values appear consecutively with the eigenvalue
-having the positive imaginary part first.  if an
-error exit is made, the eigenvalues should be correct
-for indices ierr+1,...,n.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wi</strong>(n)</td><td><p>the imaginary parts of the eigenvalues.  the eigenvalues
-are unordered except that complex conjugate pairs
-of values appear consecutively with the eigenvalue
-having the positive imaginary part first.  if an
-error exit is made, the eigenvalues should be correct
-for indices ierr+1,...,n.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ierr</strong></td><td><p>is set to:</p>
-<ul>
-<li>zero -- for normal return,</li>
-<li>j -- if the limit of 30*n iterations is exhausted
-   while the j-th eigenvalue is being sought.</li>
 </ul></td>
 </tr>
 </tbody>
@@ -879,21 +610,21 @@ for indices ierr+1,...,n.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>p</strong>(n+1)</td><td><p>polynomial coefficients array, in order of decreasing powers</p></td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>p</strong></td><td><p>polynomial coefficients array, in order of decreasing powers</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wr</strong>(n)</td><td><p>real parts of roots</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>wr</strong></td><td><p>real parts of roots</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wi</strong>(n)</td><td><p>imaginary parts of roots</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>wi</strong></td><td><p>imaginary parts of roots</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -929,16 +660,16 @@ if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>coeff</strong>(*)</td><td><p><code>(NDEG+1)</code> coefficients in descending order.  i.e.,
+<td>intent(in),</td>
+  <td></td>  <td>dimension(ndeg+1)</td><td>::</td>
+  <td><strong>coeff</strong></td><td><p><code>(NDEG+1)</code> coefficients in descending order.  i.e.,
 <code>P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>root</strong>(*)</td><td><p><code>(NDEG)</code> vector of roots</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(ndeg)</td><td>::</td>
+  <td><strong>root</strong></td><td><p><code>(NDEG)</code> vector of roots</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
@@ -955,190 +686,6 @@ if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
 <li>2 --  COEFF(1)=0.0</li>
 <li>3 --  NDEG is invalid (less than or equal to 0)</li>
 </ul></td>
-</tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-comqr"></span><h3>private subroutine <a href='../proc/comqr.html'>comqr</a>(nm, n, low, igh, hr, hi, wr, wi, ierr)</h3></div>
-  <div class="panel-body">
-       
-<p>this subroutine finds the eigenvalues of a complex
-  upper hessenberg matrix by the qr method.</p><a href="../proc/comqr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>nm</strong></td><td><p>row dimension of two-dimensional array parameters</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>the order of the matrix</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>low</strong></td><td><p>integer determined by the balancing
-subroutine  cbal.  if  cbal  has not been used,
-set low=1</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>igh</strong></td><td><p>integer determined by the balancing
-subroutine  cbal.  if  cbal  has not been used,
-igh=n.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>hr</strong>(nm,n)</td><td><p>On input: hr and hi contain the real and imaginary parts,
-respectively, of the complex upper hessenberg matrix.
-their lower triangles below the subdiagonal contain
-information about the unitary transformations used in
-the reduction by  corth, if performed.</p>
-<p>On Output: the upper hessenberg portions of hr and hi have been
-destroyed.  therefore, they must be saved before
-calling  comqr  if subsequent calculation of
-eigenvectors is to be performed.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>hi</strong>(nm,n)</td><td><p>See <code>hr</code> description</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wr</strong>(n)</td><td><p>the real parts of the eigenvalues.  if an error
-exit is made, the eigenvalues should be correct
-for indices <code>ierr+1,...,n</code>.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>wi</strong>(n)</td><td><p>the imaginary parts of the eigenvalues.  if an error
-exit is made, the eigenvalues should be correct
-for indices <code>ierr+1,...,n</code>.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ierr</strong></td><td><p>is set to:</p>
-<ul>
-<li>0 -- for normal return</li>
-<li>j -- if the limit of 30*n iterations is exhausted
-   while the j-th eigenvalue is being sought.</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-csroot"></span><h3>private pure subroutine <a href='../proc/csroot.html'>csroot</a>(xr, xi, yr, yi)</h3></div>
-  <div class="panel-body">
-       
-<p>Compute the complex square root of a complex number.</p><a href="../proc/csroot.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>xr</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>xi</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>yr</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>yi</strong></td><td></td>
-</tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-cdiv"></span><h3>private pure subroutine <a href='../proc/cdiv.html'>cdiv</a>(ar, ai, br, bi, cr, ci)</h3></div>
-  <div class="panel-body">
-       
-<p>Compute the complex quotient of two complex numbers.</p><a href="../proc/cdiv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ai</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>br</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>bi</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>cr</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ci</strong></td><td></td>
 </tr>
 </tbody>
 </table>
@@ -1166,21 +713,21 @@ for indices <code>ierr+1,...,n</code>.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>p</strong>(n+1)</td><td><p>vector of coefficients in order of decreasing powers</p></td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>p</strong></td><td><p>vector of coefficients in order of decreasing powers</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
 <td>intent(inout)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>zr</strong></td><td><p>output vector of real parts of the zeros</p></td>
+  <td><strong>zr</strong></td><td><p>real part of the zero</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
 <td>intent(inout)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>zi</strong></td><td><p>output vector of imaginary parts of the zeros</p></td>
+  <td><strong>zi</strong></td><td><p>imaginary part of the zero</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
@@ -1211,6 +758,64 @@ for indices <code>ierr+1,...,n</code>.</p></td>
 <li>-1 = singular</li>
 <li>-2 = max iterations reached</li>
 </ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cmplx_roots_gen"></span><h3>public subroutine <a href='../proc/cmplx_roots_gen.html'>cmplx_roots_gen</a>(degree, poly, roots, polish_roots_after, use_roots_as_starting_points)</h3></div>
+  <div class="panel-body">
+       
+<p>This subroutine finds roots of a complex polynomial.
+  It uses a new dynamic root finding algorithm (see the Paper).</p><a href="../proc/cmplx_roots_gen.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>degree</strong></td><td><p>degree of the polynomial and size of 'roots' array</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(degree+1)</td><td>::</td>
+  <td><strong>poly</strong></td><td><p>coeffs of the polynomial, in order of increasing powers.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(inout),</td>
+  <td></td>  <td>dimension(degree)</td><td>::</td>
+  <td><strong>roots</strong></td><td><p>array which will hold all roots that had been found.
+If the flag 'use_roots_as_starting_points' is set to
+.true., then instead of point (0,0) we use value from
+this array as starting point for cmplx_laguerre</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>logical,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>polish_roots_after</strong></td><td><p>after all roots have been found by dividing
+original polynomial by each root found,
+you can opt in to polish all roots using full
+polynomial. [default is false]</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>logical,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>use_roots_as_starting_points</strong></td><td><p>usually we start Laguerre's
+method from point (0,0), but you can decide to use the
+values of 'roots' array as starting point for each new
+root that is searched for. This is useful if you have
+very rough idea where some of the roots can be.
+[default is false]</p></td>
 </tr>
 </tbody>
 </table>
@@ -1266,6 +871,9 @@ for indices <code>ierr+1,...,n</code>.</p></td>
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
     
   </body>
 </html>

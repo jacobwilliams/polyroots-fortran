@@ -14,6 +14,7 @@
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -59,6 +60,14 @@
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
                                        </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -112,7 +121,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public subroutine rpzero(n, a, r, t, iflg, s)</h2>
+    <h2>public subroutine rpzero(n, a, r, iflg, s)</h2>
     
 
     <p>Find the zeros of a polynomial with real coefficients:
@@ -131,30 +140,24 @@
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-n~3"></span>integer,</td>
+  <td><span class="anchor" id="variable-n~2"></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>degree of P(X)</p></td>
+  <td><strong>n</strong></td><td><p>degree of <code>P(X)</code></p></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-a~6"></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>a</strong>(*)</td><td><p>real vector containing coefficients of P(X),
-A(I) = coefficient of X**(N+1-I)</p></td>
+  <td><span class="anchor" id="variable-a~4"></span>real(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>a</strong></td><td><p>real vector containing coefficients of <code>P(X)</code>,
+<code>A(I)</code> = coefficient of <code>X**(N+1-I)</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-r~2"></span>complex(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>r</strong>(*)</td><td><p>N word complex vector. On Input: containing initial estimates for zeros
+<td>intent(inout),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>r</strong></td><td><p>N word complex vector. On Input: containing initial estimates for zeros
 if these are known. On output: ith zero.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-t~2"></span>complex(kind=wp)</td>
-<td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong>(*)</td><td><p><code>6(N+1)</code> word array used for temporary storage</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-iflg~2"></span>integer,</td>
@@ -181,9 +184,9 @@ if these are known. On output: ith zero.</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-s~2"></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>s</strong>(*)</td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>s</strong></td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
 </tr>
 </tbody>
 </table>
@@ -214,16 +217,15 @@ if these are known. On output: ith zero.</p></td>
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">rpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">rpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
-<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="c">!! degree of P(X)</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! real vector containing coefficients of P(X),</span>
-<span class="w">                                 </span><span class="c">!! A(I) = coefficient of X**(N+1-I)</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">r</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! N word complex vector. On Input: containing initial estimates for zeros</span>
-<span class="w">                                       </span><span class="c">!! if these are known. On output: ith zero.</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! `6(N+1)` word array used for temporary storage</span>
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="c">!! degree of `P(X)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="c">!! real vector containing coefficients of `P(X)`,</span>
+<span class="w">                                              </span><span class="c">!! `A(I)` = coefficient of `X**(N+1-I)`</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="c">!! N word complex vector. On Input: containing initial estimates for zeros</span>
+<span class="w">                                                  </span><span class="c">!! if these are known. On output: ith zero.</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iflg</span><span class="w"> </span><span class="c">!!### On Input:</span>
 <span class="w">                                   </span><span class="c">!!</span>
 <span class="w">                                   </span><span class="c">!! flag to indicate if initial estimates of zeros are input:</span>
@@ -243,15 +245,17 @@ if these are known. On output: ith zero.</p></td>
 <span class="w">                                   </span><span class="c">!! * If IFLG == 2 on return, the program failed to converge</span>
 <span class="w">                                   </span><span class="c">!!   after 25*N iterations.  Best current estimates of the</span>
 <span class="w">                                   </span><span class="c">!!   zeros are in R(I).  Error bounds are not calculated.</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! an `N` word array. bound for R(I).</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="c">!! an `N` word array. bound for R(I).</span>
 
-<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w"></span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="c">!! complex coefficients</span>
 
-<span class="w">    </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
-<span class="w">        </span><span class="n">t</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">cmplx</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">        </span><span class="n">p</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">cmplx</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">end do</span>
-<span class="k">    call </span><span class="n">cpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="k">    call </span><span class="n">cpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 
 <span class="k">end subroutine </span><span class="n">rpzero</span><span class="w"></span>
 </pre></div>
@@ -303,6 +307,9 @@ if these are known. On output: ith zero.</p></td>
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
     
   </body>
 </html>

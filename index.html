@@ -14,6 +14,7 @@
     <link href="./css/pygments.css" rel="stylesheet">
     <link href="./css/font-awesome.min.css" rel="stylesheet">
     <link href="./css/local.css" rel="stylesheet">
+    <link  href="./tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -59,6 +60,14 @@
 <li class="visible-xs hidden-sm visible-lg"><a href="./lists/modules.html">Modules</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="./lists/procedures.html">Procedures</a></li>
                                        </ul>
+        <form action="./search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -119,13 +128,6 @@
 <td><a href="https://github.com/jacobwilliams/nswc">NSWC Library</a></td>
 </tr>
 <tr>
-<td><a href="https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html"><code>qr_algeq_solver</code></a></td>
-<td>General</td>
-<td>real</td>
-<td>complex</td>
-<td><a href="https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf">Edelman &amp; Murakami (1995)</a></td>
-</tr>
-<tr>
 <td><a href="https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html"><code>rpzero</code></a></td>
 <td>General</td>
 <td>real</td>
@@ -152,6 +154,20 @@
 <td>complex</td>
 <td>complex</td>
 <td><a href="https://netlib.org/slatec/src/cpqr79.f">SLATEC</a></td>
+</tr>
+<tr>
+<td><a href="https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html"><code>qr_algeq_solver</code></a></td>
+<td>General</td>
+<td>real</td>
+<td>complex</td>
+<td><a href="https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf">Edelman &amp; Murakami (1995)</a></td>
+</tr>
+<tr>
+<td><a href="https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html"><code>cmplx_roots_gen</code></a></td>
+<td>General</td>
+<td>complex</td>
+<td>complex</td>
+<td><a href="http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/">Skowron &amp; Gould (2012)</a></td>
 </tr>
 <tr>
 <td><a href="https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html"><code>polyroots</code></a></td>
@@ -246,7 +262,7 @@
 <li><a href="https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf">PA03</a> HSL Archive code for computing all the roots of a cubic polynomial</li>
 <li><a href="https://www.hsl.rl.ac.uk/archive/specs/pa05.pdf">PA05</a> HSL Archive code for computing all the roots of a quartic polynomial</li>
 <li><a href="https://www.hsl.rl.ac.uk/catalogue/pa16.html">PA16</a>, <a href="https://www.hsl.rl.ac.uk/catalogue/pa17.html">PA17</a> HSL codes for computing zeros of polynomials using method of Madsen and Reid</li>
-<li><code>POLZEROS</code> - Polynomial zeros using Aberth's method, <a href="https://doi.org/10.1007/BF02207694"><em>Numer Algor</em> <strong>13</strong>, 179–200 (1996).</a> Fortran source code at Netlib: <a href="https://netlib.org/numeralgo/na10"><code>numeralgo/na10</code></a>, several versions provided also by <a href="https://jblevins.org/mirror/amiller/">Alan Miller</a>   </li>
+<li><code>POLZEROS</code> - Polynomial zeros using Aberth's method, <a href="https://doi.org/10.1007/BF02207694"><em>Numer Algor</em> <strong>13</strong>, 179–200 (1996).</a> Fortran source code at Netlib: <a href="https://netlib.org/numeralgo/na10"><code>numeralgo/na10</code></a>, several versions provided also by <a href="https://jblevins.org/mirror/amiller/">Alan Miller</a></li>
 </ul>
 <h2>See also</h2>
 <ul>
@@ -277,16 +293,16 @@
           </div>
 		  <div class="col-xs-6 col-sm-4">
               <h3>Procedures</h3>
-              <ul>                    <li><a href='./proc/cdiv.html'>cdiv</a></li>
-                    <li><a href='./proc/comqr.html'>comqr</a></li>
-                    <li><a href='./proc/cpevl.html'>cpevl</a></li>
+              <ul>                    <li><a href='./proc/cmplx_roots_gen.html'>cmplx_roots_gen</a></li>
                     <li><a href='./proc/cpqr79.html'>cpqr79</a></li>
                     <li><a href='./proc/cpzero.html'>cpzero</a></li>
-                    <li><a href='./proc/csroot.html'>csroot</a></li>
                     <li><a href='./proc/dcbcrt.html'>dcbcrt</a></li>
-                    <li><a href='./proc/dcbrt.html'>dcbrt</a></li>
                     <li><a href='./proc/dqdcrt.html'>dqdcrt</a></li>
-                    <li><a href='./proc/hqr.html'>hqr</a></li>
+                    <li><a href='./proc/newton_root_polish.html'>newton_root_polish</a></li>
+                    <li><a href='./proc/polyroots.html'>polyroots</a></li>
+                    <li><a href='./proc/qr_algeq_solver.html'>qr_algeq_solver</a></li>
+                    <li><a href='./proc/rpoly.html'>rpoly</a></li>
+                    <li><a href='./proc/rpqr79.html'>rpqr79</a></li>
 </ul>
           </div>
       </div>
@@ -331,6 +347,9 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
+    <script src="./tipuesearch/tipuesearch_content.js"></script>
+    <script src="./tipuesearch/tipuesearch_set.js"></script>
+    <script src="./tipuesearch/tipuesearch.js"></script>
     
   </body>
 </html>

@@ -14,6 +14,7 @@
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -59,6 +60,14 @@
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
                                        </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -75,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="16.2% of total for procedures.">290 statements</a>
+    title="16.3% of total for procedures.">293 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -112,7 +121,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)</h2>
+    <h2>public subroutine qr_algeq_solver(n, c, zr, zi, istatus, detil)</h2>
     
 
     <p>Solve the real coefficient algebraic equation by the qr-method.</p>
@@ -151,12 +160,6 @@
   <td><strong>zi</strong>(n)</td><td><p>imaginary part of output roots</p></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-detil"></span>real(kind=wp),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>detil</strong></td><td><p>accuracy hint.</p></td>
-</tr>
-<tr>
   <td><span class="anchor" id="variable-istatus"></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
@@ -167,6 +170,12 @@
 <li>0 : success</li>
 <li>otherwise, the return code from <code>hqr_eigen_hessenberg</code></li>
 </ul></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-detil"></span>real(kind=wp),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>detil</strong></td><td><p>accuracy hint.</p></td>
 </tr>
 </tbody>
 </table>
@@ -197,7 +206,7 @@
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">qr_algeq_solver</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">zr</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">detil</span><span class="p">,</span><span class="w"> </span><span class="n">istatus</span><span class="p">)</span><span class="w"></span>
+    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">qr_algeq_solver</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">zr</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">istatus</span><span class="p">,</span><span class="w"> </span><span class="n">detil</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -205,13 +214,13 @@
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">c</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">!! coefficients of the polynomial. in order of decreasing powers.</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zr</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">!! real part of output roots</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">!! imaginary part of output roots</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">detil</span><span class="w"> </span><span class="c">!! accuracy hint.</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">istatus</span><span class="w"> </span><span class="c">!! return code:</span>
 <span class="w">                                    </span><span class="c">!!</span>
 <span class="w">                                    </span><span class="c">!! * -1 : degree &lt;= 0</span>
 <span class="w">                                    </span><span class="c">!! * -2 : leading coefficient `c(1)` is zero</span>
 <span class="w">                                    </span><span class="c">!! * 0 : success</span>
 <span class="w">                                    </span><span class="c">!! * otherwise, the return code from `hqr_eigen_hessenberg`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">detil</span><span class="w"> </span><span class="c">!! accuracy hint.</span>
 
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="c">!! work matrix</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cnt</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! work area for counting the qr-iterations</span>
@@ -238,27 +247,31 @@
 <span class="w">    </span><span class="c">! balancing the a itself.</span>
 <span class="w">    </span><span class="k">call </span><span class="n">balance_companion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="c">! compute the frobenius norm of the balanced companion matrix a.</span>
-<span class="w">    </span><span class="n">afnorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frobenius_norm_companion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"></span>
-
 <span class="w">    </span><span class="c">! qr iterations from a.</span>
 <span class="w">    </span><span class="k">call </span><span class="n">hqr_eigen_hessenberg</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">zr</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">cnt</span><span class="p">,</span><span class="w"> </span><span class="n">istatus</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">istatus</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
 <span class="k">        write</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,1X,I4)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;abnormal return from hqr_eigen_hessenberg. istatus=&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">istatus</span><span class="w"></span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">istatus</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;matrix is completely zero.&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">istatus</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;qr iteration does not converged.&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">istatus</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;qr iteration did not converge.&#39;</span><span class="w"></span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">istatus</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;arguments violate the condition.&#39;</span><span class="w"></span>
 <span class="w">        </span><span class="k">return</span>
-<span class="k">    end if</span><span class="w"></span>
+<span class="k">    end if</span>
 
-<span class="w">    </span><span class="c">! count the total qr iteration.</span>
-<span class="w">    </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cnt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cnt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">end do</span><span class="w"></span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">detil</span><span class="p">))</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
 
-<span class="w">    </span><span class="c">! calculate the accuracy hint.</span>
-<span class="w">    </span><span class="n">detil</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eps</span><span class="o">*</span><span class="n">n</span><span class="o">*</span><span class="n">iter</span><span class="o">*</span><span class="n">afnorm</span><span class="w"></span>
+<span class="w">        </span><span class="c">! compute the frobenius norm of the balanced companion matrix a.</span>
+<span class="w">        </span><span class="n">afnorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frobenius_norm_companion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="c">! count the total qr iteration.</span>
+<span class="w">        </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cnt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cnt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end do</span><span class="w"></span>
+
+<span class="w">        </span><span class="c">! calculate the accuracy hint.</span>
+<span class="w">        </span><span class="n">detil</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eps</span><span class="o">*</span><span class="n">n</span><span class="o">*</span><span class="n">iter</span><span class="o">*</span><span class="n">afnorm</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">end if</span>
 
 <span class="k">contains</span>
 
@@ -291,7 +304,7 @@
 <span class="w">        </span><span class="c">!!  blancing the unsymmetric matrix `a`.</span>
 <span class="w">        </span><span class="c">!!</span>
 <span class="w">        </span><span class="c">!!  this fortran code is based on the algol code &quot;balance&quot; from paper:</span>
-<span class="w">        </span><span class="c">!!   &quot;balancing a matrixfor calculation of eigenvalues and eigenvectors&quot;</span>
+<span class="w">        </span><span class="c">!!   &quot;balancing a matrix for calculation of eigenvalues and eigenvectors&quot;</span>
 <span class="w">        </span><span class="c">!!   by b.n.parlett and c.reinsch, numer. math. 13, 293-304(1969).</span>
 <span class="w">        </span><span class="c">!!</span>
 <span class="w">        </span><span class="c">!!  note: the only non-zero elements of the companion matrix are touched.</span>
@@ -413,7 +426,7 @@
 <span class="w">        </span><span class="c">!!          parts in the array wr(1:n0) and the imaginary parts in the</span>
 <span class="w">        </span><span class="c">!!          array wi(1:n0).</span>
 <span class="w">        </span><span class="c">!!          the procedure fails if any eigenvalue takes more than</span>
-<span class="w">        </span><span class="c">!!          30 iterations.</span>
+<span class="w">        </span><span class="c">!!          `maxiter` iterations.</span>
 
 <span class="w">        </span><span class="k">implicit none</span>
 
@@ -427,6 +440,13 @@
 <span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="p">,</span><span class="w"> </span><span class="n">its</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
 <span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"></span>
 <span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">notlast</span><span class="p">,</span><span class="w"> </span><span class="n">found</span><span class="w"></span>
+
+<span class="cp">#if REAL128</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">maxiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="c">!! max iterations. It seems we need more than 30</span>
+<span class="w">                                            </span><span class="c">!! for quad precision (see test case 11)</span>
+<span class="cp">#else</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">maxiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w">  </span><span class="c">!! max iterations</span>
+<span class="cp">#endif</span>
 
 <span class="w">        </span><span class="c">! note: n is changing in this subroutine.</span>
 <span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n0</span><span class="w"></span>
@@ -489,8 +509,8 @@
 <span class="k">                        </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
 <span class="w">                        </span><span class="k">cycle </span><span class="n">main</span><span class="w"></span>
 <span class="w">                    </span><span class="k">else</span>
-<span class="k">                        if</span><span class="w"> </span><span class="p">(</span><span class="n">its</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="k">                            </span><span class="n">istatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="k">                        if</span><span class="w"> </span><span class="p">(</span><span class="n">its</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">maxiter</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! 30 for the orignial double precision code</span>
+<span class="w">                            </span><span class="n">istatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
 <span class="w">                            </span><span class="k">return</span>
 <span class="k">                        end if</span>
 <span class="k">                        if</span><span class="w"> </span><span class="p">(</span><span class="n">its</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">its</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
@@ -644,6 +664,9 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
     
   </body>
 </html>
