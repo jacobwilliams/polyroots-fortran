@@ -97,10 +97,10 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
     real(wp), parameter :: deg2rad = pi/180.0_wp
     real(wp), parameter :: cosr = cos(94.0_wp*deg2rad)
     real(wp), parameter :: sinr = sin(86.0_wp*deg2rad)
-    real(wp), parameter :: base = radix(0.0_wp)
+    real(wp), parameter :: base = radix(1.0_wp)
     real(wp), parameter :: eta = eps
-    real(wp), parameter :: infin = huge(0.0_wp)
-    real(wp), parameter :: smalno = tiny(0.0_wp)
+    real(wp), parameter :: infin = huge(1.0_wp)
+    real(wp), parameter :: smalno = tiny(1.0_wp)
     real(wp), parameter :: sqrthalf = sqrt(0.5_wp)
     real(wp), parameter :: are = eta !! unit error in +
     real(wp), parameter :: mre = eta !! unit error in *
@@ -642,17 +642,17 @@ contains
             a3 = (a + g)*e + h*(b/d)
             a1 = b*f - a
             a7 = (f + u)*a + h
-            return
+        else
+            type = 1
+            ! type=1 indicates that all formulas are divided by c
+            e = a/c
+            f = d/c
+            g = u*e
+            h = v*b
+            a3 = a*e + (h/c + g)*b
+            a1 = b - a*(d/c)
+            a7 = a + g*d + h*f
         end if
-        type = 1
-        ! type=1 indicates that all formulas are divided by c
-        e = a/c
-        f = d/c
-        g = u*e
-        h = v*b
-        a3 = a*e + (h/c + g)*b
-        a1 = b - a*(d/c)
-        a7 = a + g*d + h*f
 
     end subroutine calcsc
 
@@ -686,15 +686,15 @@ contains
             do i = 3, n
                 k(i) = a3*qk(i - 2) - a7*qp(i - 1) + qp(i)
             end do
-            return
-        end if
 
-        ! use unscaled form of the recurrence if type is 3
-        k(1) = 0.0_wp
-        k(2) = 0.0_wp
-        do i = 3, n
-            k(i) = qk(i - 2)
-        end do
+        else
+            ! use unscaled form of the recurrence if type is 3
+            k(1) = 0.0_wp
+            k(2) = 0.0_wp
+            do i = 3, n
+                k(i) = qk(i - 2)
+            end do
+        end if
 
     end subroutine nextk
 
@@ -1289,20 +1289,20 @@ subroutine qr_algeq_solver(n, c, zr, zi, istatus, detil)
     ! balancing the a itself.
     call balance_companion(n, a)
 
-    ! compute the frobenius norm of the balanced companion matrix a.
-    afnorm = frobenius_norm_companion(n, a)
-
     ! qr iterations from a.
     call hqr_eigen_hessenberg(n, a, zr, zi, cnt, istatus)
     if (istatus /= 0) then
         write (*, '(A,1X,I4)') 'abnormal return from hqr_eigen_hessenberg. istatus=', istatus
         if (istatus == 1) write (*, '(A)') 'matrix is completely zero.'
-        if (istatus == 2) write (*, '(A)') 'qr iteration does not converged.'
+        if (istatus == 2) write (*, '(A)') 'qr iteration did not converge.'
         if (istatus > 3) write (*, '(A)') 'arguments violate the condition.'
         return
     end if
 
     if (present(detil)) then
+
+        ! compute the frobenius norm of the balanced companion matrix a.
+        afnorm = frobenius_norm_companion(n, a)
 
         ! count the total qr iteration.
         iter = 0

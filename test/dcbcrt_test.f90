@@ -23,7 +23,7 @@
     do i = 1, 3
         z = cmplx(zr(i), zi(i), wp)
         root = a(1) + a(2)*z + a(3)*z**2 + a(4)*z**3
-        write(*,*) 'root is: ', real(root,wp)
+        write(*,*) 'root is: ', zr(i), zi(i), abs(root)
         if (abs(root) > 100*epsilon(1.0_wp)) error stop 'Error: insufficient accuracy'
     end do
 
@@ -32,7 +32,7 @@
     do i = 1, 2
         z = cmplx(zr(i), zi(i), wp)
         root = a(1) + a(2)*z + a(3)*z**2
-        write(*,*) 'root is: ', real(root,wp)
+        write(*,*) 'root is: ', zr(i), zi(i), abs(root)
         if (abs(root) > 100*epsilon(1.0_wp)) error stop 'Error: insufficient accuracy'
     end do
 

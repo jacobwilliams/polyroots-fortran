@@ -9,7 +9,7 @@
 
     implicit none
 
-    integer,parameter :: max_degree = 10
+    integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 30 !! number of cases to run
 
     real(wp),dimension(:),allocatable :: p, zr, zi, s
@@ -79,6 +79,13 @@
             call allocate_arrays(3)
             p = [ -8.0e18_wp,3.0e12_wp,5.0e6_wp,1.0_wp]
 
+        case(13)
+            call allocate_arrays(3)
+            p = [4.0_wp, 3.0_wp, 2.0_wp, 1.0_wp]
+        case(14)
+            call allocate_arrays(2)
+            p = [3.0_wp, 2.0_wp, 1.0_wp]
+
         case default
             ! random coefficients
             call allocate_arrays(get_random_integer_number(3,max_degree))
@@ -89,6 +96,22 @@
 
         write(*,'(A,1X,I3)')          ' Degree: ', degree
         write(*,'(A,1X/,*(g23.15/))') ' Coefficients: ', p(1:degree+1)
+
+        if (degree==2) then
+            ! also test this one (only for quadratic equations):
+            write(*, '(A,1x,i3)') 'dqdcrt'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call dqdcrt(reverse(p), zr, zi)
+            call check_results(zr, zi, degree)
+        end if
+
+        if (degree==3) then
+            ! also test this one (only for cubic equations):
+            write(*, '(A,1x,i3)') 'dcbcrt'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call dcbcrt(reverse(p), zr, zi)
+            call check_results(zr, zi, degree)
+        end if
 
         write(*, '(A,1x,i3)') 'rpoly'
         write(*, '(a)') '  real part               imaginary part         root'
@@ -141,6 +164,28 @@
     contains
 
     !********************************************************************
+        pure function reverse(x) result(y)
+
+        !! reverse a `real(wp)` vector
+
+        implicit none
+
+        real(wp), dimension(:), intent(in) :: x
+        real(wp), dimension(size(x)) :: y
+
+        integer :: i !! counter
+        integer :: n !! size of `x`
+
+        n = size(x)
+
+        do i = 1, n
+            y(i) = x(n-i+1)
+        end do
+
+        end function reverse
+    !********************************************************************
+
+    !********************************************************************
         subroutine allocate_arrays(d)
 
         integer,intent(in) :: d
@@ -154,12 +199,12 @@
         if (allocated(r))  deallocate(r)
         if (allocated(cp)) deallocate(cp)
 
-        allocate(p(max_degree+1))
-        allocate(zr(max_degree+1))
-        allocate(zi(max_degree+1))
-        allocate(s(max_degree+1))
-        allocate(r(max_degree+1))
-        allocate(cp(max_degree+1))
+        allocate(p(degree+1))
+        allocate(zr(degree+1))
+        allocate(zi(degree+1))
+        allocate(s(degree+1))
+        allocate(r(degree+1))
+        allocate(cp(degree+1))
 
         end subroutine allocate_arrays
     !********************************************************************
