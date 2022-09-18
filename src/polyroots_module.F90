@@ -20,44 +20,44 @@
 
 module polyroots_module
 
-use iso_fortran_env
+    use iso_fortran_env
 
-implicit none
+    implicit none
 
-private
+    private
 
 #ifdef REAL32
-integer, parameter, public :: polyroots_module_rk = real32   !! real kind used by this module [4 bytes]
+    integer, parameter, public :: polyroots_module_rk = real32   !! real kind used by this module [4 bytes]
 #elif REAL64
-integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
+    integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
 #elif REAL128
-integer, parameter, public :: polyroots_module_rk = real128  !! real kind used by this module [16 bytes]
+    integer, parameter, public :: polyroots_module_rk = real128  !! real kind used by this module [16 bytes]
 #else
-integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
+    integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
 #endif
 
-integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
+    integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
 
-real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
-real(wp), parameter :: pi = acos(-1.0_wp)
+    real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
+    real(wp), parameter :: pi = acos(-1.0_wp)
 
-! general polynomial routines:
-public :: polyroots
-public :: rpoly
-public :: cpzero
-public :: rpzero
-public :: rpqr79
-public :: cpqr79
-public :: qr_algeq_solver
+    ! general polynomial routines:
+    public :: polyroots
+    public :: rpoly
+    public :: cpzero
+    public :: rpzero
+    public :: rpqr79
+    public :: cpqr79
+    public :: qr_algeq_solver
 
-! special polynomial routines:
-public :: dcbcrt
-public :: dqdcrt
+    ! special polynomial routines:
+    public :: dcbcrt
+    public :: dqdcrt
 
-! utility routines:
-public :: dcbrt
-public :: cpevl
-public :: newton_root_polish
+    ! utility routines:
+    public :: dcbrt
+    public :: cpevl
+    public :: newton_root_polish
 
 contains
 !*****************************************************************************************
@@ -75,10 +75,10 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
 
     implicit none
 
-    real(wp), intent(in) :: op(:) !! vector of coefficients in order of decreasing powers
     integer, intent(in) :: degree !! degree of polynomial
-    real(wp), intent(out) :: zeror(:) !! output vector of real parts of the zeros
-    real(wp), intent(out) :: zeroi(:) !! output vector of imaginary parts of the zeros
+    real(wp), dimension(degree+1), intent(in) :: op !! vector of coefficients in order of decreasing powers
+    real(wp), dimension(degree), intent(out) :: zeror !! output vector of real parts of the zeros
+    real(wp), dimension(degree), intent(out) :: zeroi !! output vector of imaginary parts of the zeros
     integer, intent(out) :: istat !! status output:
                                   !!
                                   !! * 0 : success
@@ -86,17 +86,12 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
                                   !! * -2 : no roots found
                                   !! * >0 : the number of zeros found
 
-    ! these were formerly in a common block:
-    real(wp), allocatable :: p(:), qp(:), k(:), qk(:), svk(:)
+    real(wp), dimension(:), allocatable :: p, qp, k, qk, svk, temp, pt
     real(wp) :: sr, si, u, v, a, b, c, d, a1, a3, &
-                a7, e, f, g, h, szr, szi, lzr, lzi
-    integer :: n, nn
-    !--------------------------------------------------------
-
-    real(wp), allocatable :: temp(:)
-    real(wp), allocatable :: pt(:)
-    real(wp) :: t, aa, bb, cc, factor, mx, mn, xx, yy, xxx, x, sc, bnd, xm, ff, df, dx
-    integer :: cnt, nz, i, j, jj, l, nm1
+                a7, e, f, g, h, szr, szi, lzr, lzi, &
+                t, aa, bb, cc, factor, mx, mn, xx, yy, &
+                xxx, x, sc, bnd, xm, ff, df, dx
+    integer :: cnt, nz, i, j, jj, l, nm1, n, nn
     logical :: zerok
 
     real(wp), parameter :: deg2rad = pi/180.0_wp
@@ -1253,7 +1248,7 @@ end subroutine dqdcrt
 !  * [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib
 !    from [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf),
 
-subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
+subroutine qr_algeq_solver(n, c, zr, zi, istatus, detil)
 
     implicit none
 
@@ -1261,13 +1256,13 @@ subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
     real(wp), intent(in) :: c(n + 1) !! coefficients of the polynomial. in order of decreasing powers.
     real(wp), intent(out) :: zr(n) !! real part of output roots
     real(wp), intent(out) :: zi(n) !! imaginary part of output roots
-    real(wp), intent(out) :: detil !! accuracy hint.
     integer, intent(out) :: istatus !! return code:
                                     !!
                                     !! * -1 : degree <= 0
                                     !! * -2 : leading coefficient `c(1)` is zero
                                     !! * 0 : success
                                     !! * otherwise, the return code from `hqr_eigen_hessenberg`
+    real(wp), intent(out), optional :: detil !! accuracy hint.
 
     real(wp), allocatable :: a(:, :) !! work matrix
     integer, allocatable :: cnt(:) !! work area for counting the qr-iterations
@@ -1307,14 +1302,18 @@ subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
         return
     end if
 
-    ! count the total qr iteration.
-    iter = 0
-    do i = 1, n
-        if (cnt(i) > 0) iter = iter + cnt(i)
-    end do
+    if (present(detil)) then
 
-    ! calculate the accuracy hint.
-    detil = eps*n*iter*afnorm
+        ! count the total qr iteration.
+        iter = 0
+        do i = 1, n
+            if (cnt(i) > 0) iter = iter + cnt(i)
+        end do
+
+        ! calculate the accuracy hint.
+        detil = eps*n*iter*afnorm
+
+    end if
 
 contains
 
@@ -1678,13 +1677,13 @@ subroutine cpevl(n, m, a, z, c, b, kbd)
                              !!
                              !! if M > N+1 function and all N derivatives will be calculated.
     complex(wp), intent(in) :: a(*) !! vector containing the N+1 coefficients of polynomial.
-                                   !! A(I) = coefficient of Z**(N+1-I)
+                                    !! A(I) = coefficient of Z**(N+1-I)
     complex(wp), intent(in) :: z !! point at which the evaluation is to take place
     complex(wp), intent(out) :: c(*) !! Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
                                      !! derivative at Z, I=0,...,M
     complex(wp), intent(out) :: b(*) !! Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
-                                    !! of C(I) if they were requested. only needed if bounds are to be calculated.
-                                    !! It is not used otherwise.
+                                     !! of C(I) if they were requested. only needed if bounds are to be calculated.
+                                     !! It is not used otherwise.
     logical, intent(in) :: kbd !! A logical variable, e.g. .TRUE. or .FALSE. which is
                                !! to be set .TRUE. if bounds are to be computed.
 
@@ -1731,16 +1730,15 @@ end subroutine cpevl
 !  * 891214  Prologue converted to Version 4.0 format.  (BAB)
 !  * Jacob Williams, 9/13/2022 : modernized this routine
 
-subroutine cpzero(in, a, r, t, iflg, s)
+subroutine cpzero(in, a, r, iflg, s)
 
     implicit none
 
-    integer, intent(in) :: in !! degree of P(Z)
-    complex(wp), intent(in) :: a(*) !! complex vector containing coefficients of P(Z),
-                                    !! A(I) = coefficient of Z**(N+1-i)
-    complex(wp), intent(inout) :: r(*) !! N word complex vector. On input: containing initial estimates for zeros
-                                       !! if these are known. On output: Ith zero
-    complex(wp) :: t(*) !! `4(N+1)` word array used for temporary storage
+    integer, intent(in) :: in !! `N`, the degree of `P(Z)`
+    complex(wp), dimension(in+1), intent(in) :: a !! complex vector containing coefficients of `P(Z)`,
+                                                  !! `A(I)` = coefficient of `Z**(N+1-i)`
+    complex(wp), dimension(in), intent(inout) :: r !! `N` word complex vector. On input: containing initial
+                                                   !! estimates for zeros if these are known. On output: Ith zero
     integer, intent(inout) :: iflg !!### On Input:
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
@@ -1760,16 +1758,19 @@ subroutine cpzero(in, a, r, t, iflg, s)
                                    !! * If IFLG == 2 on return, the program failed to converge
                                    !!   after 25*N iterations.  Best current estimates of the
                                    !!   zeros are in R(I).  Error bounds are not calculated.
-    real(wp), intent(out) :: s(*) !! an `N` word array. S(I) = bound for R(I)
+    real(wp), intent(out) :: s(in) !! an `N` word array. `S(I)` = bound for `R(I)`
 
     integer :: i, imax, j, n, n1, nit, nmax, nr
     real(wp) :: u, v, x
     complex(wp) :: pn, temp
     complex(wp) :: ctmp(1), btmp(1)
+    complex(wp), dimension(:), allocatable :: t !! `4(N+1)` word array used for temporary storage
 
     if (in <= 0 .or. abs(a(1)) == 0.0_wp) then
         iflg = 1
     else
+        ! work array:
+        allocate(t(4*(in+1)))
         ! check for easily obtained zeros
         n = in
         n1 = n + 1
@@ -1880,16 +1881,15 @@ end subroutine cpzero
 !
 !@note This is just a wrapper to [[cpzero]]
 
-subroutine rpzero(n, a, r, t, iflg, s)
+subroutine rpzero(n, a, r, iflg, s)
 
     implicit none
 
-    integer, intent(in) :: n !! degree of P(X)
-    real(wp), intent(in) :: a(*) !! real vector containing coefficients of P(X),
-                                 !! A(I) = coefficient of X**(N+1-I)
-    complex(wp), intent(inout) :: r(*) !! N word complex vector. On Input: containing initial estimates for zeros
-                                       !! if these are known. On output: ith zero.
-    complex(wp) :: t(*) !! `6(N+1)` word array used for temporary storage
+    integer, intent(in) :: n !! degree of `P(X)`
+    real(wp), dimension(n+1), intent(in) :: a !! real vector containing coefficients of `P(X)`,
+                                              !! `A(I)` = coefficient of `X**(N+1-I)`
+    complex(wp), dimension(n), intent(inout) :: r !! N word complex vector. On Input: containing initial estimates for zeros
+                                                  !! if these are known. On output: ith zero.
     integer, intent(inout) :: iflg !!### On Input:
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
@@ -1909,15 +1909,17 @@ subroutine rpzero(n, a, r, t, iflg, s)
                                    !! * If IFLG == 2 on return, the program failed to converge
                                    !!   after 25*N iterations.  Best current estimates of the
                                    !!   zeros are in R(I).  Error bounds are not calculated.
-    real(wp), intent(out) :: s(*) !! an `N` word array. bound for R(I).
+    real(wp), dimension(n), intent(out) :: s !! an `N` word array. bound for R(I).
 
-    integer :: i, n1
+    integer :: i
+    complex(wp), dimension(:), allocatable :: p !! complex coefficients
 
-    n1 = n + 1
-    do i = 1, n1
-        t(i) = cmplx(a(i), 0.0_wp, wp)
+    allocate(p(n+1))
+
+    do i = 1, n + 1
+        p(i) = cmplx(a(i), 0.0_wp, wp)
     end do
-    call cpzero(n, t, r, t(n + 2), iflg, s)
+    call cpzero(n, p, r, iflg, s)
 
 end subroutine rpzero
 !*****************************************************************************************
@@ -1942,9 +1944,9 @@ subroutine rpqr79(ndeg, coeff, root, ierr)
     implicit none
 
     integer, intent(in) :: ndeg !! degree of polynomial
-    real(wp), intent(in) :: coeff(*) !! `NDEG+1` coefficients in descending order.  i.e.,
-                                     !! `P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
-    complex(wp), intent(out) :: root(*) !! `NDEG` vector of roots
+    real(wp), dimension(ndeg+1), intent(in) :: coeff !! `NDEG+1` coefficients in descending order.  i.e.,
+                                                     !! `P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+    complex(wp), dimension(ndeg), intent(out) :: root !! `NDEG` vector of roots
     integer, intent(out) :: ierr !! Output Error Code
                                  !!
                                  !!### Normal Code:
@@ -2285,16 +2287,16 @@ subroutine polyroots(n, p, wr, wi, info)
 
     implicit none
 
-    integer, intent(in) :: n  !! polynomial degree
-    real(wp), intent(in) :: p(n + 1)  !! polynomial coefficients array, in order of decreasing powers
-    real(wp), intent(out) :: wr(n)  !! real parts of roots
-    real(wp), intent(out) :: wi(n)  !! imaginary parts of roots
-    integer, intent(out) :: info  !! output from the lapack solver.
-                                  !! if `info=0` the routine converged.
-                                  !! if `info=-999`, then the leading coefficient is zero.
+    integer, intent(in) :: n !! polynomial degree
+    real(wp), dimension(n+1), intent(in) :: p !! polynomial coefficients array, in order of decreasing powers
+    real(wp), dimension(n), intent(out) :: wr !! real parts of roots
+    real(wp), dimension(n), intent(out) :: wi !! imaginary parts of roots
+    integer, intent(out) :: info !! output from the lapack solver.
+                                 !! if `info=0` the routine converged.
+                                 !! if `info=-999`, then the leading coefficient is zero.
 
     integer :: i !! counter
-    real(wp), allocatable, dimension(:, :) :: a !! companion matrix
+    real(wp), allocatable, dimension(:,:) :: a !! companion matrix
     real(wp), allocatable, dimension(:) :: work !! work array
     real(wp), dimension(1) :: vl, vr !! not used here
 
@@ -2373,9 +2375,9 @@ subroutine cpqr79(ndeg, coeff, root, ierr)
     implicit none
 
     integer, intent(in) :: ndeg !! degree of polynomial
-    complex(wp), intent(in) :: coeff(*) !! `(NDEG+1)` coefficients in descending order.  i.e.,
-                                        !! `P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
-    complex(wp), intent(out) :: root(*) !! `(NDEG)` vector of roots
+    complex(wp), dimension(ndeg+1), intent(in) :: coeff !! `(NDEG+1)` coefficients in descending order.  i.e.,
+                                                        !! `P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+    complex(wp), dimension(ndeg), intent(out) :: root !! `(NDEG)` vector of roots
     integer, intent(out) :: ierr !! Output Error Code.
                                  !!
                                  !!### Normal Code:
@@ -2808,19 +2810,19 @@ subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
 
     implicit none
 
-    integer, intent(in) :: n          !! degree of polynomial
-    real(wp), intent(in) :: p(n + 1)  !! vector of coefficients in order of decreasing powers
-    real(wp), intent(inout) :: zr     !! output vector of real parts of the zeros
-    real(wp), intent(inout) :: zi     !! output vector of imaginary parts of the zeros
-    real(wp), intent(in) :: ftol      !! convergence tolerance for the root
-    real(wp), intent(in) :: ztol      !! convergence tolerance for `x`
-    integer, intent(in) :: maxiter    !! maximum number of iterations
-    integer, intent(out) :: istat     !! status flag:
-                                      !!
-                                      !! * 0  = converged in `f`
-                                      !! * 1  = converged in `x`
-                                      !! * -1 = singular
-                                      !! * -2 = max iterations reached
+    integer, intent(in) :: n                  !! degree of polynomial
+    real(wp), dimension(n+1), intent(in) :: p !! vector of coefficients in order of decreasing powers
+    real(wp), intent(inout) :: zr             !! real part of the zero
+    real(wp), intent(inout) :: zi             !! imaginary part of the zero
+    real(wp), intent(in) :: ftol              !! convergence tolerance for the root
+    real(wp), intent(in) :: ztol              !! convergence tolerance for `x`
+    integer, intent(in) :: maxiter            !! maximum number of iterations
+    integer, intent(out) :: istat             !! status flag:
+                                              !!
+                                              !! * 0  = converged in `f`
+                                              !! * 1  = converged in `x`
+                                              !! * -1 = singular
+                                              !! * -2 = max iterations reached
 
     complex(wp) :: z, f, z_prev, z_best, f_best, dfdx
     integer :: i !! counter

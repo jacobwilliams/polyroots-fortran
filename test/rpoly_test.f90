@@ -14,7 +14,6 @@
 
     real(wp),dimension(:),allocatable :: p, zr, zi, s
     complex(wp),dimension(:),allocatable :: r, cp
-    complex(wp),dimension(:),allocatable :: t !! work array for [[rpzero]]
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
     real(wp) :: detil
@@ -103,7 +102,7 @@
         write(*, '(/A,1x,i3)') 'rpzero'
         write(*, '(a)') '  real part               imaginary part         root'
         istatus = 0 ! no estimates input
-        call rpzero(degree,p,r,t,istatus,s)
+        call rpzero(degree,p,r,istatus,s)
         if (istatus/=0) error stop ' ** failure in rpzero **'
         call check_results(real(r,wp), aimag(r), degree)
 
@@ -125,7 +124,7 @@
 
         write(*, '(/A,1x,i3)') 'qr_algeq_solver'
         write(*, '(a)') '  real part               imaginary part         root'
-        call qr_algeq_solver(degree,p,zr,zi,detil,istatus)
+        call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
         if (istatus/=0) error stop ' ** failure in qr_algeq_solver **'
         call check_results(zr, zi, degree)
 
@@ -154,7 +153,6 @@
         if (allocated(s))  deallocate(s)
         if (allocated(r))  deallocate(r)
         if (allocated(cp)) deallocate(cp)
-        if (allocated(t))  deallocate(t)
 
         allocate(p(max_degree+1))
         allocate(zr(max_degree+1))
@@ -162,7 +160,6 @@
         allocate(s(max_degree+1))
         allocate(r(max_degree+1))
         allocate(cp(max_degree+1))
-        allocate(t(6*(max_degree+1)))
 
         end subroutine allocate_arrays
     !********************************************************************
