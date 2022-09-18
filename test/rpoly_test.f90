@@ -12,7 +12,7 @@
     integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 30 !! number of cases to run
 
-    real(wp),dimension(:),allocatable :: p, zr, zi, s
+    real(wp),dimension(:),allocatable :: p, zr, zi, s, q
     complex(wp),dimension(:),allocatable :: r, cp
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
@@ -97,11 +97,13 @@
         write(*,'(A,1X,I3)')          ' Degree: ', degree
         write(*,'(A,1X/,*(g23.15/))') ' Coefficients: ', p(1:degree+1)
 
+        q = reverse(p) ! the following two accept the coefficients in reverse order
+
         if (degree==2) then
             ! also test this one (only for quadratic equations):
             write(*, '(A,1x,i3)') 'dqdcrt'
             write(*, '(a)') '  real part               imaginary part         root'
-            call dqdcrt(reverse(p), zr, zi)
+            call dqdcrt(q, zr, zi)
             call check_results(zr, zi, degree)
         end if
 
@@ -109,7 +111,7 @@
             ! also test this one (only for cubic equations):
             write(*, '(A,1x,i3)') 'dcbcrt'
             write(*, '(a)') '  real part               imaginary part         root'
-            call dcbcrt(reverse(p), zr, zi)
+            call dcbcrt(q, zr, zi)
             call check_results(zr, zi, degree)
         end if
 
@@ -149,6 +151,13 @@
         write(*, '(a)') '  real part               imaginary part         root'
         call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
         if (istatus/=0) error stop ' ** failure in qr_algeq_solver **'
+        call check_results(real(r,wp), aimag(r), degree)
+
+        write(*, '(/A,1x,i3)') 'cmplx_roots_gen'
+        write(*, '(a)') '  real part               imaginary part         root'
+        cp = reversez(cp)
+        call cmplx_roots_gen(degree, cp, r)
+        if (istatus/=0) error stop ' ** failure in cmplx_roots_gen **'
         call check_results(zr, zi, degree)
 
         if (wp /= REAL128) then
@@ -186,6 +195,28 @@
     !********************************************************************
 
     !********************************************************************
+        pure function reversez(x) result(y)
+
+        !! reverse a `complex(wp)` vector
+
+        implicit none
+
+        complex(wp), dimension(:), intent(in) :: x
+        complex(wp), dimension(size(x)) :: y
+
+        integer :: i !! counter
+        integer :: n !! size of `x`
+
+        n = size(x)
+
+        do i = 1, n
+            y(i) = x(n-i+1)
+        end do
+
+        end function reversez
+    !********************************************************************
+
+    !********************************************************************
         subroutine allocate_arrays(d)
 
         integer,intent(in) :: d
@@ -198,8 +229,10 @@
         if (allocated(s))  deallocate(s)
         if (allocated(r))  deallocate(r)
         if (allocated(cp)) deallocate(cp)
+        if (allocated(q))  deallocate(q)
 
         allocate(p(degree+1))
+        allocate(q(degree+1))
         allocate(zr(degree+1))
         allocate(zi(degree+1))
         allocate(s(degree+1))
