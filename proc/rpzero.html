@@ -154,7 +154,7 @@ if these are known. On output: ith zero.</p></td>
   <td><span class="anchor" id="variable-t~2"></span>complex(kind=wp)</td>
 <td></td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong>(*)</td><td><p>6(N+1) word array used for temporary storage</p></td>
+  <td><strong>t</strong>(*)</td><td><p><code>6(N+1)</code> word array used for temporary storage</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-iflg~2"></span>integer,</td>
@@ -183,7 +183,7 @@ if these are known. On output: ith zero.</p></td>
   <td><span class="anchor" id="variable-s~2"></span>real(kind=wp),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>s</strong>(*)</td><td><p>an N word array. bound for R(I).</p></td>
+  <td><strong>s</strong>(*)</td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
 </tr>
 </tbody>
 </table>
@@ -214,46 +214,46 @@ if these are known. On output: ith zero.</p></td>
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">rpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">iflg</span><span class="p">,</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">rpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
-<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="c">!! degree of P(X)</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! real vector containing coefficients of P(X),</span>
-<span class="w">                                </span><span class="c">!! A(I) = coefficient of X**(N+1-I)</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">r</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! N word complex vector. On Input: containing initial estimates for zeros</span>
-<span class="w">                                      </span><span class="c">!! if these are known. On output: ith zero.</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! 6(N+1) word array used for temporary storage</span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iflg</span><span class="w"> </span><span class="c">!!### On Input:</span>
-<span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!! flag to indicate if initial estimates of zeros are input:</span>
-<span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!!  * If IFLG == 0, no estimates are input.</span>
-<span class="w">                                  </span><span class="c">!!  * If IFLG /= 0, the vector R contains estimates of the zeros</span>
-<span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!! ** WARNING ****** If estimates are input, they must</span>
-<span class="w">                                  </span><span class="c">!!                   be separated, that is, distinct or</span>
-<span class="w">                                  </span><span class="c">!!                   not repeated.</span>
-<span class="w">                                  </span><span class="c">!!### On Output:</span>
-<span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!! Error Diagnostics:</span>
-<span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!! * If IFLG == 0 on return, all is well</span>
-<span class="w">                                  </span><span class="c">!! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input</span>
-<span class="w">                                  </span><span class="c">!! * If IFLG == 2 on return, the program failed to converge</span>
-<span class="w">                                  </span><span class="c">!!   after 25*N iterations.  Best current estimates of the</span>
-<span class="w">                                  </span><span class="c">!!   zeros are in R(I).  Error bounds are not calculated.</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! an N word array. bound for R(I).</span>
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="c">!! degree of P(X)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! real vector containing coefficients of P(X),</span>
+<span class="w">                                 </span><span class="c">!! A(I) = coefficient of X**(N+1-I)</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">r</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! N word complex vector. On Input: containing initial estimates for zeros</span>
+<span class="w">                                       </span><span class="c">!! if these are known. On output: ith zero.</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! `6(N+1)` word array used for temporary storage</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iflg</span><span class="w"> </span><span class="c">!!### On Input:</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!! flag to indicate if initial estimates of zeros are input:</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!!  * If IFLG == 0, no estimates are input.</span>
+<span class="w">                                   </span><span class="c">!!  * If IFLG /= 0, the vector R contains estimates of the zeros</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!! ** WARNING ****** If estimates are input, they must</span>
+<span class="w">                                   </span><span class="c">!!                   be separated, that is, distinct or</span>
+<span class="w">                                   </span><span class="c">!!                   not repeated.</span>
+<span class="w">                                   </span><span class="c">!!### On Output:</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!! Error Diagnostics:</span>
+<span class="w">                                   </span><span class="c">!!</span>
+<span class="w">                                   </span><span class="c">!! * If IFLG == 0 on return, all is well</span>
+<span class="w">                                   </span><span class="c">!! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input</span>
+<span class="w">                                   </span><span class="c">!! * If IFLG == 2 on return, the program failed to converge</span>
+<span class="w">                                   </span><span class="c">!!   after 25*N iterations.  Best current estimates of the</span>
+<span class="w">                                   </span><span class="c">!!   zeros are in R(I).  Error bounds are not calculated.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! an `N` word array. bound for R(I).</span>
 
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
+<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
 <span class="w">        </span><span class="n">t</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">cmplx</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">enddo</span>
-<span class="k">    call </span><span class="n">cpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="n">iflg</span><span class="p">,</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">end do</span>
+<span class="k">    call </span><span class="n">cpzero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">iflg</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">end subroutine </span><span class="n">rpzero</span><span class="w"></span>
+<span class="k">end subroutine </span><span class="n">rpzero</span><span class="w"></span>
 </pre></div>
 
     </section>
