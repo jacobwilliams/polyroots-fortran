@@ -2433,9 +2433,9 @@ subroutine cpzero(in,a,r,t,iflg,s)
         call comqr(ndeg,ndeg,1,ndeg,work(khr),work(khi),work(kwr),work(kwi),ierr)
 
         if ( ierr/=0 ) then
-           ierr = 1
-           write(*,*) 'no convergence in 30 qr iterations.'
-           return
+            write(*,*) 'no convergence in 30 qr iterations. ierr = ', ierr
+            ierr = 1
+            return
         endif
 
         do k = 1 , ndeg
@@ -2443,7 +2443,7 @@ subroutine cpzero(in,a,r,t,iflg,s)
            root(k) = cmplx(work(kwr+km1),work(kwi+km1), wp)
         enddo
 
-        end subroutine cpqr79
+    end subroutine cpqr79
 !*****************************************************************************************
 
 !*****************************************************************************************
