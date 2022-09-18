@@ -20,44 +20,43 @@
 
 module polyroots_module
 
-use iso_fortran_env
+    use iso_fortran_env
 
-implicit none
+    implicit none
 
-private
+    private
 
 #ifdef REAL32
-integer, parameter, public :: polyroots_module_rk = real32   !! real kind used by this module [4 bytes]
+    integer, parameter, public :: polyroots_module_rk = real32   !! real kind used by this module [4 bytes]
 #elif REAL64
-integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
+    integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
 #elif REAL128
-integer, parameter, public :: polyroots_module_rk = real128  !! real kind used by this module [16 bytes]
+    integer, parameter, public :: polyroots_module_rk = real128  !! real kind used by this module [16 bytes]
 #else
-integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
+    integer, parameter, public :: polyroots_module_rk = real64   !! real kind used by this module [8 bytes]
 #endif
 
-integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
+    integer, parameter :: wp = polyroots_module_rk  !! local copy of `polyroots_module_rk` with a shorter name
 
-real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
-real(wp), parameter :: pi = acos(-1.0_wp)
+    real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
+    real(wp), parameter :: pi = acos(-1.0_wp)
 
-! general polynomial routines:
-public :: polyroots
-public :: rpoly
-public :: cpzero
-public :: rpzero
-public :: rpqr79
-public :: cpqr79
-public :: qr_algeq_solver
+    ! general polynomial routines:
+    public :: polyroots
+    public :: rpoly
+    public :: cpzero
+    public :: rpzero
+    public :: rpqr79
+    public :: cpqr79
+    public :: qr_algeq_solver
+    public :: cmplx_roots_gen
 
-! special polynomial routines:
-public :: dcbcrt
-public :: dqdcrt
+    ! special polynomial routines:
+    public :: dcbcrt
+    public :: dqdcrt
 
-! utility routines:
-public :: dcbrt
-public :: cpevl
-public :: newton_root_polish
+    ! utility routines:
+    public :: newton_root_polish
 
 contains
 !*****************************************************************************************
@@ -75,10 +74,10 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
 
     implicit none
 
-    real(wp), intent(in) :: op(:) !! vector of coefficients in order of decreasing powers
     integer, intent(in) :: degree !! degree of polynomial
-    real(wp), intent(out) :: zeror(:) !! output vector of real parts of the zeros
-    real(wp), intent(out) :: zeroi(:) !! output vector of imaginary parts of the zeros
+    real(wp), dimension(degree+1), intent(in) :: op !! vector of coefficients in order of decreasing powers
+    real(wp), dimension(degree), intent(out) :: zeror !! output vector of real parts of the zeros
+    real(wp), dimension(degree), intent(out) :: zeroi !! output vector of imaginary parts of the zeros
     integer, intent(out) :: istat !! status output:
                                   !!
                                   !! * 0 : success
@@ -86,26 +85,21 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
                                   !! * -2 : no roots found
                                   !! * >0 : the number of zeros found
 
-    ! these were formerly in a common block:
-    real(wp), allocatable :: p(:), qp(:), k(:), qk(:), svk(:)
+    real(wp), dimension(:), allocatable :: p, qp, k, qk, svk, temp, pt
     real(wp) :: sr, si, u, v, a, b, c, d, a1, a3, &
-                a7, e, f, g, h, szr, szi, lzr, lzi
-    integer :: n, nn
-    !--------------------------------------------------------
-
-    real(wp), allocatable :: temp(:)
-    real(wp), allocatable :: pt(:)
-    real(wp) :: t, aa, bb, cc, factor, mx, mn, xx, yy, xxx, x, sc, bnd, xm, ff, df, dx
-    integer :: cnt, nz, i, j, jj, l, nm1
+                a7, e, f, g, h, szr, szi, lzr, lzi, &
+                t, aa, bb, cc, factor, mx, mn, xx, yy, &
+                xxx, x, sc, bnd, xm, ff, df, dx
+    integer :: cnt, nz, i, j, jj, l, nm1, n, nn
     logical :: zerok
 
     real(wp), parameter :: deg2rad = pi/180.0_wp
     real(wp), parameter :: cosr = cos(94.0_wp*deg2rad)
     real(wp), parameter :: sinr = sin(86.0_wp*deg2rad)
-    real(wp), parameter :: base = radix(0.0_wp)
+    real(wp), parameter :: base = radix(1.0_wp)
     real(wp), parameter :: eta = eps
-    real(wp), parameter :: infin = huge(0.0_wp)
-    real(wp), parameter :: smalno = tiny(0.0_wp)
+    real(wp), parameter :: infin = huge(1.0_wp)
+    real(wp), parameter :: smalno = tiny(1.0_wp)
     real(wp), parameter :: sqrthalf = sqrt(0.5_wp)
     real(wp), parameter :: are = eta !! unit error in +
     real(wp), parameter :: mre = eta !! unit error in *
@@ -647,17 +641,17 @@ contains
             a3 = (a + g)*e + h*(b/d)
             a1 = b*f - a
             a7 = (f + u)*a + h
-            return
+        else
+            type = 1
+            ! type=1 indicates that all formulas are divided by c
+            e = a/c
+            f = d/c
+            g = u*e
+            h = v*b
+            a3 = a*e + (h/c + g)*b
+            a1 = b - a*(d/c)
+            a7 = a + g*d + h*f
         end if
-        type = 1
-        ! type=1 indicates that all formulas are divided by c
-        e = a/c
-        f = d/c
-        g = u*e
-        h = v*b
-        a3 = a*e + (h/c + g)*b
-        a1 = b - a*(d/c)
-        a7 = a + g*d + h*f
 
     end subroutine calcsc
 
@@ -691,15 +685,15 @@ contains
             do i = 3, n
                 k(i) = a3*qk(i - 2) - a7*qp(i - 1) + qp(i)
             end do
-            return
-        end if
 
-        ! use unscaled form of the recurrence if type is 3
-        k(1) = 0.0_wp
-        k(2) = 0.0_wp
-        do i = 3, n
-            k(i) = qk(i - 2)
-        end do
+        else
+            ! use unscaled form of the recurrence if type is 3
+            k(1) = 0.0_wp
+            k(2) = 0.0_wp
+            do i = 3, n
+                k(i) = qk(i - 2)
+            end do
+        end if
 
     end subroutine nextk
 
@@ -1253,7 +1247,7 @@ end subroutine dqdcrt
 !  * [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib
 !    from [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf),
 
-subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
+subroutine qr_algeq_solver(n, c, zr, zi, istatus, detil)
 
     implicit none
 
@@ -1261,13 +1255,13 @@ subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
     real(wp), intent(in) :: c(n + 1) !! coefficients of the polynomial. in order of decreasing powers.
     real(wp), intent(out) :: zr(n) !! real part of output roots
     real(wp), intent(out) :: zi(n) !! imaginary part of output roots
-    real(wp), intent(out) :: detil !! accuracy hint.
     integer, intent(out) :: istatus !! return code:
                                     !!
                                     !! * -1 : degree <= 0
                                     !! * -2 : leading coefficient `c(1)` is zero
                                     !! * 0 : success
                                     !! * otherwise, the return code from `hqr_eigen_hessenberg`
+    real(wp), intent(out), optional :: detil !! accuracy hint.
 
     real(wp), allocatable :: a(:, :) !! work matrix
     integer, allocatable :: cnt(:) !! work area for counting the qr-iterations
@@ -1294,27 +1288,31 @@ subroutine qr_algeq_solver(n, c, zr, zi, detil, istatus)
     ! balancing the a itself.
     call balance_companion(n, a)
 
-    ! compute the frobenius norm of the balanced companion matrix a.
-    afnorm = frobenius_norm_companion(n, a)
-
     ! qr iterations from a.
     call hqr_eigen_hessenberg(n, a, zr, zi, cnt, istatus)
     if (istatus /= 0) then
         write (*, '(A,1X,I4)') 'abnormal return from hqr_eigen_hessenberg. istatus=', istatus
         if (istatus == 1) write (*, '(A)') 'matrix is completely zero.'
-        if (istatus == 2) write (*, '(A)') 'qr iteration does not converged.'
+        if (istatus == 2) write (*, '(A)') 'qr iteration did not converge.'
         if (istatus > 3) write (*, '(A)') 'arguments violate the condition.'
         return
     end if
 
-    ! count the total qr iteration.
-    iter = 0
-    do i = 1, n
-        if (cnt(i) > 0) iter = iter + cnt(i)
-    end do
+    if (present(detil)) then
 
-    ! calculate the accuracy hint.
-    detil = eps*n*iter*afnorm
+        ! compute the frobenius norm of the balanced companion matrix a.
+        afnorm = frobenius_norm_companion(n, a)
+
+        ! count the total qr iteration.
+        iter = 0
+        do i = 1, n
+            if (cnt(i) > 0) iter = iter + cnt(i)
+        end do
+
+        ! calculate the accuracy hint.
+        detil = eps*n*iter*afnorm
+
+    end if
 
 contains
 
@@ -1347,7 +1345,7 @@ contains
         !!  blancing the unsymmetric matrix `a`.
         !!
         !!  this fortran code is based on the algol code "balance" from paper:
-        !!   "balancing a matrixfor calculation of eigenvalues and eigenvectors"
+        !!   "balancing a matrix for calculation of eigenvalues and eigenvectors"
         !!   by b.n.parlett and c.reinsch, numer. math. 13, 293-304(1969).
         !!
         !!  note: the only non-zero elements of the companion matrix are touched.
@@ -1469,7 +1467,7 @@ contains
         !!          parts in the array wr(1:n0) and the imaginary parts in the
         !!          array wi(1:n0).
         !!          the procedure fails if any eigenvalue takes more than
-        !!          30 iterations.
+        !!          `maxiter` iterations.
 
         implicit none
 
@@ -1483,6 +1481,13 @@ contains
         integer :: i, j, k, l, m, na, its, n
         real(wp) :: p, q, r, s, t, w, x, y, z
         logical :: notlast, found
+
+#if REAL128
+        integer, parameter :: maxiter = 100 !! max iterations. It seems we need more than 30
+                                            !! for quad precision (see test case 11)
+#else
+        integer, parameter :: maxiter = 30  !! max iterations
+#endif
 
         ! note: n is changing in this subroutine.
         n = n0
@@ -1545,7 +1550,7 @@ contains
                         n = n - 2
                         cycle main
                     else
-                        if (its == 30) then
+                        if (its == maxiter) then ! 30 for the orignial double precision code
                             istatus = 1
                             return
                         end if
@@ -1678,13 +1683,13 @@ subroutine cpevl(n, m, a, z, c, b, kbd)
                              !!
                              !! if M > N+1 function and all N derivatives will be calculated.
     complex(wp), intent(in) :: a(*) !! vector containing the N+1 coefficients of polynomial.
-                                   !! A(I) = coefficient of Z**(N+1-I)
+                                    !! A(I) = coefficient of Z**(N+1-I)
     complex(wp), intent(in) :: z !! point at which the evaluation is to take place
     complex(wp), intent(out) :: c(*) !! Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
                                      !! derivative at Z, I=0,...,M
     complex(wp), intent(out) :: b(*) !! Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
-                                    !! of C(I) if they were requested. only needed if bounds are to be calculated.
-                                    !! It is not used otherwise.
+                                     !! of C(I) if they were requested. only needed if bounds are to be calculated.
+                                     !! It is not used otherwise.
     logical, intent(in) :: kbd !! A logical variable, e.g. .TRUE. or .FALSE. which is
                                !! to be set .TRUE. if bounds are to be computed.
 
@@ -1731,16 +1736,15 @@ end subroutine cpevl
 !  * 891214  Prologue converted to Version 4.0 format.  (BAB)
 !  * Jacob Williams, 9/13/2022 : modernized this routine
 
-subroutine cpzero(in, a, r, t, iflg, s)
+subroutine cpzero(in, a, r, iflg, s)
 
     implicit none
 
-    integer, intent(in) :: in !! degree of P(Z)
-    complex(wp), intent(in) :: a(*) !! complex vector containing coefficients of P(Z),
-                                    !! A(I) = coefficient of Z**(N+1-i)
-    complex(wp), intent(inout) :: r(*) !! N word complex vector. On input: containing initial estimates for zeros
-                                       !! if these are known. On output: Ith zero
-    complex(wp) :: t(*) !! `4(N+1)` word array used for temporary storage
+    integer, intent(in) :: in !! `N`, the degree of `P(Z)`
+    complex(wp), dimension(in+1), intent(in) :: a !! complex vector containing coefficients of `P(Z)`,
+                                                  !! `A(I)` = coefficient of `Z**(N+1-i)`
+    complex(wp), dimension(in), intent(inout) :: r !! `N` word complex vector. On input: containing initial
+                                                   !! estimates for zeros if these are known. On output: Ith zero
     integer, intent(inout) :: iflg !!### On Input:
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
@@ -1760,16 +1764,19 @@ subroutine cpzero(in, a, r, t, iflg, s)
                                    !! * If IFLG == 2 on return, the program failed to converge
                                    !!   after 25*N iterations.  Best current estimates of the
                                    !!   zeros are in R(I).  Error bounds are not calculated.
-    real(wp), intent(out) :: s(*) !! an `N` word array. S(I) = bound for R(I)
+    real(wp), intent(out) :: s(in) !! an `N` word array. `S(I)` = bound for `R(I)`
 
     integer :: i, imax, j, n, n1, nit, nmax, nr
     real(wp) :: u, v, x
     complex(wp) :: pn, temp
     complex(wp) :: ctmp(1), btmp(1)
+    complex(wp), dimension(:), allocatable :: t !! `4(N+1)` word array used for temporary storage
 
     if (in <= 0 .or. abs(a(1)) == 0.0_wp) then
         iflg = 1
     else
+        ! work array:
+        allocate(t(4*(in+1)))
         ! check for easily obtained zeros
         n = in
         n1 = n + 1
@@ -1880,16 +1887,15 @@ end subroutine cpzero
 !
 !@note This is just a wrapper to [[cpzero]]
 
-subroutine rpzero(n, a, r, t, iflg, s)
+subroutine rpzero(n, a, r, iflg, s)
 
     implicit none
 
-    integer, intent(in) :: n !! degree of P(X)
-    real(wp), intent(in) :: a(*) !! real vector containing coefficients of P(X),
-                                 !! A(I) = coefficient of X**(N+1-I)
-    complex(wp), intent(inout) :: r(*) !! N word complex vector. On Input: containing initial estimates for zeros
-                                       !! if these are known. On output: ith zero.
-    complex(wp) :: t(*) !! `6(N+1)` word array used for temporary storage
+    integer, intent(in) :: n !! degree of `P(X)`
+    real(wp), dimension(n+1), intent(in) :: a !! real vector containing coefficients of `P(X)`,
+                                              !! `A(I)` = coefficient of `X**(N+1-I)`
+    complex(wp), dimension(n), intent(inout) :: r !! N word complex vector. On Input: containing initial estimates for zeros
+                                                  !! if these are known. On output: ith zero.
     integer, intent(inout) :: iflg !!### On Input:
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
@@ -1909,15 +1915,17 @@ subroutine rpzero(n, a, r, t, iflg, s)
                                    !! * If IFLG == 2 on return, the program failed to converge
                                    !!   after 25*N iterations.  Best current estimates of the
                                    !!   zeros are in R(I).  Error bounds are not calculated.
-    real(wp), intent(out) :: s(*) !! an `N` word array. bound for R(I).
+    real(wp), dimension(n), intent(out) :: s !! an `N` word array. bound for R(I).
 
-    integer :: i, n1
+    integer :: i
+    complex(wp), dimension(:), allocatable :: p !! complex coefficients
 
-    n1 = n + 1
-    do i = 1, n1
-        t(i) = cmplx(a(i), 0.0_wp, wp)
+    allocate(p(n+1))
+
+    do i = 1, n + 1
+        p(i) = cmplx(a(i), 0.0_wp, wp)
     end do
-    call cpzero(n, t, r, t(n + 2), iflg, s)
+    call cpzero(n, p, r, iflg, s)
 
 end subroutine rpzero
 !*****************************************************************************************
@@ -1942,9 +1950,9 @@ subroutine rpqr79(ndeg, coeff, root, ierr)
     implicit none
 
     integer, intent(in) :: ndeg !! degree of polynomial
-    real(wp), intent(in) :: coeff(*) !! `NDEG+1` coefficients in descending order.  i.e.,
-                                     !! `P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
-    complex(wp), intent(out) :: root(*) !! `NDEG` vector of roots
+    real(wp), dimension(ndeg+1), intent(in) :: coeff !! `NDEG+1` coefficients in descending order.  i.e.,
+                                                     !! `P(Z) = COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+    complex(wp), dimension(ndeg), intent(out) :: root !! `NDEG` vector of roots
     integer, intent(out) :: ierr !! Output Error Code
                                  !!
                                  !!### Normal Code:
@@ -2285,16 +2293,16 @@ subroutine polyroots(n, p, wr, wi, info)
 
     implicit none
 
-    integer, intent(in) :: n  !! polynomial degree
-    real(wp), intent(in) :: p(n + 1)  !! polynomial coefficients array, in order of decreasing powers
-    real(wp), intent(out) :: wr(n)  !! real parts of roots
-    real(wp), intent(out) :: wi(n)  !! imaginary parts of roots
-    integer, intent(out) :: info  !! output from the lapack solver.
-                                  !! if `info=0` the routine converged.
-                                  !! if `info=-999`, then the leading coefficient is zero.
+    integer, intent(in) :: n !! polynomial degree
+    real(wp), dimension(n+1), intent(in) :: p !! polynomial coefficients array, in order of decreasing powers
+    real(wp), dimension(n), intent(out) :: wr !! real parts of roots
+    real(wp), dimension(n), intent(out) :: wi !! imaginary parts of roots
+    integer, intent(out) :: info !! output from the lapack solver.
+                                 !! if `info=0` the routine converged.
+                                 !! if `info=-999`, then the leading coefficient is zero.
 
     integer :: i !! counter
-    real(wp), allocatable, dimension(:, :) :: a !! companion matrix
+    real(wp), allocatable, dimension(:,:) :: a !! companion matrix
     real(wp), allocatable, dimension(:) :: work !! work array
     real(wp), dimension(1) :: vl, vr !! not used here
 
@@ -2373,9 +2381,9 @@ subroutine cpqr79(ndeg, coeff, root, ierr)
     implicit none
 
     integer, intent(in) :: ndeg !! degree of polynomial
-    complex(wp), intent(in) :: coeff(*) !! `(NDEG+1)` coefficients in descending order.  i.e.,
-                                        !! `P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
-    complex(wp), intent(out) :: root(*) !! `(NDEG)` vector of roots
+    complex(wp), dimension(ndeg+1), intent(in) :: coeff !! `(NDEG+1)` coefficients in descending order.  i.e.,
+                                                        !! `P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)`
+    complex(wp), dimension(ndeg), intent(out) :: root !! `(NDEG)` vector of roots
     integer, intent(out) :: ierr !! Output Error Code.
                                  !!
                                  !!### Normal Code:
@@ -2808,19 +2816,19 @@ subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
 
     implicit none
 
-    integer, intent(in) :: n          !! degree of polynomial
-    real(wp), intent(in) :: p(n + 1)  !! vector of coefficients in order of decreasing powers
-    real(wp), intent(inout) :: zr     !! output vector of real parts of the zeros
-    real(wp), intent(inout) :: zi     !! output vector of imaginary parts of the zeros
-    real(wp), intent(in) :: ftol      !! convergence tolerance for the root
-    real(wp), intent(in) :: ztol      !! convergence tolerance for `x`
-    integer, intent(in) :: maxiter    !! maximum number of iterations
-    integer, intent(out) :: istat     !! status flag:
-                                      !!
-                                      !! * 0  = converged in `f`
-                                      !! * 1  = converged in `x`
-                                      !! * -1 = singular
-                                      !! * -2 = max iterations reached
+    integer, intent(in) :: n                  !! degree of polynomial
+    real(wp), dimension(n+1), intent(in) :: p !! vector of coefficients in order of decreasing powers
+    real(wp), intent(inout) :: zr             !! real part of the zero
+    real(wp), intent(inout) :: zi             !! imaginary part of the zero
+    real(wp), intent(in) :: ftol              !! convergence tolerance for the root
+    real(wp), intent(in) :: ztol              !! convergence tolerance for `x`
+    integer, intent(in) :: maxiter            !! maximum number of iterations
+    integer, intent(out) :: istat             !! status flag:
+                                              !!
+                                              !! * 0  = converged in `f`
+                                              !! * 1  = converged in `x`
+                                              !! * -1 = singular
+                                              !! * -2 = max iterations reached
 
     complex(wp) :: z, f, z_prev, z_best, f_best, dfdx
     integer :: i !! counter
@@ -2905,6 +2913,709 @@ contains
     end subroutine func
 
 end subroutine newton_root_polish
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  This subroutine finds roots of a complex polynomial.
+!  It uses a new dynamic root finding algorithm (see the Paper).
+!
+!  It can use Laguerre's method (subroutine [[cmplx_laguerre]])
+!  or Laguerre->SG->Newton method (subroutine
+!  [[cmplx_laguerre2newton]] - this is default choice) to find
+!  roots. It divides polynomial one by one by found roots. At the
+!  end it finds last root from Viete's formula for quadratic
+!  equation. Finally, it polishes all found roots using a full
+!  polynomial and Newton's or Laguerre's method (default is
+!  Laguerre's - subroutine [[cmplx_laguerre]]).
+!  You can change default choices by commenting out and uncommenting
+!  certain lines in the code below.
+!
+!### Reference
+!  * J. Skowron & A. Gould,
+!    "[General Complex Polynomial Root Solver and Its Further Optimization for Binary Microlenses](https://arxiv.org/pdf/1203.1034.pdf)"
+!    (2012)
+!
+!### History
+!  * Original code here (Apache license): http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/
+!  * Jacob Williams, 9/18/2022 : refactored this code a bit
+!
+!### Notes:
+!
+! * we solve for the last root with Viete's formula rather
+!   than doing full Laguerre step (which is time consuming
+!   and unnecessary)
+! * we do not introduce any preference to real roots
+! * in Laguerre implementation we omit unneccesarry calculation of
+!   absolute values of denominator
+! * we do not sort roots.
+
+subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as_starting_points)
+
+    implicit none
+
+    integer, intent(in) :: degree !! degree of the polynomial and size of 'roots' array
+    complex(kind=wp), dimension(degree+1), intent(in) :: poly !! coeffs of the polynomial, in order of increasing powers.
+    complex(kind=wp), dimension(degree), intent(inout) :: roots !! array which will hold all roots that had been found.
+                                                                !! If the flag 'use_roots_as_starting_points' is set to
+                                                                !! .true., then instead of point (0,0) we use value from
+                                                                !! this array as starting point for cmplx_laguerre
+    logical, intent(in), optional :: polish_roots_after !! after all roots have been found by dividing
+                                                        !! original polynomial by each root found,
+                                                        !! you can opt in to polish all roots using full
+                                                        !! polynomial. [default is false]
+    logical, intent(in), optional :: use_roots_as_starting_points !! usually we start Laguerre's
+                                                                  !! method from point (0,0), but you can decide to use the
+                                                                  !! values of 'roots' array as starting point for each new
+                                                                  !! root that is searched for. This is useful if you have
+                                                                  !! very rough idea where some of the roots can be.
+                                                                  !! [default is false]
+
+    complex(kind=wp), dimension(:), allocatable :: poly2 !! `degree+1` array
+    integer :: i, n, iter
+    logical :: success
+    complex(kind=wp) :: coef, prev
+
+    integer, parameter :: MAX_ITERS=50
+    ! constants needed to break cycles in the scheme
+    integer, parameter :: FRAC_JUMP_EVERY=10
+    integer, parameter :: FRAC_JUMP_LEN=10
+    real(kind=wp), dimension(FRAC_JUMP_LEN), parameter :: FRAC_JUMPS=&
+           [0.64109297_wp, &
+            0.91577881_wp, 0.25921289_wp,  0.50487203_wp, &
+            0.08177045_wp, 0.13653241_wp,  0.306162_wp  , &
+            0.37794326_wp, 0.04618805_wp,  0.75132137_wp] !! some random numbers
+    real(kind=wp), parameter :: FRAC_ERR = 10.0_wp * eps  !! fractional error (see. Adams 1967 Eqs 9 and 10) [2.0d-15 in original code]
+    complex(kind=wp), parameter :: zero = cmplx(0.0_wp,0.0_wp,wp)
+    complex(kind=wp), parameter :: c_one=cmplx(1.0_wp,0.0_wp,wp)
+
+    ! initialize starting points
+    if (present(use_roots_as_starting_points)) then
+        if (.not.use_roots_as_starting_points) roots = zero
+    else
+        roots = zero
+    end if
+
+    ! skip small degree polynomials from doing Laguerre's method
+    if (degree<=1) then
+      if (degree==1) roots(1)=-poly(1)/poly(2)
+      return
+    endif
+
+    allocate(poly2(degree+1))
+    poly2=poly
+
+    do n=degree, 3, -1
+
+      ! find root with Laguerre's method
+      !call cmplx_laguerre(poly2, n, roots(n), iter, success)
+      ! or
+      ! find root with (Laguerre's method -> SG method -> Newton's method)
+      call cmplx_laguerre2newton(poly2, n, roots(n), iter, success, 2)
+      if (.not.success) then
+        roots(n)=zero
+        call cmplx_laguerre(poly2, n, roots(n), iter, success)
+      endif
+
+      ! divide the polynomial by this root
+      coef=poly2(n+1)
+      do i=n,1,-1
+        prev=poly2(i)
+        poly2(i)=coef
+        coef=prev+roots(n)*coef
+      enddo
+      ! variable coef now holds a remainder - should be close to 0
+
+    enddo
+
+    ! find all but last root with Laguerre's method
+    !call cmplx_laguerre(poly2, 2, roots(2), iter, success)
+    ! or
+    call cmplx_laguerre2newton(poly2, 2, roots(2), iter, success, 2)
+    if (.not.success) then
+      call solve_quadratic_eq(roots(2),roots(1),poly2)
+    else
+      ! calculate last root from Viete's formula
+      roots(1)=-(roots(2)+poly2(2)/poly2(3))
+    endif
+
+    if (present(polish_roots_after)) then
+        if (polish_roots_after) then
+            do n=1, degree ! polish roots one-by-one with a full polynomial
+                call cmplx_laguerre(poly, degree, roots(n), iter, success)
+                !call cmplx_newton_spec(poly, degree, roots(n), iter, success)
+            enddo
+        endif
+    end if
+
+    contains
+
+    recursive subroutine cmplx_laguerre(poly, degree, root, iter, success)
+
+    !  Subroutine finds one root of a complex polynomial using
+    !  Laguerre's method. In every loop it calculates simplified
+    !  Adams' stopping criterion for the value of the polynomial.
+    !
+    !  For a summary of the method go to:
+    !  http://en.wikipedia.org/wiki/Laguerre's_method
+
+    implicit none
+
+    integer, intent(in) :: degree !! a degree of the polynomial
+    complex(kind=wp), dimension(degree+1), intent(in)  :: poly !! an array of polynomial cooefs
+                                                               !! length = degree+1, poly(1) is constant
+                                                               !!```
+                                                               !!        1              2             3
+                                                               !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
+                                                               !!```
+    integer, intent(out) :: iter !! number of iterations performed (the number of polynomial
+                                 !! evaluations and stopping criterion evaluation)
+    complex(kind=wp), intent(inout) :: root !! input: guess for the value of a root
+                                            !! output: a root of the polynomial
+                                            !!
+                                            !! Uses 'root' value as a starting point (!!!!!)
+                                            !! Remember to initialize 'root' to some initial guess or to
+                                            !! point (0,0) if you have no prior knowledge.
+
+    logical, intent(out) :: success !! is false if routine reaches maximum number of iterations
+
+    real(kind=wp) :: faq !! jump length
+    complex(kind=wp) :: p         !! value of polynomial
+    complex(kind=wp) :: dp        !! value of 1st derivative
+    complex(kind=wp) :: d2p_half  !! value of 2nd derivative
+    integer :: i, k
+    logical :: good_to_go
+    complex(kind=wp) :: denom, denom_sqrt, dx, newroot
+    real(kind=wp) :: ek, absroot, abs2p
+    complex(kind=wp) :: fac_netwon, fac_extra, F_half, c_one_nth
+    real(kind=wp) :: one_nth, n_1_nth, two_n_div_n_1
+    real(kind=wp) :: stopping_crit2
+
+    iter=0
+    success=.true.
+
+    ! next if-endif block is an EXTREME failsafe, not usually needed, and thus turned off in this version.
+    !if (.false.) then ! change false-->true if you would like to use caution about having first coefficient == 0
+      if (degree<0) then
+        write(*,*) 'Error: cmplx_laguerre: degree<0'
+        return
+      endif
+      if (poly(degree+1)==zero) then
+        if (degree==0) return
+        call cmplx_laguerre(poly, degree-1, root, iter, success)
+        return
+      endif
+      if (degree<=1) then
+        if (degree==0) then  ! we know from previous check than poly(1) not equal zero
+          success=.false.
+          write(*,*) 'Warning: cmplx_laguerre: degree=0 and poly(1)/=0, no roots'
+          return
+        else
+          root=-poly(1)/poly(2)
+          return
+        endif
+      endif
+    !endif
+    !  end EXTREME failsafe
+
+    good_to_go=.false.
+    one_nth=1.0_wp/degree
+    n_1_nth=(degree-1.0_wp)*one_nth
+    two_n_div_n_1=2.0_wp/n_1_nth
+    c_one_nth=cmplx(one_nth,0.0_wp,wp)
+
+    do i=1,MAX_ITERS
+      ! prepare stoping criterion
+      ek=abs(poly(degree+1))
+      absroot=abs(root)
+      ! calculate value of polynomial and its first two derivatives
+      p  =poly(degree+1)
+      dp =zero
+      d2p_half=zero
+      do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+        d2p_half=dp + d2p_half*root
+        dp =p + dp*root
+        p  =poly(k)+p*root    ! b_k
+        ! Adams, Duane A., 1967, "A stopping criterion for polynomial root finding",
+        ! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655
+        ! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf
+        ! Eq 8.
+        ek=absroot*ek+abs(p)
+      enddo
+      iter=iter+1
+
+      abs2p=real(conjg(p)*p)
+      if (abs2p==0.0_wp) return
+      stopping_crit2=(FRAC_ERR*ek)**2
+      if (abs2p<stopping_crit2) then ! (simplified a little Eq. 10 of Adams 1967)
+        ! do additional iteration if we are less than 10x from stopping criterion
+        if (abs2p<0.01d0*stopping_crit2) then
+          return ! return immediately, because we are at very good place
+        else
+          good_to_go=.true. ! do one iteration more
+        endif
+      else
+        good_to_go=.false.  ! reset if we are outside the zone of the root
+      endif
+
+      faq=1.0_wp
+      denom=zero
+      if (dp/=zero) then
+        fac_netwon=p/dp
+        fac_extra=d2p_half/dp
+        F_half=fac_netwon*fac_extra
+
+        denom_sqrt=sqrt(c_one-two_n_div_n_1*F_half)
+
+        !G=dp/p  ! gradient of ln(p)
+        !G2=G*G
+        !H=G2-2.0_wp*d2p_half/p  ! second derivative of ln(p)
+        !denom_sqrt=sqrt( (degree-1)*(degree*H-G2) )
+
+        ! NEXT LINE PROBABLY CAN BE COMMENTED OUT
+        if (real(denom_sqrt)>=0.0_wp) then
+          ! real part of a square root is positive for probably all compilers. You can
+          ! test this on your compiler and if so, you can omit this check
+          denom=c_one_nth+n_1_nth*denom_sqrt
+        else
+          denom=c_one_nth-n_1_nth*denom_sqrt
+        endif
+      endif
+      if (denom==zero) then !test if demoninators are > 0.0 not to divide by zero
+        dx=(absroot+1.0_wp)*exp(cmplx(0.0_wp,FRAC_JUMPS(mod(i,FRAC_JUMP_LEN)+1)*2*pi,wp)) ! make some random jump
+      else
+        dx=fac_netwon/denom
+        !dx=degree/denom
+      endif
+
+      newroot=root-dx
+      if (newroot==root) return ! nothing changes -> return
+      if (good_to_go) then       ! this was jump already after stopping criterion was met
+        root=newroot
+        return
+      endif
+
+      if (mod(i,FRAC_JUMP_EVERY)==0) then ! decide whether to do a jump of modified length (to break cycles)
+        faq=FRAC_JUMPS(mod(i/FRAC_JUMP_EVERY-1,FRAC_JUMP_LEN)+1)
+        newroot=root-faq*dx ! do jump of some semi-random length (0<faq<1)
+      endif
+      root=newroot
+    enddo
+    success=.false.
+    ! too many iterations here
+  end subroutine cmplx_laguerre
+
+  subroutine solve_quadratic_eq(x0,x1,poly)
+
+      ! Quadratic equation solver for complex polynomial (degree=2)
+
+      implicit none
+
+      complex(kind=wp), intent(out) :: x0, x1
+      complex(kind=wp), dimension(*), intent(in) :: poly !! coeffs of the polynomial
+                                                         !! an array of polynomial cooefs,
+                                                         !! length = degree+1, poly(1) is constant
+                                                         !!```
+                                                         !!        1              2             3
+                                                         !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2
+                                                         !!```
+      complex(kind=wp) :: a, b, c, b2, delta
+      complex(kind=wp) :: val, x
+      integer :: i
+
+      a=poly(3)
+      b=poly(2)
+      c=poly(1)
+      ! quadratic equation: a z^2 + b z + c = 0
+
+      b2=b*b
+      delta=sqrt(b2-4.0_wp*(a*c))
+      if ( real(conjg(b)*delta, wp)>=0.0_wp ) then  ! scalar product to decide the sign yielding bigger magnitude
+        x0=-0.5_wp*(b+delta)
+      else
+        x0=-0.5_wp*(b-delta)
+      endif
+      if (x0==cmplx(0.0_wp,0.0_wp,wp)) then
+        x1=cmplx(0.0_wp,0.0_wp,wp)
+      else ! Viete's formula
+        x1=c/x0
+        x0=x0/a
+      endif
+
+    end subroutine solve_quadratic_eq
+
+  recursive subroutine cmplx_laguerre2newton(poly, degree, root, iter, success, starting_mode)
+
+    !  Subroutine finds one root of a complex polynomial using
+    !  Laguerre's method, Second-order General method and Newton's
+    !  method - depending on the value of function F, which is a
+    !  combination of second derivative, first derivative and
+    !  value of polynomial [F=-(p"*p)/(p'p')].
+    !
+    !  Subroutine has 3 modes of operation. It starts with mode=2
+    !  which is the Laguerre's method, and continues until F
+    !  becames F<0.50, at which point, it switches to mode=1,
+    !  i.e., SG method (see paper). While in the first two
+    !  modes, routine calculates stopping criterion once per every
+    !  iteration. Switch to the last mode, Newton's method, (mode=0)
+    !  happens when becomes F<0.05. In this mode, routine calculates
+    !  stopping criterion only once, at the beginning, under an
+    !  assumption that we are already very close to the root.
+    !  If there are more than 10 iterations in Newton's mode,
+    !  it means that in fact we were far from the root, and
+    !  routine goes back to Laguerre's method (mode=2).
+    !
+    !  For a summary of the method see the paper: Skowron & Gould (2012)
+
+    implicit none
+
+    integer, intent(in) :: degree !! a degree of the polynomial
+    complex(kind=wp), dimension(degree+1), intent(in)  :: poly !! is an array of polynomial cooefs
+                                                               !! length = degree+1, poly(1) is constant
+                                                               !!```
+                                                               !!        1              2             3
+                                                               !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
+                                                               !!```
+    complex(kind=wp), intent(inout) :: root !! input: guess for the value of a root
+                                            !! output: a root of the polynomial
+                                            !!
+                                            !! Uses 'root' value as a starting point (!!!!!)
+                                            !! Remember to initialize 'root' to some initial guess or to
+                                            !! point (0,0) if you have no prior knowledge.
+    integer, intent(in) :: starting_mode !! this should be by default = 2. However if you
+                                         !! choose to start with SG method put 1 instead.
+                                         !! Zero will cause the routine to
+                                         !! start with Newton for first 10 iterations, and
+                                         !! then go back to mode 2.
+    integer, intent(out) :: iter !! number of iterations performed (the number of polynomial
+                                 !! evaluations and stopping criterion evaluation)
+    logical, intent(out) :: success !! is false if routine reaches maximum number of iterations
+
+    real(kind=wp) :: faq ! jump length
+    complex(kind=wp) :: p         ! value of polynomial
+    complex(kind=wp) :: dp        ! value of 1st derivative
+    complex(kind=wp) :: d2p_half  ! value of 2nd derivative
+    integer :: i, j, k
+    logical :: good_to_go
+    complex(kind=wp) :: denom, denom_sqrt, dx, newroot
+    real(kind=wp) :: ek, absroot, abs2p, abs2_F_half
+    complex(kind=wp) :: fac_netwon, fac_extra, F_half, c_one_nth
+    real(kind=wp) :: one_nth, n_1_nth, two_n_div_n_1
+    integer :: mode
+    real(kind=wp) :: stopping_crit2
+
+    iter=0
+    success=.true.
+    stopping_crit2 = 0.0_wp  !  value not important, will be initialized anyway on the first loop (because mod(1,10)==1)
+
+    ! next if-endif block is an EXTREME failsafe, not usually needed, and thus turned off in this version.
+    !if(.false.)then ! change false-->true if you would like to use caution about having first coefficient == 0
+      if (degree<0) then
+          write(*,*) 'Error: cmplx_laguerre2newton: degree<0'
+          return
+      endif
+      if (poly(degree+1)==zero) then
+          if (degree==0) return
+          call cmplx_laguerre2newton(poly, degree-1, root, iter, success, starting_mode)
+          return
+      endif
+      if (degree<=1) then
+          if (degree==0) then  ! we know from previous check than poly(1) not equal zero
+            success=.false.
+            write(*,*) 'Warning: cmplx_laguerre2newton: degree=0 and poly(1)/=0, no roots'
+            return
+          else
+            root=-poly(1)/poly(2)
+            return
+          endif
+      endif
+    !endif
+    !  end EXTREME failsafe
+
+    j=1
+    good_to_go=.false.
+    mode=starting_mode  ! mode=2 full laguerre, mode=1 SG, mode=0 newton
+
+    do ! infinite loop, just to be able to come back from newton, if more than 10 iteration there
+
+      !------------------------------------------------------------- mode 2
+      if (mode>=2) then  ! LAGUERRE'S METHOD
+          one_nth=1.0_wp/degree
+          n_1_nth=(degree-1.0_wp)*one_nth
+          two_n_div_n_1=2.0_wp/n_1_nth
+          c_one_nth=cmplx(one_nth,0.0_wp,wp)
+
+          do i=1,MAX_ITERS  !
+          faq=1.0_wp
+
+          ! prepare stoping criterion
+          ek=abs(poly(degree+1))
+          absroot=abs(root)
+          ! calculate value of polynomial and its first two derivatives
+          p  =poly(degree+1)
+          dp =zero
+          d2p_half=zero
+          do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+              d2p_half=dp + d2p_half*root
+              dp =p + dp*root
+              p  =poly(k)+p*root    ! b_k
+              ! Adams, Duane A., 1967, "A stopping criterion for polynomial root finding",
+              ! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655
+              ! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf
+              ! Eq 8.
+              ek=absroot*ek+abs(p)
+          enddo
+          abs2p=real(conjg(p)*p, wp) !abs(p)
+          iter=iter+1
+          if (abs2p==0.0_wp) return
+
+          stopping_crit2=(FRAC_ERR*ek)**2
+          if (abs2p<stopping_crit2) then ! (simplified a little Eq. 10 of Adams 1967)
+              ! do additional iteration if we are less than 10x from stopping criterion
+              if (abs2p<0.01_wp*stopping_crit2) then ! ten times better than stopping criterion
+              return ! return immediately, because we are at very good place
+              else
+              good_to_go=.true. ! do one iteration more
+              endif
+          else
+              good_to_go=.false. ! reset if we are outside the zone of the root
+          endif
+
+          denom=zero
+          if (dp/=zero) then
+              fac_netwon=p/dp
+              fac_extra=d2p_half/dp
+              F_half=fac_netwon*fac_extra
+
+              abs2_F_half=real(conjg(F_half)*F_half, wp)
+              if (abs2_F_half<=0.0625_wp) then     ! F<0.50, F/2<0.25
+              ! go to SG method
+              if (abs2_F_half<=0.000625_wp) then ! F<0.05, F/2<0.025
+                  mode=0 ! go to Newton's
+              else
+                  mode=1 ! go to SG
+              endif
+              endif
+
+              denom_sqrt=sqrt(c_one-two_n_div_n_1*F_half)
+
+              ! NEXT LINE PROBABLY CAN BE COMMENTED OUT
+              if (real(denom_sqrt, wp)>=0.0_wp) then
+                ! real part of a square root is positive for probably all compilers. You can
+                ! test this on your compiler and if so, you can omit this check
+                denom=c_one_nth+n_1_nth*denom_sqrt
+              else
+                denom=c_one_nth-n_1_nth*denom_sqrt
+              endif
+          endif
+          if (denom==zero) then !test if demoninators are > 0.0 not to divide by zero
+              dx=(abs(root)+1.0_wp)*exp(cmplx(0.0_wp,FRAC_JUMPS(mod(i,FRAC_JUMP_LEN)+1)*2*pi,wp)) ! make some random jump
+          else
+              dx=fac_netwon/denom
+          endif
+
+          newroot=root-dx
+          if (newroot==root) return ! nothing changes -> return
+          if (good_to_go) then       ! this was jump already after stopping criterion was met
+              root=newroot
+              return
+          endif
+
+          if (mode/=2) then
+              root=newroot
+              j=i+1    ! remember iteration index
+              exit     ! go to Newton's or SG
+          endif
+
+          if (mod(i,FRAC_JUMP_EVERY)==0) then ! decide whether to do a jump of modified length (to break cycles)
+              faq=FRAC_JUMPS(mod(i/FRAC_JUMP_EVERY-1,FRAC_JUMP_LEN)+1)
+              newroot=root-faq*dx ! do jump of some semi-random length (0<faq<1)
+          endif
+          root=newroot
+          enddo ! do mode 2
+
+          if (i>=MAX_ITERS) then
+            success=.false.
+            return
+          endif
+
+      endif ! if mode 2
+
+      !------------------------------------------------------------- mode 1
+      if (mode==1) then  ! SECOND-ORDER GENERAL METHOD (SG)
+
+          do i=j,MAX_ITERS  !
+          faq=1.0_wp
+
+          ! calculate value of polynomial and its first two derivatives
+          p  =poly(degree+1)
+          dp =zero
+          d2p_half=zero
+          if (mod(i-j,10)==0) then
+              ! prepare stoping criterion
+              ek=abs(poly(degree+1))
+              absroot=abs(root)
+              do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+                d2p_half=dp + d2p_half*root
+                dp =p + dp*root
+                p  =poly(k)+p*root    ! b_k
+                ! Adams, Duane A., 1967, "A stopping criterion for polynomial root finding",
+                ! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655
+                ! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf
+                ! Eq 8.
+                ek=absroot*ek+abs(p)
+              enddo
+              stopping_crit2=(FRAC_ERR*ek)**2
+          else
+              do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+                d2p_half=dp + d2p_half*root
+                dp =p + dp*root
+                p  =poly(k)+p*root    ! b_k
+              enddo
+          endif
+
+          abs2p=real(conjg(p)*p, wp) !abs(p)**2
+          iter=iter+1
+          if (abs2p==0.0_wp) return
+
+          if (abs2p<stopping_crit2) then ! (simplified a little Eq. 10 of Adams 1967)
+              if (dp==zero) return
+                ! do additional iteration if we are less than 10x from stopping criterion
+                if (abs2p<0.01_wp*stopping_crit2) then ! ten times better than stopping criterion
+                return ! return immediately, because we are at very good place
+              else
+                good_to_go=.true. ! do one iteration more
+              endif
+          else
+              good_to_go=.false. ! reset if we are outside the zone of the root
+          endif
+
+          if (dp==zero) then !test if demoninators are > 0.0 not to divide by zero
+              dx=(abs(root)+1.0_wp)*exp(cmplx(0.0_wp,FRAC_JUMPS(mod(i,FRAC_JUMP_LEN)+1)*2*pi,wp)) ! make some random jump
+          else
+              fac_netwon=p/dp
+              fac_extra=d2p_half/dp
+              F_half=fac_netwon*fac_extra
+
+              abs2_F_half=real(conjg(F_half)*F_half, wp)
+              if (abs2_F_half<=0.000625_wp) then ! F<0.05, F/2<0.025
+                mode=0 ! set Newton's, go there after jump
+              endif
+
+              dx=fac_netwon*(c_one+F_half)  ! SG
+          endif
+
+          newroot=root-dx
+          if (newroot==root) return ! nothing changes -> return
+          if (good_to_go) then       ! this was jump already after stopping criterion was met
+              root=newroot
+              return
+          endif
+
+          if (mode/=1) then
+              root=newroot
+              j=i+1    ! remember iteration number
+              exit     ! go to Newton's
+          endif
+
+          if (mod(i,FRAC_JUMP_EVERY)==0) then ! decide whether to do a jump of modified length (to break cycles)
+              faq=FRAC_JUMPS(mod(i/FRAC_JUMP_EVERY-1,FRAC_JUMP_LEN)+1)
+              newroot=root-faq*dx ! do jump of some semi-random length (0<faq<1)
+          endif
+          root=newroot
+
+          enddo ! do mode 1
+
+          if (i>=MAX_ITERS) then
+            success=.false.
+            return
+          endif
+
+      endif ! if mode 1
+
+      !------------------------------------------------------------- mode 0
+      if (mode==0) then  ! NEWTON'S METHOD
+
+          do i=j,j+10  ! do only 10 iterations the most, then go back to full Laguerre's
+            faq=1.0_wp
+
+            ! calculate value of polynomial and its first two derivatives
+            p  =poly(degree+1)
+            dp =zero
+            if (i==j) then ! calculate stopping crit only once at the begining
+                ! prepare stoping criterion
+                ek=abs(poly(degree+1))
+                absroot=abs(root)
+                do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+                    dp =p + dp*root
+                    p  =poly(k)+p*root    ! b_k
+                    ! Adams, Duane A., 1967, "A stopping criterion for polynomial root finding",
+                    ! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655
+                    ! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf
+                    ! Eq 8.
+                    ek=absroot*ek+abs(p)
+                enddo
+                stopping_crit2=(FRAC_ERR*ek)**2
+            else        !
+                do k=degree,1,-1 ! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives
+                    dp =p + dp*root
+                    p  =poly(k)+p*root    ! b_k
+                enddo
+            endif
+            abs2p=real(conjg(p)*p, wp) !abs(p)**2
+            iter=iter+1
+            if (abs2p==0.0_wp) return
+
+            if (abs2p<stopping_crit2) then ! (simplified a little Eq. 10 of Adams 1967)
+                if (dp==zero) return
+                ! do additional iteration if we are less than 10x from stopping criterion
+                if (abs2p<0.01_wp*stopping_crit2) then ! ten times better than stopping criterion
+                    return ! return immediately, because we are at very good place
+                else
+                    good_to_go=.true. ! do one iteration more
+                endif
+            else
+                good_to_go=.false. ! reset if we are outside the zone of the root
+            endif
+
+            if (dp==zero) then ! test if demoninators are > 0.0 not to divide by zero
+                dx=(abs(root)+1.0_wp)*exp(cmplx(0.0_wp,FRAC_JUMPS(mod(i,FRAC_JUMP_LEN)+1)*2*pi,wp)) ! make some random jump
+            else
+                dx=p/dp
+            endif
+
+            newroot=root-dx
+            if (newroot==root) return ! nothing changes -> return
+            if (good_to_go) then
+                root=newroot
+                return
+            endif
+
+            ! this loop is done only 10 times. So skip this check
+            !if (mod(i,FRAC_JUMP_EVERY)==0) then ! decide whether to do a jump of modified length (to break cycles)
+            !  faq=FRAC_JUMPS(mod(i/FRAC_JUMP_EVERY-1,FRAC_JUMP_LEN)+1)
+            !  newroot=root-faq*dx ! do jump of some semi-random length (0<faq<1)
+            !endif
+            root=newroot
+
+          enddo ! do mode 0 10 times
+
+          if (iter>=MAX_ITERS) then
+            ! too many iterations here
+            success=.false.
+            return
+          endif
+          mode=2 ! go back to Laguerre's. This happens when we were unable to converge in 10 iterations with Newton's
+
+      endif ! if mode 0
+
+    enddo ! end of infinite loop
+
+    success=.false.
+
+  end subroutine cmplx_laguerre2newton
+
+end subroutine cmplx_roots_gen
 !*****************************************************************************************
 
 !*****************************************************************************************

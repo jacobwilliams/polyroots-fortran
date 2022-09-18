@@ -21,11 +21,12 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub](https://dl.acm.org/doi/10.1145/355637.355643)
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
-[`qr_algeq_solver`](https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html) | General | real | complex | [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf)
 [`rpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpzero.f)
 [`cpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpzero.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpzero.f)
 [`rpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpqr79.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpqr79.f)
 [`cpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpqr79.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpqr79.f)
+[`qr_algeq_solver`](https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html) | General | real | complex | [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf)
+[`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | --
 
 ## Compiling
@@ -109,7 +110,7 @@ The polyroots-fortran source code and related files and documentation are distri
 * [PA03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
 * [PA05](https://www.hsl.rl.ac.uk/archive/specs/pa05.pdf) HSL Archive code for computing all the roots of a quartic polynomial
 * [PA16](https://www.hsl.rl.ac.uk/catalogue/pa16.html), [PA17](https://www.hsl.rl.ac.uk/catalogue/pa17.html) HSL codes for computing zeros of polynomials using method of Madsen and Reid
-* `POLZEROS` - Polynomial zeros using Aberth's method, [_Numer Algor_ **13**, 179–200 (1996).](https://doi.org/10.1007/BF02207694) Fortran source code at Netlib: [`numeralgo/na10`](https://netlib.org/numeralgo/na10), several versions provided also by [Alan Miller](https://jblevins.org/mirror/amiller/)   
+* `POLZEROS` - Polynomial zeros using Aberth's method, [_Numer Algor_ **13**, 179–200 (1996).](https://doi.org/10.1007/BF02207694) Fortran source code at Netlib: [`numeralgo/na10`](https://netlib.org/numeralgo/na10), several versions provided also by [Alan Miller](https://jblevins.org/mirror/amiller/)
 
 ## See also
 

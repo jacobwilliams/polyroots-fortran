@@ -11,15 +11,10 @@ predocmark: <
 docmark_alt:
 docmark: !
 display: public
-         private
 source: true
 graph: false
-search: false
+search: true
 preprocessor: gfortran -E
-exclude: pyplot_module.f90
-         face.F90
-exclude_dir: ./src/tests
-extra_mods: pyplot_module:https://github.com/jacobwilliams/pyplot-fortran
-            iso_fortran_env:https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html
+extra_mods: iso_fortran_env:https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html
 
 {!README.md!}
