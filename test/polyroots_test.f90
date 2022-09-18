@@ -2,7 +2,7 @@
 !>
 !  Tests for [[rpoly]].
 
-    program rpoly_test
+    program polyroots_test
 
     use iso_fortran_env
     use polyroots_module, wp => polyroots_module_rk
@@ -332,5 +332,5 @@
     !*****************************************************************************************
 
 !*****************************************************************************************
-    end program rpoly_test
+    end program polyroots_test
 !*****************************************************************************************
