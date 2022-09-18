@@ -314,122 +314,125 @@ contains
 
       subroutine fxshfr(l2, nz)
 
-         !! computes up to  l2  fixed shift k-polynomials, testing for convergence in
-         !! the linear or quadratic case.  initiates one of the variable shift
-         !! iterations and returns with the number of zeros found.
+      !! computes up to  l2  fixed shift k-polynomials, testing for convergence in
+      !! the linear or quadratic case.  initiates one of the variable shift
+      !! iterations and returns with the number of zeros found.
 
-         integer, intent(in)   :: l2 !! limit of fixed shift steps
-         integer, intent(out)  :: nz !! number of zeros found
+      integer, intent(in)  :: l2 !! limit of fixed shift steps
+      integer, intent(out) :: nz !! number of zeros found
 
-         real(wp) :: svu, svv, ui, vi, s, betas, betav, oss, ovv, &
-                     ss, vv, ts, tv, ots, otv, tvv, tss
-         integer  :: type, j, iflag
-         logical  :: vpass, spass, vtry, stry, skip
+      real(wp) :: svu, svv, ui, vi, s, betas, betav, oss, ovv, &
+                  ss, vv, ts, tv, ots, otv, tvv, tss
+      integer  :: type, j, iflag
+      logical  :: vpass, spass, vtry, stry, skip
 
-         nz = 0
-         betav = 0.25_wp
-         betas = 0.25_wp
-         oss = sr
-         ovv = v
+      nz = 0
+      betav = 0.25_wp
+      betas = 0.25_wp
+      oss = sr
+      ovv = v
 
-         ! evaluate polynomial by synthetic division
-         call quadsd(nn, u, v, p, qp, a, b)
+      ! evaluate polynomial by synthetic division
+      call quadsd(nn, u, v, p, qp, a, b)
+      call calcsc(type)
+      do j = 1, l2
+         ! calculate next k polynomial and estimate v
+         call nextk(type)
          call calcsc(type)
-         do j = 1, l2
-            ! calculate next k polynomial and estimate v
-            call nextk(type)
-            call calcsc(type)
-            call newest(type, ui, vi)
-            vv = vi
+         call newest(type, ui, vi)
+         vv = vi
 
-            ! estimate s
-            ss = 0.0_wp
-            if (k(n) /= 0.0_wp) ss = -p(nn)/k(n)
-            tv = 1.0_wp
-            ts = 1.0_wp
-            if (j /= 1 .and. type /= 3) then
-               ! compute relative measures of convergence of s and v sequences
-               if (vv /= 0.0_wp) tv = abs((vv - ovv)/vv)
-               if (ss /= 0.0_wp) ts = abs((ss - oss)/ss)
+         ! estimate s
+         ss = 0.0_wp
+         if (k(n) /= 0.0_wp) ss = -p(nn)/k(n)
+         tv = 1.0_wp
+         ts = 1.0_wp
+         if (j /= 1 .and. type /= 3) then
+            ! compute relative measures of convergence of s and v sequences
+            if (vv /= 0.0_wp) tv = abs((vv - ovv)/vv)
+            if (ss /= 0.0_wp) ts = abs((ss - oss)/ss)
 
-               ! if decreasing, multiply two most recent convergence measures
-               tvv = 1.0_wp
-               if (tv < otv) tvv = tv*otv
-               tss = 1.0_wp
-               if (ts < ots) tss = ts*ots
+            ! if decreasing, multiply two most recent convergence measures
+            tvv = 1.0_wp
+            if (tv < otv) tvv = tv*otv
+            tss = 1.0_wp
+            if (ts < ots) tss = ts*ots
 
-               ! compare with convergence criteria
-               vpass = tvv < betav
-               spass = tss < betas
-               if (spass .or. vpass) then
+            ! compare with convergence criteria
+            vpass = tvv < betav
+            spass = tss < betas
+            if (spass .or. vpass) then
 
-                  ! at least one sequence has passed the convergence test.
-                  ! store variables before iterating
-                  svu = u
-                  svv = v
-                  svk(1:n) = k(1:n)
-                  s = ss
+               ! at least one sequence has passed the convergence test.
+               ! store variables before iterating
+               svu = u
+               svv = v
+               svk(1:n) = k(1:n)
+               s = ss
 
-                  ! choose iteration according to the fastest converging sequence
-                  vtry = .false.
-                  stry = .false.
-                  skip = (spass .and. ((.not. vpass) .or. tss < tvv))
+               ! choose iteration according to the fastest converging sequence
+               vtry = .false.
+               stry = .false.
+               skip = (spass .and. ((.not. vpass) .or. tss < tvv))
 
-                  do
-                    do
+               do
 
-                      if (.not. skip) then
-                        call quadit(ui, vi, nz)
-                        if (nz > 0) return
+                   try : block
 
-                        ! quadratic iteration has failed. flag that it has
-                        ! been tried and decrease the convergence criterion.
-                        vtry = .true.
-                        betav = betav * 0.25_wp
+                       if (.not. skip) then
+                          call quadit(ui, vi, nz)
+                          if (nz > 0) return
 
-                        ! try linear iteration if it has not been tried and
-                        ! the s sequence is converging
-                        if (stry .or. (.not. spass)) exit
-                        k(1:n) = svk(1:n)
-                      end if
+                          ! quadratic iteration has failed. flag that it has
+                          ! been tried and decrease the convergence criterion.
+                          vtry = .true.
+                          betav = betav * 0.25_wp
 
-                      call realit(s, nz, iflag)
-                      if (nz > 0) return
+                          ! try linear iteration if it has not been tried and
+                          ! the s sequence is converging
+                          if (stry .or. (.not. spass)) exit try
+                          k(1:n) = svk(1:n)
+                       end if
+                       skip = .false.
 
-                      ! linear iteration has failed.  flag that it has been
-                      ! tried and decrease the convergence criterion
-                      stry = .true.
-                      betas = betas * 0.25_wp
-                      if (iflag == 0) exit
+                       call realit(s, nz, iflag)
+                       if (nz > 0) return
 
-                      ! if linear iteration signals an almost double real
-                      ! zero attempt quadratic interation
-                      ui = -(s + s)
-                      vi = s*s
+                       ! linear iteration has failed.  flag that it has been
+                       ! tried and decrease the convergence criterion
+                       stry = .true.
+                       betas = betas * 0.25_wp
+                       if (iflag /= 0) then
+                          ! if linear iteration signals an almost double real
+                          ! zero attempt quadratic interation
+                          ui = -(s + s)
+                          vi = s*s
+                          cycle
+                       end if
 
-                    end do
+                   end block try
 
-                    ! restore variables
-                    u = svu
-                    v = svv
-                    k(1:n) = svk(1:n)
+                   ! restore variables
+                   u = svu
+                   v = svv
+                   k(1:n) = svk(1:n)
 
-                    ! try quadratic iteration if it has not been tried
-                    ! and the v sequence is converging
-                    if (.not.(vpass .and. (.not. vtry))) exit
+                   ! try quadratic iteration if it has not been tried
+                   ! and the v sequence is converging
+                   if (.not.(vpass .and. (.not. vtry))) exit
 
-                  end do
+               end do
 
-                  ! recompute qp and scalar values to continue the second stage
-                  call quadsd(nn, u, v, p, qp, a, b)
-                  call calcsc(type)
-               end if
+               ! recompute qp and scalar values to continue the second stage
+               call quadsd(nn, u, v, p, qp, a, b)
+               call calcsc(type)
             end if
-            ovv = vv
-            oss = ss
-            otv = tv
-            ots = ts
-         end do
+         end if
+         ovv = vv
+         oss = ss
+         otv = tv
+         ots = ts
+      end do
 
       end subroutine fxshfr
 
