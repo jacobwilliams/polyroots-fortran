@@ -40,10 +40,12 @@ module polyroots_module
 
     real(wp), parameter :: eps = epsilon(1.0_wp) !! machine epsilon
     real(wp), parameter :: pi = acos(-1.0_wp)
+    real(wp), parameter :: deg2rad = pi/180.0_wp
 
     ! general polynomial routines:
     public :: polyroots
     public :: rpoly
+    public :: cpoly
     public :: cpzero
     public :: rpzero
     public :: rpqr79
@@ -63,12 +65,13 @@ contains
 
 !*****************************************************************************************
 !>
-!  Finds the zeros of a general real polynomial using the jenkins & traub algorithm
+!  Finds the zeros of a general real polynomial using the Jenkins & Traub algorithm.
 !
 !### History
-! * algorithm 493 by jenkins & traub
-! * code converted using to_f90 by alan miller, 2003-06-02
-! * Jacob Williams, 9/13/2022 : modernized this code
+!  * M. A. Jenkins, "[Algorithm 493: Zeros of a Real Polynomial](https://dl.acm.org/doi/10.1145/355637.355643)",
+!    ACM Transactions on Mathematical SoftwareVolume 1, Issue 2, June 1975, pp 178-189
+!  * code converted using to_f90 by alan miller, 2003-06-02
+!  * Jacob Williams, 9/13/2022 : modernized this code
 
 subroutine rpoly(op, degree, zeror, zeroi, istat)
 
@@ -93,7 +96,6 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
     integer :: cnt, nz, i, j, jj, l, nm1, n, nn
     logical :: zerok
 
-    real(wp), parameter :: deg2rad = pi/180.0_wp
     real(wp), parameter :: cosr = cos(94.0_wp*deg2rad)
     real(wp), parameter :: sinr = sin(86.0_wp*deg2rad)
     real(wp), parameter :: base = radix(1.0_wp)
@@ -1550,7 +1552,7 @@ contains
                         n = n - 2
                         cycle main
                     else
-                        if (its == maxiter) then ! 30 for the orignial double precision code
+                        if (its == maxiter) then ! 30 for the original double precision code
                             istatus = 1
                             return
                         end if
@@ -1678,17 +1680,17 @@ subroutine cpevl(n, m, a, z, c, b, kbd)
     integer, intent(in) :: n !! Degree of the polynomial
     integer, intent(in) :: m !! Number of derivatives to be calculated:
                              !!
-                             !!  * M=0 evaluates only the function
-                             !!  * M=1 evaluates the function and first derivative, etc.
+                             !!  * `M=0` evaluates only the function
+                             !!  * `M=1` evaluates the function and first derivative, etc.
                              !!
-                             !! if M > N+1 function and all N derivatives will be calculated.
-    complex(wp), intent(in) :: a(*) !! vector containing the N+1 coefficients of polynomial.
-                                    !! A(I) = coefficient of Z**(N+1-I)
+                             !! if `M > N+1` function and all `N` derivatives will be calculated.
+    complex(wp), intent(in) :: a(*) !! vector containing the `N+1` coefficients of polynomial.
+                                    !! `A(I)` = coefficient of `Z**(N+1-I)`
     complex(wp), intent(in) :: z !! point at which the evaluation is to take place
-    complex(wp), intent(out) :: c(*) !! Array of 2(M+1) words: C(I+1) contains the complex value of the I-th
-                                     !! derivative at Z, I=0,...,M
-    complex(wp), intent(out) :: b(*) !! Array of 2(M+1) words: B(I) contains the bounds on the real and imaginary parts
-                                     !! of C(I) if they were requested. only needed if bounds are to be calculated.
+    complex(wp), intent(out) :: c(*) !! Array of `2(M+1)` words: `C(I+1)` contains the complex value of the I-th
+                                     !! derivative at `Z, I=0,...,M`
+    complex(wp), intent(out) :: b(*) !! Array of `2(M+1)` words: `B(I)` contains the bounds on the real and imaginary parts
+                                     !! of `C(I)` if they were requested. only needed if bounds are to be calculated.
                                      !! It is not used otherwise.
     logical, intent(in) :: kbd !! A logical variable, e.g. .TRUE. or .FALSE. which is
                                !! to be set .TRUE. if bounds are to be computed.
@@ -1749,8 +1751,8 @@ subroutine cpzero(in, a, r, iflg, s)
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
                                    !!
-                                   !!  * If IFLG == 0, no estimates are input.
-                                   !!  * If IFLG /= 0, the vector R contains estimates of the zeros
+                                   !!  * If `IFLG == 0`, no estimates are input.
+                                   !!  * If `IFLG /= 0`, the vector `R` contains estimates of the zeros
                                    !!
                                    !! ** WARNING ****** If estimates are input, they must
                                    !!                   be separated, that is, distinct or
@@ -1759,11 +1761,11 @@ subroutine cpzero(in, a, r, iflg, s)
                                    !!
                                    !! Error Diagnostics:
                                    !!
-                                   !! * If IFLG == 0 on return, all is well
-                                   !! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input
-                                   !! * If IFLG == 2 on return, the program failed to converge
-                                   !!   after 25*N iterations.  Best current estimates of the
-                                   !!   zeros are in R(I).  Error bounds are not calculated.
+                                   !! * If `IFLG == 0` on return, all is well
+                                   !! * If `IFLG == 1` on return, `A(1)=0.0` or `N=0` on input
+                                   !! * If `IFLG == 2` on return, the program failed to converge
+                                   !!   after `25*N` iterations.  Best current estimates of the
+                                   !!   zeros are in `R(I)`.  Error bounds are not calculated.
     real(wp), intent(out) :: s(in) !! an `N` word array. `S(I)` = bound for `R(I)`
 
     integer :: i, imax, j, n, n1, nit, nmax, nr
@@ -1894,14 +1896,14 @@ subroutine rpzero(n, a, r, iflg, s)
     integer, intent(in) :: n !! degree of `P(X)`
     real(wp), dimension(n+1), intent(in) :: a !! real vector containing coefficients of `P(X)`,
                                               !! `A(I)` = coefficient of `X**(N+1-I)`
-    complex(wp), dimension(n), intent(inout) :: r !! N word complex vector. On Input: containing initial estimates for zeros
+    complex(wp), dimension(n), intent(inout) :: r !! `N` word complex vector. On Input: containing initial estimates for zeros
                                                   !! if these are known. On output: ith zero.
     integer, intent(inout) :: iflg !!### On Input:
                                    !!
                                    !! flag to indicate if initial estimates of zeros are input:
                                    !!
-                                   !!  * If IFLG == 0, no estimates are input.
-                                   !!  * If IFLG /= 0, the vector R contains estimates of the zeros
+                                   !!  * If `IFLG == 0`, no estimates are input.
+                                   !!  * If `IFLG /= 0`, the vector R contains estimates of the zeros
                                    !!
                                    !! ** WARNING ****** If estimates are input, they must
                                    !!                   be separated, that is, distinct or
@@ -1910,12 +1912,12 @@ subroutine rpzero(n, a, r, iflg, s)
                                    !!
                                    !! Error Diagnostics:
                                    !!
-                                   !! * If IFLG == 0 on return, all is well
-                                   !! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input
-                                   !! * If IFLG == 2 on return, the program failed to converge
-                                   !!   after 25*N iterations.  Best current estimates of the
-                                   !!   zeros are in R(I).  Error bounds are not calculated.
-    real(wp), dimension(n), intent(out) :: s !! an `N` word array. bound for R(I).
+                                   !! * If `IFLG == 0` on return, all is well
+                                   !! * If `IFLG == 1` on return, `A(1)=0.0` or `N=0` on input
+                                   !! * If `IFLG == 2` on return, the program failed to converge
+                                   !!   after `25*N` iterations.  Best current estimates of the
+                                   !!   zeros are in `R(I)`.  Error bounds are not calculated.
+    real(wp), dimension(n), intent(out) :: s !! an `N` word array. bound for `R(I)`.
 
     integer :: i
     complex(wp), dimension(:), allocatable :: p !! complex coefficients
@@ -2298,8 +2300,9 @@ subroutine polyroots(n, p, wr, wi, info)
     real(wp), dimension(n), intent(out) :: wr !! real parts of roots
     real(wp), dimension(n), intent(out) :: wi !! imaginary parts of roots
     integer, intent(out) :: info !! output from the lapack solver.
-                                 !! if `info=0` the routine converged.
-                                 !! if `info=-999`, then the leading coefficient is zero.
+                                 !!
+                                 !! * if `info=0` the routine converged.
+                                 !! * if `info=-999`, then the leading coefficient is zero.
 
     integer :: i !! counter
     real(wp), allocatable, dimension(:,:) :: a !! companion matrix
@@ -2464,7 +2467,7 @@ end subroutine cpqr79
 !### Notes
 !  * calls [[cdiv]] for complex division.
 !  * calls [[csroot]] for complex square root.
-!  * calls [[pythag]] for dsqrt(a*a + b*b) .
+!  * calls [[pythag]] for sqrt(a*a + b*b) .
 !
 !### Reference
 !  * this subroutine is a translation of a unitary analogue of the
@@ -2830,7 +2833,12 @@ subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
                                               !! * -1 = singular
                                               !! * -2 = max iterations reached
 
-    complex(wp) :: z, f, z_prev, z_best, f_best, dfdx
+    complex(wp) :: z !! complex number for `(zr,zi)`
+    complex(wp) :: f !! function evaluation
+    complex(wp) :: z_prev !! previous value of `z`
+    complex(wp) :: z_best !! best `z` so far
+    complex(wp) :: f_best !! best `f` so far
+    complex(wp) :: dfdx !! derivative evaluation
     integer :: i !! counter
 
     real(wp), parameter :: alpha = 1.0_wp !! newton step size
@@ -2955,11 +2963,11 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
     implicit none
 
     integer, intent(in) :: degree !! degree of the polynomial and size of 'roots' array
-    complex(kind=wp), dimension(degree+1), intent(in) :: poly !! coeffs of the polynomial, in order of increasing powers.
-    complex(kind=wp), dimension(degree), intent(inout) :: roots !! array which will hold all roots that had been found.
-                                                                !! If the flag 'use_roots_as_starting_points' is set to
-                                                                !! .true., then instead of point (0,0) we use value from
-                                                                !! this array as starting point for cmplx_laguerre
+    complex(wp), dimension(degree+1), intent(in) :: poly !! coeffs of the polynomial, in order of increasing powers.
+    complex(wp), dimension(degree), intent(inout) :: roots !! array which will hold all roots that had been found.
+                                                           !! If the flag 'use_roots_as_starting_points' is set to
+                                                           !! .true., then instead of point (0,0) we use value from
+                                                           !! this array as starting point for cmplx_laguerre
     logical, intent(in), optional :: polish_roots_after !! after all roots have been found by dividing
                                                         !! original polynomial by each root found,
                                                         !! you can opt in to polish all roots using full
@@ -2971,23 +2979,23 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
                                                                   !! very rough idea where some of the roots can be.
                                                                   !! [default is false]
 
-    complex(kind=wp), dimension(:), allocatable :: poly2 !! `degree+1` array
+    complex(wp), dimension(:), allocatable :: poly2 !! `degree+1` array
     integer :: i, n, iter
     logical :: success
-    complex(kind=wp) :: coef, prev
+    complex(wp) :: coef, prev
 
     integer, parameter :: MAX_ITERS=50
     ! constants needed to break cycles in the scheme
     integer, parameter :: FRAC_JUMP_EVERY=10
     integer, parameter :: FRAC_JUMP_LEN=10
-    real(kind=wp), dimension(FRAC_JUMP_LEN), parameter :: FRAC_JUMPS=&
-           [0.64109297_wp, &
-            0.91577881_wp, 0.25921289_wp,  0.50487203_wp, &
-            0.08177045_wp, 0.13653241_wp,  0.306162_wp  , &
-            0.37794326_wp, 0.04618805_wp,  0.75132137_wp] !! some random numbers
-    real(kind=wp), parameter :: FRAC_ERR = 10.0_wp * eps  !! fractional error (see. Adams 1967 Eqs 9 and 10) [2.0d-15 in original code]
-    complex(kind=wp), parameter :: zero = cmplx(0.0_wp,0.0_wp,wp)
-    complex(kind=wp), parameter :: c_one=cmplx(1.0_wp,0.0_wp,wp)
+    real(wp), dimension(FRAC_JUMP_LEN), parameter :: FRAC_JUMPS=&
+        [0.64109297_wp, 0.91577881_wp, 0.25921289_wp,  0.50487203_wp, 0.08177045_wp, &
+         0.13653241_wp,  0.306162_wp , 0.37794326_wp, 0.04618805_wp,  0.75132137_wp] !! some random numbers
+    real(wp), parameter :: FRAC_ERR = 10.0_wp * eps  !! fractional error
+                                                     !! (see. Adams 1967 Eqs 9 and 10)
+                                                     !! [2.0d-15 in original code]
+    complex(wp), parameter :: zero = cmplx(0.0_wp,0.0_wp,wp)
+    complex(wp), parameter :: c_one=cmplx(1.0_wp,0.0_wp,wp)
 
     ! initialize starting points
     if (present(use_roots_as_starting_points)) then
@@ -3062,34 +3070,31 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
     implicit none
 
     integer, intent(in) :: degree !! a degree of the polynomial
-    complex(kind=wp), dimension(degree+1), intent(in)  :: poly !! an array of polynomial cooefs
-                                                               !! length = degree+1, poly(1) is constant
-                                                               !!```
-                                                               !!        1              2             3
-                                                               !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
-                                                               !!```
+    complex(wp), dimension(degree+1), intent(in)  :: poly !! an array of polynomial cooefs
+                                                          !! length = degree+1, poly(1) is constant
+                                                          !!```
+                                                          !!        1              2             3
+                                                          !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
+                                                          !!```
     integer, intent(out) :: iter !! number of iterations performed (the number of polynomial
                                  !! evaluations and stopping criterion evaluation)
-    complex(kind=wp), intent(inout) :: root !! input: guess for the value of a root
-                                            !! output: a root of the polynomial
-                                            !!
-                                            !! Uses 'root' value as a starting point (!!!!!)
-                                            !! Remember to initialize 'root' to some initial guess or to
-                                            !! point (0,0) if you have no prior knowledge.
+    complex(wp), intent(inout) :: root !! input: guess for the value of a root
+                                       !! output: a root of the polynomial
+                                       !!
+                                       !! Uses 'root' value as a starting point (!!!!!)
+                                       !! Remember to initialize 'root' to some initial guess or to
+                                       !! point (0,0) if you have no prior knowledge.
 
     logical, intent(out) :: success !! is false if routine reaches maximum number of iterations
 
-    real(kind=wp) :: faq !! jump length
-    complex(kind=wp) :: p         !! value of polynomial
-    complex(kind=wp) :: dp        !! value of 1st derivative
-    complex(kind=wp) :: d2p_half  !! value of 2nd derivative
+    real(wp) :: faq !! jump length
+    complex(wp) :: p         !! value of polynomial
+    complex(wp) :: dp        !! value of 1st derivative
+    complex(wp) :: d2p_half  !! value of 2nd derivative
     integer :: i, k
     logical :: good_to_go
-    complex(kind=wp) :: denom, denom_sqrt, dx, newroot
-    real(kind=wp) :: ek, absroot, abs2p
-    complex(kind=wp) :: fac_netwon, fac_extra, F_half, c_one_nth
-    real(kind=wp) :: one_nth, n_1_nth, two_n_div_n_1
-    real(kind=wp) :: stopping_crit2
+    complex(wp) :: denom, denom_sqrt, dx, newroot, fac_netwon, fac_extra, F_half, c_one_nth
+    real(wp) :: ek, absroot, abs2p, one_nth, n_1_nth, two_n_div_n_1, stopping_crit2
 
     iter=0
     success=.true.
@@ -3211,17 +3216,15 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
 
       implicit none
 
-      complex(kind=wp), intent(out) :: x0, x1
-      complex(kind=wp), dimension(*), intent(in) :: poly !! coeffs of the polynomial
+      complex(wp), intent(out) :: x0, x1
+      complex(wp), dimension(*), intent(in) :: poly !! coeffs of the polynomial
                                                          !! an array of polynomial cooefs,
                                                          !! length = degree+1, poly(1) is constant
                                                          !!```
                                                          !!        1              2             3
                                                          !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2
                                                          !!```
-      complex(kind=wp) :: a, b, c, b2, delta
-      complex(kind=wp) :: val, x
-      integer :: i
+      complex(wp) :: a, b, c, b2, delta
 
       a=poly(3)
       b=poly(2)
@@ -3270,13 +3273,13 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
     implicit none
 
     integer, intent(in) :: degree !! a degree of the polynomial
-    complex(kind=wp), dimension(degree+1), intent(in)  :: poly !! is an array of polynomial cooefs
+    complex(wp), dimension(degree+1), intent(in)  :: poly !! is an array of polynomial cooefs
                                                                !! length = degree+1, poly(1) is constant
                                                                !!```
                                                                !!        1              2             3
                                                                !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
                                                                !!```
-    complex(kind=wp), intent(inout) :: root !! input: guess for the value of a root
+    complex(wp), intent(inout) :: root !! input: guess for the value of a root
                                             !! output: a root of the polynomial
                                             !!
                                             !! Uses 'root' value as a starting point (!!!!!)
@@ -3291,18 +3294,18 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
                                  !! evaluations and stopping criterion evaluation)
     logical, intent(out) :: success !! is false if routine reaches maximum number of iterations
 
-    real(kind=wp) :: faq ! jump length
-    complex(kind=wp) :: p         ! value of polynomial
-    complex(kind=wp) :: dp        ! value of 1st derivative
-    complex(kind=wp) :: d2p_half  ! value of 2nd derivative
+    real(wp) :: faq ! jump length
+    complex(wp) :: p         ! value of polynomial
+    complex(wp) :: dp        ! value of 1st derivative
+    complex(wp) :: d2p_half  ! value of 2nd derivative
     integer :: i, j, k
     logical :: good_to_go
-    complex(kind=wp) :: denom, denom_sqrt, dx, newroot
-    real(kind=wp) :: ek, absroot, abs2p, abs2_F_half
-    complex(kind=wp) :: fac_netwon, fac_extra, F_half, c_one_nth
-    real(kind=wp) :: one_nth, n_1_nth, two_n_div_n_1
+    complex(wp) :: denom, denom_sqrt, dx, newroot
+    real(wp) :: ek, absroot, abs2p, abs2_F_half
+    complex(wp) :: fac_netwon, fac_extra, F_half, c_one_nth
+    real(wp) :: one_nth, n_1_nth, two_n_div_n_1
     integer :: mode
-    real(kind=wp) :: stopping_crit2
+    real(wp) :: stopping_crit2
 
     iter=0
     success=.true.
@@ -3617,6 +3620,592 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
 
 end subroutine cmplx_roots_gen
 !*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Finds the zeros of a complex polynomial.
+!
+!### Reference
+!  * Jenkins & Traub,
+!    "[Algorithm 419: Zeros of a complex polynomial](https://netlib.org/toms-2014-06-10/419)"
+!    Communications of the ACM, Volume 15, Issue 2, Feb. 1972, pp 97-99.
+!  * Added changes from remark on algorithm 419 by david h. withers
+!    cacm (march 1974) vol 17 no 3 p. 157]
+!
+!@note the program has been written to reduce the chance of overflow
+!      occurring. if it does occur, there is still a possibility that
+!      the zerofinder will work provided the overflowed quantity is
+!      replaced by a large number.
+!
+!### History
+!  * Jacob Williams, 9/18/2022 : modern Fortran version of this code.
+
+subroutine cpoly(opr,opi,degree,zeror,zeroi,fail)
+
+    implicit none
+
+    integer,intent(in) :: degree !! degree of polynomial
+    real(wp), dimension(degree+1), intent(in) :: opr !! vectors of real parts of the coefficients in
+                                                     !! order of decreasing powers.
+    real(wp), dimension(degree+1), intent(in) :: opi !! vectors of imaginary parts of the coefficients in
+                                                     !! order of decreasing powers.
+    real(wp), dimension(degree), intent(out) :: zeror !! real parts of the zeros
+    real(wp), dimension(degree), intent(out) :: zeroi !! imaginary parts of the zeros
+    logical,intent(out) :: fail !! true only if leading coefficient is zero or if cpoly
+                                !! has found fewer than `degree` zeros.
+
+    real(wp) :: sr , si , tr , ti , pvr , pvi, xxx , zr , zi , bnd , xx , yy
+    real(wp), dimension(degree+1) :: pr , pi , hr, hi , qpr, qpi, qhr , qhi , shr , shi
+    logical :: conv
+    integer :: cnt1 , cnt2, i , idnn2 , nn
+
+    real(wp), parameter :: base = radix(1.0_wp)
+    real(wp), parameter :: eta = eps
+    real(wp), parameter :: infin = huge(1.0_wp)
+    real(wp), parameter :: smalno = tiny(1.0_wp)
+    real(wp), parameter :: are = eta
+    real(wp), parameter :: cosr = cos(94.0_wp*deg2rad)  !! -.069756474
+    real(wp), parameter :: sinr = sin(86.0_wp*deg2rad)  !! .99756405
+    real(wp), parameter :: mre = 2.0_wp*sqrt(2.0_wp)*eta
+    real(wp), parameter :: cos45 = cos(45.0_wp*deg2rad) !! .70710678
+
+    if ( opr(1)==0.0_wp .and. opi(1)==0.0_wp ) then
+        ! algorithm fails if the leading coefficient is zero.
+        fail = .true.
+        return
+    end if
+
+    xx = cos45
+    yy = -xx
+    fail = .false.
+    nn = degree + 1
+
+    ! remove the zeros at the origin if any.
+    do
+        if ( opr(nn)/=0.0_wp .or. opi(nn)/=0.0_wp ) then
+            exit
+        else
+            idnn2 = degree - nn + 2
+            zeror(idnn2) = 0.0_wp
+            zeroi(idnn2) = 0.0_wp
+            nn = nn - 1
+        endif
+    end do
+
+    ! make a copy of the coefficients.
+    do i = 1 , nn
+        pr(i) = opr(i)
+        pi(i) = opi(i)
+        shr(i) = cmod(pr(i),pi(i))
+    enddo
+    ! scale the polynomial.
+    bnd = scale(nn,shr,eta,infin,smalno,base)
+    if ( bnd/=1.0_wp ) then
+        do i = 1 , nn
+            pr(i) = bnd*pr(i)
+            pi(i) = bnd*pi(i)
+        enddo
+    endif
+
+    ! start the algorithm for one zero.
+    main : do
+        if ( nn>2 ) then
+            ! calculate bnd, a lower bound on the modulus of the zeros.
+            do i = 1 , nn
+                shr(i) = cmod(pr(i),pi(i))
+            enddo
+            bnd = cauchy(nn,shr,shi)
+            ! outer loop to control 2 major passes with different sequences
+            ! of shifts.
+            do cnt1 = 1 , 2
+                ! first stage calculation, no shift.
+                call noshft(5)
+                ! inner loop to select a shift.
+                do cnt2 = 1 , 9
+                    ! shift is chosen with modulus bnd and amplitude rotated by
+                    ! 94 degrees from the previous shift
+                    xxx = cosr*xx - sinr*yy
+                    yy = sinr*xx + cosr*yy
+                    xx = xxx
+                    sr = bnd*xx
+                    si = bnd*yy
+                    ! second stage calculation, fixed shift.
+                    call fxshft(10*cnt2,zr,zi,conv)
+                    if ( conv ) then
+                        ! the second stage jumps directly to the third stage iteration.
+                        ! if successful the zero is stored and the polynomial deflated.
+                        idnn2 = degree - nn + 2
+                        zeror(idnn2) = zr
+                        zeroi(idnn2) = zi
+                        nn = nn - 1
+                        do i = 1 , nn
+                            pr(i) = qpr(i)
+                            pi(i) = qpi(i)
+                        enddo
+                        cycle main
+                    endif
+                    ! if the iteration is unsuccessful another shift is chosen.
+                enddo
+                ! if 9 shifts fail, the outer loop is repeated with another
+                ! sequence of shifts.
+            enddo
+            ! the zerofinder has failed on two major passes.
+            ! return empty handed.
+            fail = .true.
+            return
+        else
+            exit
+        endif
+
+    end do main
+
+    ! calculate the final zero and return.
+    call cdivid(-pr(2),-pi(2),pr(1),pi(1),zeror(degree),zeroi(degree))
+
+contains
+
+subroutine noshft(l1)
+
+    ! computes the derivative polynomial as the initial h
+    ! polynomial and computes l1 no-shift h polynomials.
+
+    implicit none
+
+    integer,intent(in) :: l1
+
+    integer :: i , j , jj , n , nm1
+    real(wp) :: xni , t1 , t2
+
+    n = nn - 1
+    nm1 = n - 1
+    do i = 1 , n
+       xni = nn - i
+       hr(i) = xni*pr(i)/real(n,wp)
+       hi(i) = xni*pi(i)/real(n,wp)
+    enddo
+    do jj = 1 , l1
+       if ( cmod(hr(n),hi(n))<=eta*10.0_wp*cmod(pr(n),pi(n)) ) then
+          ! if the constant term is essentially zero, shift h coefficients.
+          do i = 1 , nm1
+             j = nn - i
+             hr(j) = hr(j-1)
+             hi(j) = hi(j-1)
+          enddo
+          hr(1) = 0.0_wp
+          hi(1) = 0.0_wp
+       else
+          call cdivid(-pr(nn),-pi(nn),hr(n),hi(n),tr,ti)
+          do i = 1 , nm1
+             j = nn - i
+             t1 = hr(j-1)
+             t2 = hi(j-1)
+             hr(j) = tr*t1 - ti*t2 + pr(j)
+             hi(j) = tr*t2 + ti*t1 + pi(j)
+          enddo
+          hr(1) = pr(1)
+          hi(1) = pi(1)
+       endif
+    enddo
+end subroutine noshft
+
+subroutine fxshft(l2,zr,zi,conv)
+
+    ! computes l2 fixed-shift h polynomials and tests for
+    ! convergence.
+    ! initiates a variable-shift iteration and returns with the
+    ! approximate zero if successful.
+
+    implicit none
+
+    integer,intent(in) :: l2 !! limit of fixed shift steps
+    real(wp) :: zr , zi !! approximate zero if conv is .true.
+    logical :: conv !! logical indicating convergence of stage 3 iteration
+
+    integer :: i , j , n
+    real(wp) :: otr , oti , svsr , svsi
+    logical :: test , pasd , bool
+
+    n = nn - 1
+    ! evaluate p at s.
+    call polyev(nn,sr,si,pr,pi,qpr,qpi,pvr,pvi)
+    test = .true.
+    pasd = .false.
+    ! calculate first t = -p(s)/h(s).
+    call calct(bool)
+    ! main loop for one second stage step.
+    do j = 1 , l2
+       otr = tr
+       oti = ti
+        ! compute next h polynomial and new t.
+       call nexth(bool)
+       call calct(bool)
+       zr = sr + tr
+       zi = si + ti
+        ! test for convergence unless stage 3 has failed once or this
+        ! is the last h polynomial .
+       if ( .not.(bool .or. .not.test .or. j==l2) ) then
+          if ( cmod(tr-otr,ti-oti)>=0.5_wp*cmod(zr,zi) ) then
+             pasd = .false.
+          elseif ( .not.pasd ) then
+             pasd = .true.
+          else
+            ! the weak convergence test has been passed twice, start the
+            ! third stage iteration, after saving the current h polynomial
+            ! and shift.
+             do i = 1 , n
+                shr(i) = hr(i)
+                shi(i) = hi(i)
+             enddo
+             svsr = sr
+             svsi = si
+             call vrshft(10,zr,zi,conv)
+             if ( conv ) return
+            ! the iteration failed to converge. turn off testing and restore
+            ! h,s,pv and t.
+             test = .false.
+             do i = 1 , n
+                hr(i) = shr(i)
+                hi(i) = shi(i)
+             enddo
+             sr = svsr
+             si = svsi
+             call polyev(nn,sr,si,pr,pi,qpr,qpi,pvr,pvi)
+             call calct(bool)
+          endif
+       endif
+    enddo
+    ! attempt an iteration with final h polynomial from second stage.
+    call vrshft(10,zr,zi,conv)
+
+end subroutine fxshft
+
+subroutine vrshft(l3,zr,zi,conv)
+
+    ! carries out the third stage iteration.
+
+    implicit none
+
+    integer,intent(in) :: l3 !! limit of steps in stage 3.
+    real(wp) :: zr , zi !! on entry contains the initial iterate, if the
+                        !! iteration converges it contains the final iterate
+                        !! on exit.
+    logical :: conv !! .true. if iteration converges
+
+    real(wp) :: mp , ms , omp , relstp , r1 , r2 , tp
+    logical :: b , bool
+    integer :: i , j
+
+    conv = .false.
+    b = .false.
+    sr = zr
+    si = zi
+
+    ! main loop for stage three
+    do i = 1 , l3
+        ! evaluate p at s and test for convergence.
+       call polyev(nn,sr,si,pr,pi,qpr,qpi,pvr,pvi)
+       mp = cmod(pvr,pvi)
+       ms = cmod(sr,si)
+       if ( mp>20.0_wp*errev(nn,qpr,qpi,ms,mp,are,mre) ) then
+          if ( i==1 ) then
+             omp = mp
+          elseif ( b .or. mp<omp .or. relstp>=0.05_wp ) then
+            ! exit if polynomial value increases significantly.
+             if ( mp*0.1_wp>omp ) return
+             omp = mp
+          else
+            ! iteration has stalled. probably a cluster of zeros. do 5 fixed
+            ! shift steps into the cluster to force one zero to dominate.
+             tp = relstp
+             b = .true.
+             if ( relstp<eta ) tp = eta
+             r1 = sqrt(tp)
+             r2 = sr*(1.0_wp+r1) - si*r1
+             si = sr*r1 + si*(1.0_wp+r1)
+             sr = r2
+             call polyev(nn,sr,si,pr,pi,qpr,qpi,pvr,pvi)
+             do j = 1 , 5
+                call calct(bool)
+                call nexth(bool)
+             enddo
+             omp = infin
+          endif
+            ! calculate next iterate.
+          call calct(bool)
+          call nexth(bool)
+          call calct(bool)
+          if ( .not.(bool) ) then
+             relstp = cmod(tr,ti)/cmod(sr,si)
+             sr = sr + tr
+             si = si + ti
+          endif
+       else
+          ! polynomial value is smaller in value than a bound on the error
+          ! in evaluating p, terminate the iteration.
+          conv = .true.
+          zr = sr
+          zi = si
+          return
+       endif
+    enddo
+
+end subroutine vrshft
+
+subroutine calct(bool)
+
+    ! computes `t = -p(s)/h(s)`.
+
+    implicit none
+
+    logical,intent(out) :: bool !! logical, set true if `h(s)` is essentially zero.
+
+    real(wp) :: hvr , hvi
+    integer :: n
+
+    n = nn - 1
+    ! evaluate h(s).
+    call polyev(n,sr,si,hr,hi,qhr,qhi,hvr,hvi)
+    bool = cmod(hvr,hvi)<=are*10.0_wp*cmod(hr(n),hi(n))
+    if ( bool ) then
+       tr = 0.0_wp
+       ti = 0.0_wp
+    else
+        call cdivid(-pvr,-pvi,hvr,hvi,tr,ti)
+    end if
+
+end subroutine calct
+
+subroutine nexth(bool)
+
+    ! calculates the next shifted h polynomial.
+
+    implicit none
+
+    logical,intent(in) :: bool !! logical, if .true. `h(s)` is essentially zero
+
+    real(wp) :: t1 , t2
+    integer :: j , n , nm1
+
+    n = nn - 1
+    nm1 = n - 1
+    if ( bool ) then
+       ! if h(s) is zero replace h with qh.
+       do j = 2 , n
+          hr(j) = qhr(j-1)
+          hi(j) = qhi(j-1)
+       enddo
+       hr(1) = 0.0_wp
+       hi(1) = 0.0_wp
+    else
+        do j = 2 , n
+            t1 = qhr(j-1)
+            t2 = qhi(j-1)
+            hr(j) = tr*t1 - ti*t2 + qpr(j)
+            hi(j) = tr*t2 + ti*t1 + qpi(j)
+        enddo
+        hr(1) = qpr(1)
+        hi(1) = qpi(1)
+    end if
+
+end subroutine nexth
+
+subroutine polyev(nn,sr,si,pr,pi,qr,qi,pvr,pvi)
+
+    ! evaluates a polynomial  p  at  s  by the horner recurrence
+    ! placing the partial sums in q and the computed value in pv.
+
+    implicit none
+
+    integer,intent(in) :: nn
+    real(wp) :: pr(nn) , pi(nn) , qr(nn) , qi(nn) , sr , si , pvr , pvi
+
+    real(wp) :: t
+    integer :: i
+
+    qr(1) = pr(1)
+    qi(1) = pi(1)
+    pvr = qr(1)
+    pvi = qi(1)
+    do i = 2 , nn
+       t = pvr*sr - pvi*si + pr(i)
+       pvi = pvr*si + pvi*sr + pi(i)
+       pvr = t
+       qr(i) = pvr
+       qi(i) = pvi
+    enddo
+
+end subroutine polyev
+
+real(wp) function errev(nn,qr,qi,ms,mp,are,mre)
+
+    ! bounds the error in evaluating the polynomial
+    ! by the horner recurrence.
+
+    implicit none
+
+    integer,intent(in) :: nn
+    real(wp) :: qr(nn), qi(nn) !! the partial sums
+    real(wp) :: ms !! modulus of the point
+    real(wp) :: mp !! modulus of polynomial value
+    real(wp) :: are, mre !! error bounds on complex addition and multiplication
+
+    integer :: i
+    real(wp) :: e
+
+    e = cmod(qr(1),qi(1))*mre/(are+mre)
+    do i = 1 , nn
+       e = e*ms + cmod(qr(i),qi(i))
+    enddo
+    errev = e*(are+mre) - mp*mre
+
+end function errev
+
+real(wp) function cauchy(nn,pt,q)
+
+    ! cauchy computes a lower bound on the moduli of
+    ! the zeros of a polynomial
+
+    implicit none
+
+    integer,intent(in) :: nn
+    real(wp) :: q(nn)
+    real(wp) :: pt(nn) !! the modulus of the coefficients.
+
+    integer :: i , n
+    real(wp) :: x , xm , f , dx , df
+
+    pt(nn) = -pt(nn)
+    ! compute upper estimate of bound.
+    n = nn - 1
+    x = exp((log(-pt(nn))-log(pt(1)))/real(n,wp))
+    if ( pt(n)/=0.0_wp ) then
+       ! if newton step at the origin is better, use it.
+       xm = -pt(nn)/pt(n)
+       if ( xm<x ) x = xm
+    endif
+
+    do
+        ! chop the interval (0,x) unitl f <= 0.
+        xm = x*0.1_wp
+        f = pt(1)
+        do i = 2 , nn
+           f = f*xm + pt(i)
+        enddo
+        if ( f<=0.0_wp ) then
+           dx = x
+           do
+               ! newton iteration until x converges to two decimal places.
+               if ( abs(dx/x)<=0.005_wp ) then
+                  cauchy = x
+                  exit
+               end if
+               q(1) = pt(1)
+               do i = 2 , nn
+                  q(i) = q(i-1)*x + pt(i)
+               enddo
+               f = q(nn)
+               df = q(1)
+               do i = 2 , n
+                  df = df*x + q(i)
+               enddo
+               dx = f/df
+               x = x - dx
+           end do
+           exit
+        else
+           x = xm
+        endif
+    end do
+
+end function cauchy
+
+real(wp) function scale(nn,pt,eta,infin,smalno,base)
+
+    ! returns a scale factor to multiply the coefficients of the
+    ! polynomial. the scaling is done to avoid overflow and to avoid
+    ! undetected underflow interfering with the convergence
+    ! criterion.  the factor is a power of the base.
+
+    implicit none
+
+    integer :: nn
+    real(wp) :: pt(nn)  !! modulus of coefficients of p
+    real(wp) :: eta , infin , smalno , base !! constants describing the
+                                            !! floating point arithmetic.
+
+    real(wp) :: hi , lo , max , min , x , sc
+    integer :: i , l
+
+    ! find largest and smallest moduli of coefficients.
+    hi = sqrt(infin)
+    lo = smalno/eta
+    max = 0.0_wp
+    min = infin
+    do i = 1 , nn
+       x = pt(i)
+       if ( x>max ) max = x
+       if ( x/=0.0_wp .and. x<min ) min = x
+    enddo
+    ! scale only if there are very large or very small components.
+    scale = 1.0_wp
+    if ( min>=lo .and. max<=hi ) return
+    x = lo/min
+    if ( x>1.0_wp ) then
+       sc = x
+       if ( infin/sc>max ) sc = 1.0_wp
+    else
+       sc = 1.0_wp/(sqrt(max)*sqrt(min))
+    endif
+    l = log(sc)/log(base) + 0.5_wp
+    scale = base**l
+
+end function scale
+
+subroutine cdivid(ar,ai,br,bi,cr,ci)
+
+    ! complex division c = a/b, avoiding overflow.
+
+    implicit none
+
+    real(wp) :: ar , ai , br , bi , cr , ci , r , d
+
+    if ( br==0.0_wp .and. bi==0.0_wp ) then
+       ! division by zero, c = infinity.
+       cr = infin
+       ci = infin
+    elseif ( abs(br)>=abs(bi) ) then
+       r = bi/br
+       d = br + r*bi
+       cr = (ar+ai*r)/d
+       ci = (ai-ar*r)/d
+    else
+        r = br/bi
+        d = bi + r*br
+        cr = (ar*r+ai)/d
+        ci = (ai*r-ar)/d
+    end if
+
+end subroutine cdivid
+
+real(wp) function cmod(r,i)
+
+    implicit none
+
+    real(wp) :: r , i , ar , ai
+
+    ar = abs(r)
+    ai = abs(i)
+    if ( ar<ai ) then
+       cmod = ai*sqrt(1.0_wp+(ar/ai)**2)
+    elseif ( ar<=ai ) then
+       cmod = ar*sqrt(2.0d0)
+    else
+       cmod = ar*sqrt(1.0_wp+(ai/ar)**2)
+    end if
+
+end function cmod
+
+end subroutine cpoly
 
 !*****************************************************************************************
 end module polyroots_module

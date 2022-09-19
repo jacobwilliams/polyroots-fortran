@@ -18,7 +18,8 @@ Many of the methods are from legacy libraries. They have been extensively modifi
 
 Method name | Polynomial type | Coefficients | Roots | Reference
 --- | --- | --- | --- | ---
-[`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub](https://dl.acm.org/doi/10.1145/355637.355643)
+[`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub (1975)](https://dl.acm.org/doi/10.1145/355637.355643)
+[`cpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpoly.html) | General | complex | complex | [Jenkins & Traub (1972)](https://dl.acm.org/doi/abs/10.1145/361254.361262)
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`rpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpzero.f)
