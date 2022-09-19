@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">2237 statements</a>
+    title="100.0% of total for modules and submodules.">2639 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -131,6 +131,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
     </div>
   </div>
 </div>
@@ -191,6 +192,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
     </div>
   </div>
 </div>
@@ -226,7 +228,7 @@
   <div class="panel-heading codesum"><span class="anchor" id="proc-rpoly"></span><h3>public subroutine <a href='../proc/rpoly.html'>rpoly</a>(op, degree, zeror, zeroi, istat)</h3></div>
   <div class="panel-body">
        
-<p>Finds the zeros of a general real polynomial using the jenkins &amp; traub algorithm</p><a href="../proc/rpoly.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>Finds the zeros of a general real polynomial using the Jenkins &amp; Traub algorithm.</p><a href="../proc/rpoly.html" class="pull-right"><emph>Read more&hellip;</emph></a>
     
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
@@ -443,8 +445,8 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
   <td><strong>iflg</strong></td><td><h3>On Input:</h3>
 <p>flag to indicate if initial estimates of zeros are input:</p>
 <ul>
-<li>If IFLG == 0, no estimates are input.</li>
-<li>If IFLG /= 0, the vector R contains estimates of the zeros</li>
+<li>If <code>IFLG == 0</code>, no estimates are input.</li>
+<li>If <code>IFLG /= 0</code>, the vector <code>R</code> contains estimates of the zeros</li>
 </ul>
 <p><strong> WARNING </strong>**** If estimates are input, they must
                    be separated, that is, distinct or
@@ -452,11 +454,11 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
 <h3>On Output:</h3>
 <p>Error Diagnostics:</p>
 <ul>
-<li>If IFLG == 0 on return, all is well</li>
-<li>If IFLG == 1 on return, A(1)=0.0 or N=0 on input</li>
-<li>If IFLG == 2 on return, the program failed to converge
-   after 25*N iterations.  Best current estimates of the
-   zeros are in R(I).  Error bounds are not calculated.</li>
+<li>If <code>IFLG == 0</code> on return, all is well</li>
+<li>If <code>IFLG == 1</code> on return, <code>A(1)=0.0</code> or <code>N=0</code> on input</li>
+<li>If <code>IFLG == 2</code> on return, the program failed to converge
+   after <code>25*N</code> iterations.  Best current estimates of the
+   zeros are in <code>R(I)</code>.  Error bounds are not calculated.</li>
 </ul></td>
 </tr>
 <tr>
@@ -499,7 +501,7 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
   <td><span class="anchor" ></span>complex(kind=wp),</td>
 <td>intent(inout),</td>
   <td></td>  <td>dimension(n)</td><td>::</td>
-  <td><strong>r</strong></td><td><p>N word complex vector. On Input: containing initial estimates for zeros
+  <td><strong>r</strong></td><td><p><code>N</code> word complex vector. On Input: containing initial estimates for zeros
 if these are known. On output: ith zero.</p></td>
 </tr>
 <tr>
@@ -509,8 +511,8 @@ if these are known. On output: ith zero.</p></td>
   <td><strong>iflg</strong></td><td><h3>On Input:</h3>
 <p>flag to indicate if initial estimates of zeros are input:</p>
 <ul>
-<li>If IFLG == 0, no estimates are input.</li>
-<li>If IFLG /= 0, the vector R contains estimates of the zeros</li>
+<li>If <code>IFLG == 0</code>, no estimates are input.</li>
+<li>If <code>IFLG /= 0</code>, the vector R contains estimates of the zeros</li>
 </ul>
 <p><strong> WARNING </strong>**** If estimates are input, they must
                    be separated, that is, distinct or
@@ -518,18 +520,18 @@ if these are known. On output: ith zero.</p></td>
 <h3>On Output:</h3>
 <p>Error Diagnostics:</p>
 <ul>
-<li>If IFLG == 0 on return, all is well</li>
-<li>If IFLG == 1 on return, A(1)=0.0 or N=0 on input</li>
-<li>If IFLG == 2 on return, the program failed to converge
-   after 25*N iterations.  Best current estimates of the
-   zeros are in R(I).  Error bounds are not calculated.</li>
+<li>If <code>IFLG == 0</code> on return, all is well</li>
+<li>If <code>IFLG == 1</code> on return, <code>A(1)=0.0</code> or <code>N=0</code> on input</li>
+<li>If <code>IFLG == 2</code> on return, the program failed to converge
+   after <code>25*N</code> iterations.  Best current estimates of the
+   zeros are in <code>R(I)</code>.  Error bounds are not calculated.</li>
 </ul></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=wp),</td>
 <td>intent(out),</td>
   <td></td>  <td>dimension(n)</td><td>::</td>
-  <td><strong>s</strong></td><td><p>an <code>N</code> word array. bound for R(I).</p></td>
+  <td><strong>s</strong></td><td><p>an <code>N</code> word array. bound for <code>R(I)</code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -630,9 +632,11 @@ if these are known. On output: ith zero.</p></td>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>info</strong></td><td><p>output from the lapack solver.
-if <code>info=0</code> the routine converged.
-if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
+  <td><strong>info</strong></td><td><p>output from the lapack solver.</p>
+<ul>
+<li>if <code>info=0</code> the routine converged.</li>
+<li>if <code>info=-999</code>, then the leading coefficient is zero.</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
@@ -816,6 +820,61 @@ values of 'roots' array as starting point for each new
 root that is searched for. This is useful if you have
 very rough idea where some of the roots can be.
 [default is false]</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpoly"></span><h3>public subroutine <a href='../proc/cpoly.html'>cpoly</a>(opr, opi, degree, zeror, zeroi, fail)</h3></div>
+  <div class="panel-body">
+       
+<p>Finds the zeros of a complex polynomial.</p><a href="../proc/cpoly.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(degree+1)</td><td>::</td>
+  <td><strong>opr</strong></td><td><p>vectors of real parts of the coefficients in
+order of decreasing powers.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(degree+1)</td><td>::</td>
+  <td><strong>opi</strong></td><td><p>vectors of imaginary parts of the coefficients in
+order of decreasing powers.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>degree</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(degree)</td><td>::</td>
+  <td><strong>zeror</strong></td><td><p>real parts of the zeros</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(degree)</td><td>::</td>
+  <td><strong>zeroi</strong></td><td><p>imaginary parts of the zeros</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>logical,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>fail</strong></td><td><p>true only if leading coefficient is zero or if cpoly
+has found fewer than <code>degree</code> zeros.</p></td>
 </tr>
 </tbody>
 </table>

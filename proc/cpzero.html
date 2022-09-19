@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 5.8% of total for procedures.">104 statements</a>
+    title=" 4.7% of total for procedures.">104 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -166,8 +166,8 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
   <td><strong>iflg</strong></td><td><h3>On Input:</h3>
 <p>flag to indicate if initial estimates of zeros are input:</p>
 <ul>
-<li>If IFLG == 0, no estimates are input.</li>
-<li>If IFLG /= 0, the vector R contains estimates of the zeros</li>
+<li>If <code>IFLG == 0</code>, no estimates are input.</li>
+<li>If <code>IFLG /= 0</code>, the vector <code>R</code> contains estimates of the zeros</li>
 </ul>
 <p><strong> WARNING </strong>**** If estimates are input, they must
                    be separated, that is, distinct or
@@ -175,11 +175,11 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
 <h3>On Output:</h3>
 <p>Error Diagnostics:</p>
 <ul>
-<li>If IFLG == 0 on return, all is well</li>
-<li>If IFLG == 1 on return, A(1)=0.0 or N=0 on input</li>
-<li>If IFLG == 2 on return, the program failed to converge
-   after 25*N iterations.  Best current estimates of the
-   zeros are in R(I).  Error bounds are not calculated.</li>
+<li>If <code>IFLG == 0</code> on return, all is well</li>
+<li>If <code>IFLG == 1</code> on return, <code>A(1)=0.0</code> or <code>N=0</code> on input</li>
+<li>If <code>IFLG == 2</code> on return, the program failed to converge
+   after <code>25*N</code> iterations.  Best current estimates of the
+   zeros are in <code>R(I)</code>.  Error bounds are not calculated.</li>
 </ul></td>
 </tr>
 <tr>
@@ -230,8 +230,8 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
 <span class="w">                                   </span><span class="c">!!</span>
 <span class="w">                                   </span><span class="c">!! flag to indicate if initial estimates of zeros are input:</span>
 <span class="w">                                   </span><span class="c">!!</span>
-<span class="w">                                   </span><span class="c">!!  * If IFLG == 0, no estimates are input.</span>
-<span class="w">                                   </span><span class="c">!!  * If IFLG /= 0, the vector R contains estimates of the zeros</span>
+<span class="w">                                   </span><span class="c">!!  * If `IFLG == 0`, no estimates are input.</span>
+<span class="w">                                   </span><span class="c">!!  * If `IFLG /= 0`, the vector `R` contains estimates of the zeros</span>
 <span class="w">                                   </span><span class="c">!!</span>
 <span class="w">                                   </span><span class="c">!! ** WARNING ****** If estimates are input, they must</span>
 <span class="w">                                   </span><span class="c">!!                   be separated, that is, distinct or</span>
@@ -240,11 +240,11 @@ estimates for zeros if these are known. On output: Ith zero</p></td>
 <span class="w">                                   </span><span class="c">!!</span>
 <span class="w">                                   </span><span class="c">!! Error Diagnostics:</span>
 <span class="w">                                   </span><span class="c">!!</span>
-<span class="w">                                   </span><span class="c">!! * If IFLG == 0 on return, all is well</span>
-<span class="w">                                   </span><span class="c">!! * If IFLG == 1 on return, A(1)=0.0 or N=0 on input</span>
-<span class="w">                                   </span><span class="c">!! * If IFLG == 2 on return, the program failed to converge</span>
-<span class="w">                                   </span><span class="c">!!   after 25*N iterations.  Best current estimates of the</span>
-<span class="w">                                   </span><span class="c">!!   zeros are in R(I).  Error bounds are not calculated.</span>
+<span class="w">                                   </span><span class="c">!! * If `IFLG == 0` on return, all is well</span>
+<span class="w">                                   </span><span class="c">!! * If `IFLG == 1` on return, `A(1)=0.0` or `N=0` on input</span>
+<span class="w">                                   </span><span class="c">!! * If `IFLG == 2` on return, the program failed to converge</span>
+<span class="w">                                   </span><span class="c">!!   after `25*N` iterations.  Best current estimates of the</span>
+<span class="w">                                   </span><span class="c">!!   zeros are in `R(I)`.  Error bounds are not calculated.</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="c">!! an `N` word array. `S(I)` = bound for `R(I)`</span>
 
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">imax</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="p">,</span><span class="w"> </span><span class="n">nit</span><span class="p">,</span><span class="w"> </span><span class="n">nmax</span><span class="p">,</span><span class="w"> </span><span class="n">nr</span><span class="w"></span>

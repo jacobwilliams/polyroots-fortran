@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 1.9% of total for procedures.">34 statements</a>
+    title=" 1.5% of total for procedures.">34 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -170,9 +170,11 @@
   <td><span class="anchor" id="variable-info"></span>integer,</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>info</strong></td><td><p>output from the lapack solver.
-if <code>info=0</code> the routine converged.
-if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
+  <td><strong>info</strong></td><td><p>output from the lapack solver.</p>
+<ul>
+<li>if <code>info=0</code> the routine converged.</li>
+<li>if <code>info=-999</code>, then the leading coefficient is zero.</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
@@ -212,8 +214,9 @@ if <code>info=-999</code>, then the leading coefficient is zero.</p></td>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">wr</span><span class="w"> </span><span class="c">!! real parts of roots</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">wi</span><span class="w"> </span><span class="c">!! imaginary parts of roots</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="c">!! output from the lapack solver.</span>
-<span class="w">                                 </span><span class="c">!! if `info=0` the routine converged.</span>
-<span class="w">                                 </span><span class="c">!! if `info=-999`, then the leading coefficient is zero.</span>
+<span class="w">                                 </span><span class="c">!!</span>
+<span class="w">                                 </span><span class="c">!! * if `info=0` the routine converged.</span>
+<span class="w">                                 </span><span class="c">!! * if `info=-999`, then the leading coefficient is zero.</span>
 
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="c">!! counter</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:,:)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="c">!! companion matrix</span>

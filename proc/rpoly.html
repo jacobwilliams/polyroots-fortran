@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="28.4% of total for procedures.">511 statements</a>
+    title="23.2% of total for procedures.">510 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -124,10 +124,11 @@
     <h2>public subroutine rpoly(op, degree, zeror, zeroi, istat)</h2>
     
 
-    <p>Finds the zeros of a general real polynomial using the jenkins &amp; traub algorithm</p>
+    <p>Finds the zeros of a general real polynomial using the Jenkins &amp; Traub algorithm.</p>
 <h3>History</h3>
 <ul>
-<li>algorithm 493 by jenkins &amp; traub</li>
+<li>M. A. Jenkins, "<a href="https://dl.acm.org/doi/10.1145/355637.355643">Algorithm 493: Zeros of a Real Polynomial</a>",
+    ACM Transactions on Mathematical SoftwareVolume 1, Issue 2, June 1975, pp 178-189</li>
 <li>code converted using to_f90 by alan miller, 2003-06-02</li>
 <li>Jacob Williams, 9/13/2022 : modernized this code</li>
 </ul>
@@ -228,7 +229,6 @@
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cnt</span><span class="p">,</span><span class="w"> </span><span class="n">nz</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">nm1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">nn</span><span class="w"></span>
 <span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zerok</span><span class="w"></span>
 
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">deg2rad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pi</span><span class="o">/</span><span class="mi">18</span><span class="mf">0.0_wp</span><span class="w"></span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cosr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">cos</span><span class="p">(</span><span class="mi">9</span><span class="mf">4.0_wp</span><span class="o">*</span><span class="n">deg2rad</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sinr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="mi">8</span><span class="mf">6.0_wp</span><span class="o">*</span><span class="n">deg2rad</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">radix</span><span class="p">(</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="w"></span>
