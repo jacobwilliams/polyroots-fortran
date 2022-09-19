@@ -17,6 +17,7 @@
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
     real(wp) :: detil
+    logical :: fail
 
     !--------------------------------------
 
@@ -137,7 +138,15 @@
         if (istatus/=0) error stop ' ** failure in rpqr79 **'
         call check_results(real(r,wp), aimag(r), degree)
 
-        ! for now, just test this one with the real coefficients only:
+        ! for now, just test the following two with the real coefficients only:
+
+        write(*, '(/A,1x,i3)') 'cpoly'
+        write(*, '(a)') '  real part               imaginary part         root'
+        q = 0.0_wp
+        call cpoly(p,q,degree,zr,zi,fail)
+        if (fail) error stop ' ** failure in rpzero **'
+        call check_results(zr, zi, degree)
+
         write(*, '(/A,1x,i3)') 'cpqr79'
         write(*, '(a)') '  real part               imaginary part         root'
         do i = 1, degree+1
