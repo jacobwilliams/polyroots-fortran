@@ -18,17 +18,19 @@ Many of the methods are from legacy libraries. They have been extensively modifi
 
 Method name | Polynomial type | Coefficients | Roots | Reference
 --- | --- | --- | --- | ---
-[`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub (1975)](https://dl.acm.org/doi/10.1145/355637.355643)
 [`cpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpoly.html) | General | complex | complex | [Jenkins & Traub (1972)](https://dl.acm.org/doi/abs/10.1145/361254.361262)
-[`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
-[`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
+[`rpoly`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpoly.html) | General | real | complex | [Jenkins & Traub (1975)](https://dl.acm.org/doi/10.1145/355637.355643)
 [`rpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpzero.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpzero.f)
 [`cpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpzero.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpzero.f)
 [`rpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpqr79.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpqr79.f)
 [`cpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpqr79.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpqr79.f)
+[`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
+[`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`qr_algeq_solver`](https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html) | General | real | complex | [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf)
+[`polzeros`](https://jacobwilliams.github.io/polyroots-fortran/proc/polzeros.html) | General | complex | complex | [Bini (1996)](https://link.springer.com/article/10.1007/BF02207694)
 [`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | --
+
 
 ## Compiling
 

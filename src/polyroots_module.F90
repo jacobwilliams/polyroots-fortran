@@ -52,6 +52,7 @@ module polyroots_module
     public :: cpqr79
     public :: qr_algeq_solver
     public :: cmplx_roots_gen
+    public :: polzeros
 
     ! special polynomial routines:
     public :: dcbcrt
@@ -2478,7 +2479,7 @@ end subroutine cpqr79
 !    (comp. jour. 4, 332-345(1962)) for the lr algorithm.
 !
 !### History
-!  * this version dated august 1983.
+!  * From EISPACK. this version dated august 1983.
 !    questions and comments should be directed to burton s. garbow,
 !    mathematics and computer science div, argonne national laboratory
 !  * Jacob Williams, 9/14/2022 : modernized this code
@@ -2786,22 +2787,17 @@ pure real(wp) function pythag(a, b)
     p = max(abs(a), abs(b))
     q = min(abs(a), abs(b))
 
-    if (q == 0.0_wp) then
-        pythag = p
-    else
+    if (q /= 0.0_wp) then
         do
             r = (q/p)**2
             t = 4.0_wp + r
-            if (t == 4.0_wp) then
-                pythag = p
-                exit
-            else
-                s = r/t
-                p = p + 2.0_wp*p*s
-                q = q*s
-            end if
+            if (t == 4.0_wp) exit
+            s = r/t
+            p = p + 2.0_wp*p*s
+            q = q*s
         end do
     end if
+    pythag = p
 
 end function pythag
 !*****************************************************************************************
@@ -4198,7 +4194,7 @@ real(wp) function cmod(r,i)
     if ( ar<ai ) then
        cmod = ai*sqrt(1.0_wp+(ar/ai)**2)
     elseif ( ar<=ai ) then
-       cmod = ar*sqrt(2.0d0)
+       cmod = ar*sqrt(2.0_wp)
     else
        cmod = ar*sqrt(1.0_wp+(ai/ar)**2)
     end if
@@ -4206,6 +4202,569 @@ real(wp) function cmod(r,i)
 end function cmod
 
 end subroutine cpoly
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Numerical computation of the roots of a polynomial having
+!  complex coefficients, based on aberth's method.
+!
+!  this routine approximates the roots of the polynomial
+!  `p(x)=a(n+1)x^n+a(n)x^(n-1)+...+a(1), a(j)=cr(j)+i ci(j), i**2=-1`,
+!  where `a(1)` and `a(n+1)` are nonzero.
+!
+!  the coefficients are complex numbers. the routine is fast, robust
+!  against overflow, and allows to deal with polynomials of any degree.
+!  overflow situations are very unlikely and may occurr if there exist
+!  simultaneously coefficients of moduli close to big and close to
+!  small, i.e., the greatest and the smallest positive real(wp) numbers,
+!  respectively. in this limit situation the program outputs a warning
+!  message. the computation can be speeded up by performing some side
+!  computations in single precision, thus slightly reducing the
+!  robustness of the program (see the comments in the routine aberth).
+!  besides a set of approximations to the roots, the program delivers a
+!  set of a-posteriori error bounds which are guaranteed in the most
+!  part of cases. in the situation where underflow does not allow to
+!  compute a guaranteed bound, the program outputs a warning message
+!  and sets the bound to 0. in the situation where the root cannot be
+!  represented as a complex(wp) number the error bound is set to -1.
+!
+!  the computation is performed by means of aberth's method
+!  according to the formula
+!```
+!           x(i)=x(i)-newt/(1-newt*abcorr), i=1,...,n             (1)
+!```
+!  where `newt=p(x(i))/p'(x(i))` is the newton correction and `abcorr=
+!  =1/(x(i)-x(1))+...+1/(x(i)-x(i-1))+1/(x(i)-x(i+1))+...+1/(x(i)-x(n))`
+!  is the aberth correction to the newton method.
+!
+!  the value of the newton correction is computed by means of the
+!  synthetic division algorithm (ruffini-horner's rule) if |x|<=1,
+!  otherwise the following more robust (with respect to overflow)
+!  formula is applied:
+!```
+!                    newt=1/(n*y-y**2 r'(y)/r(y))                 (2)
+!```
+!  where
+!```
+!                    y=1/x
+!                    r(y)=a(1)*y**n+...+a(n)*y+a(n+1)            (2')
+!```
+!  this computation is performed by the routine [[newton]].
+!
+!  the starting approximations are complex numbers that are
+!  equispaced on circles of suitable radii. the radius of each
+!  circle, as well as the number of roots on each circle and the
+!  number of circles, is determined by applying rouche's theorem
+!  to the functions `a(k+1)*x**k` and `p(x)-a(k+1)*x**k, k=0,...,n`.
+!  this computation is performed by the routine [[start]].
+!
+!### stop condition
+!
+! if the condition
+!```
+!                     |p(x(j))|<eps s(|x(j)|)                      (3)
+!```
+! is satisfied, where `s(x)=s(1)+x*s(2)+...+x**n * s(n+1)`,
+! `s(i)=|a(i)|*(1+3.8*(i-1))`, `eps` is the machine precision (eps=2**-53
+! for the ieee arithmetic), then the approximation `x(j)` is not updated
+! and the subsequent iterations (1)  for `i=j` are skipped.
+! the program stops if the condition (3) is satisfied for `j=1,...,n`,
+! or if the maximum number `nitmax` of iterations has been reached.
+! the condition (3) is motivated by a backward rounding error analysis
+! of the ruffini-horner rule, moreover the condition (3) guarantees
+! that the computed approximation `x(j)` is an exact root of a slightly
+! perturbed polynomial.
+!
+!### inclusion disks, a-posteriori error bounds
+!
+! for each approximation `x` of a root, an a-posteriori absolute error
+! bound r is computed according to the formula
+!```
+!                   r=n(|p(x)|+eps s(|x|))/|p'(x)|                 (4)
+!```
+! this provides an inclusion disk of center `x` and radius `r` containing a
+! root.
+!
+!### Reference
+!  * Dario Andrea Bini, "[Numerical computation of polynomial zeros by means of Aberth's method](https://link.springer.com/article/10.1007/BF02207694)"
+!    Numerical Algorithms volume 13, pages 179-200 (1996)
+!
+!### History
+!  * version 1.4, june 1996
+!    (d. bini, dipartimento di matematica, universita' di pisa)
+!    (bini@dm.unipi.it)
+!    work performed under the support of the esprit bra project 6846 posso
+!    Source: [Netlib](https://netlib.org/numeralgo/na10)
+!  * Jacob Williams, 9/19/2022, modernized this code
+
+    subroutine polzeros(n, poly, nitmax, root, radius, err)
+
+        implicit none
+
+        integer,intent(in) :: n !! degree of the polynomial.
+        complex(wp),intent(in) :: poly(n + 1) !! complex vector of n+1 components, `poly(i)` is the
+                                              !! coefficient of `x**(i-1), i=1,...,n+1` of the polynomial `p(x)`
+        integer,intent(in) :: nitmax !! the max number of allowed iterations.
+        complex(wp),intent(out) :: root(n) !! complex vector of `n` components, containing the
+                                           !! approximations to the roots of `p(x)`.
+        real(wp),intent(out) :: radius(n) !! real vector of `n` components, containing the error bounds to
+                                          !! the approximations of the roots, i.e. the disk of center
+                                          !! `root(i)` and radius `radius(i)` contains a root of `p(x)`, for
+                                          !! `i=1,...,n`. `radius(i)` is set to -1 if the corresponding root
+                                          !! cannot be represented as floating point due to overflow or
+                                          !! underflow.
+        logical,intent(out) :: err(n + 1) !! vector of `n` components detecting an error condition:
+                                          !!
+                                          !!  * `err(j)=.true.` if after `nitmax` iterations the stop condition
+                                          !!    (3) is not satisfied for x(j)=root(j);
+                                          !!  * `err(j)=.false.`  otherwise, i.e., the root is reliable,
+                                          !!    i.e., it can be viewed as an exact root of a
+                                          !!    slightly perturbed polynomial.
+                                          !!
+                                          !! the vector `err` is used also in the routine convex hull for
+                                          !! storing the abscissae of the vertices of the convex hull.
+
+        integer :: iter !! number of iterations peformed
+        real(wp) :: apoly(n + 1) !! auxiliary variable: real vector of n+1 components used to store the moduli of
+                                 !! the coefficients of p(x) and the coefficients of s(x) used
+                                 !! to test the stop condition (3).
+        real(wp) :: apolyr(n + 1) !! auxiliary variable: real vector of n+1 components used to test the stop
+                                  !! condition
+        integer :: i, nzeros
+        complex(wp) :: corr, abcorr
+        real(wp) :: amax
+
+        real(wp),parameter :: eps   = epsilon(1.0_wp)
+        real(wp),parameter :: small = tiny(1.0_wp)
+        real(wp),parameter :: big   = huge(1.0_wp)
+
+        ! check consistency of data
+        if (abs(poly(n + 1)) == 0.0_wp) then
+            error stop 'inconsistent data: the leading coefficient is zero'
+        end if
+        if (abs(poly(1)) == 0.0_wp) then
+            error stop 'the constant term is zero: deflate the polynomial'
+        end if
+        ! compute the moduli of the coefficients
+        amax = 0.0_wp
+        do i = 1, n + 1
+            apoly(i) = abs(poly(i))
+            amax = max(amax, apoly(i))
+            apolyr(i) = apoly(i)
+        end do
+        if ((amax) >= (big/(n + 1))) then
+            write (*, *) 'warning: coefficients too big, overflow is likely'
+        end if
+        ! initialize
+        do i = 1, n
+            radius(i) = 0.0_wp
+            err(i) = .true.
+        end do
+        ! select the starting points
+        call start(n, apolyr, root, radius, nzeros, small, big, err)
+        ! compute the coefficients of the backward-error polynomial
+        do i = 1, n + 1
+            apolyr(n - i + 2) = eps*apoly(i)*(3.8_wp*(n - i + 1) + 1)
+            apoly(i) = eps*apoly(i)*(3.8_wp*(i - 1) + 1)
+        end do
+        if ((apoly(1) == 0.0_wp) .or. (apoly(n + 1) == 0.0_wp)) then
+            write (*, *) 'warning: the computation of some inclusion radius'
+            write (*, *) 'may fail. this is reported by radius=0'
+        end if
+        do i = 1, n
+            err(i) = .true.
+            if (radius(i) == -1) err(i) = .false.
+        end do
+        ! starts aberth's iterations
+        do iter = 1, nitmax
+          do i = 1, n
+              if (err(i)) then
+                  call newton(n, poly, apoly, apolyr, root(i), small, radius(i), corr, err(i))
+                  if (err(i)) then
+                      call aberth(n, i, root, abcorr)
+                      root(i) = root(i) - corr/(1 - corr*abcorr)
+                  else
+                      nzeros = nzeros + 1
+                      if (nzeros == n) return
+                  end if
+              end if
+          end do
+        end do
+
+    end subroutine polzeros
+
+    subroutine newton(n, poly, apoly, apolyr, z, small, radius, corr, again)
+
+        !! compute the newton's correction, the inclusion radius (4) and checks
+        !! the stop condition (3)
+
+        implicit none
+
+        integer,intent(in) :: n !! degree of the polynomial p(x)
+        complex(wp),intent(in) :: poly(n + 1) !! coefficients of the polynomial p(x)
+        real(wp),intent(in) :: apoly(n + 1) !! upper bounds on the backward perturbations on the
+                                            !! coefficients of p(x) when applying ruffini-horner's rule
+        real(wp),intent(in) :: apolyr(n + 1) !! upper bounds on the backward perturbations on the
+                                             !! coefficients of p(x) when applying (2), (2')
+        complex(wp),intent(in) :: z !! value at which the newton correction is computed
+        real(wp),intent(in) :: small !! the min positive real(wp), small=2**(-1074) for the ieee.
+        real(wp),intent(out) :: radius !! upper bound to the distance of z from the closest root of
+                                       !! the polynomial computed according to (4).
+        complex(wp),intent(out) :: corr !! newton's correction
+        logical,intent(out) :: again !! this variable is .true. if the computed value p(z) is
+                                     !! reliable, i.e., (3) is not satisfied in z. again is
+                                     !! .false., otherwise.
+
+        integer :: i
+        complex(wp) :: p, p1, zi, den, ppsp
+        real(wp) :: ap, az, azi, absp
+
+        az = abs(z)
+        ! if |z|<=1 then apply ruffini-horner's rule for p(z)/p'(z)
+        ! and for the computation of the inclusion radius
+        if (az <= 1) then
+            p = poly(n + 1)
+            ap = apoly(n + 1)
+            p1 = p
+            do i = n, 2, -1
+                p = p*z + poly(i)
+                p1 = p1*z + p
+                ap = ap*az + apoly(i)
+            end do
+            p = p*z + poly(1)
+            ap = ap*az + apoly(1)
+            corr = p/p1
+            absp = abs(p)
+            ap = ap
+            again = (absp > (small + ap))
+            if (.not. again) radius = n*(absp + ap)/abs(p1)
+            return
+        else
+            ! if |z|>1 then apply ruffini-horner's rule to the reversed polynomial
+            ! and use formula (2) for p(z)/p'(z). analogously do for the inclusion
+            ! radius.
+            zi = 1.0_wp/z
+            azi = 1.0_wp/az
+            p = poly(1)
+            p1 = p
+            ap = apolyr(n + 1)
+            do i = n, 2, -1
+                p = p*zi + poly(n - i + 2)
+                p1 = p1*zi + p
+                ap = ap*azi + apolyr(i)
+            end do
+            p = p*zi + poly(n + 1)
+            ap = ap*azi + apolyr(1)
+            absp = abs(p)
+            again = (absp > (small + ap))
+            ppsp = (p*z)/p1
+            den = n*ppsp - 1
+            corr = z*(ppsp/den)
+            if (again) return
+            radius = abs(ppsp) + (ap*az)/abs(p1)
+            radius = n*radius/abs(den)
+            radius = radius*az
+        end if
+
+    end subroutine newton
+
+    subroutine aberth(n, j, root, abcorr)
+
+        !! compute the aberth correction. to save time, the reciprocation of
+        !! root(j)-root(i) could be performed in single precision (complex*8)
+        !! in principle this might cause overflow if both root(j) and root(i)
+        !! have too small moduli.
+
+        implicit none
+
+        integer,intent(in) :: n !! degree of the polynomial
+        integer,intent(in) :: j  !! index of the component of root with respect to which the
+                                 !! aberth correction is computed
+        complex(wp),intent(in) :: root(n) !! vector containing the current approximations to the roots
+        complex(wp),intent(out) :: abcorr !! aberth's correction (compare (1))
+
+        integer :: i
+        complex(wp) :: z, zj
+
+        abcorr = 0.0_wp
+        zj = root(j)
+        do i = 1, j - 1
+            z = zj - root(i)
+            abcorr = abcorr + 1.0_wp/z
+        end do
+        do i = j + 1, n
+            z = zj - root(i)
+            abcorr = abcorr + 1.0_wp/z
+        end do
+
+    end subroutine aberth
+
+    subroutine start(n, a, y, radius, nz, small, big, h)
+
+        !! compute the starting approximations of the roots
+        !!
+        !! this routines selects starting approximations along circles center at
+        !! 0 and having suitable radii. the computation of the number of circles
+        !! and of the corresponding radii is performed by computing the upper
+        !! convex hull of the set (i,log(a(i))), i=1,...,n+1.
+
+        implicit none
+
+        integer,intent(in) :: n !! number of the coefficients of the polynomial
+        real(wp),intent(inout) :: a(n + 1) !! moduli of the coefficients of the polynomial
+        complex(wp),intent(out) :: y(n) !! starting approximations
+        real(wp),intent(out) :: radius(n) !! if a component is -1 then the corresponding root has a
+                                          !! too big or too small modulus in order to be represented
+                                          !! as double float with no overflow/underflow
+        integer,intent(out) :: nz !! number of roots which cannot be represented without
+                                  !! overflow/underflow
+        real(wp),intent(in) :: small !! the min positive real(wp), small=2**(-1074) for the ieee.
+        real(wp),intent(in) :: big !! the max real(wp), big=2**1023 for the ieee standard.
+        logical :: h(n + 1) !! auxiliary variable: needed for the computation of the convex hull
+
+        integer :: i, iold, nzeros, j, jj
+        real(wp) :: r, th, ang, temp
+        real(wp) :: xsmall, xbig
+
+        real(wp),parameter :: pi2 = 2.0_wp * pi
+        real(wp),parameter :: sigma = 0.7_wp
+
+        xsmall = log(small)
+        xbig = log(big)
+        nz = 0
+        ! compute the logarithm a(i) of the moduli of the coefficients of
+        ! the polynomial and then the upper covex hull of the set (a(i),i)
+        do i = 1, n + 1
+            if (a(i) /= 0.0_wp) then
+                a(i) = log(a(i))
+            else
+                a(i) = -1.0e30_wp ! maybe replace with -huge(1.0_wp) ?? -JW
+            end if
+        end do
+        call cnvex(n + 1, a, h)
+        ! given the upper convex hull of the set (a(i),i) compute the moduli
+        ! of the starting approximations by means of rouche's theorem
+        iold = 1
+        th = pi2/n
+        do i = 2, n + 1
+            if (h(i)) then
+                nzeros = i - iold
+                temp = (a(iold) - a(i))/nzeros
+                ! check if the modulus is too small
+                if ((temp < -xbig) .and. (temp >= xsmall)) then
+                    write (*, *) 'warning:', nzeros, ' zero(s) are too small to'
+                    write (*, *) 'represent their inverses as complex(wp), they'
+                    write (*, *) 'are replaced by small numbers, the corresponding'
+                    write (*, *) 'radii are set to -1'
+                    nz = nz + nzeros
+                    r = 1.0_wp/big
+                end if
+                if (temp < xsmall) then
+                    nz = nz + nzeros
+                    write (*, *) 'warning: ', nzeros, ' zero(s) are too small to be'
+                    write (*, *) 'represented as complex(wp), they are set to 0'
+                    write (*, *) 'the corresponding radii are set to -1'
+                end if
+                ! check if the modulus is too big
+                if (temp > xbig) then
+                    r = big
+                    nz = nz + nzeros
+                    write (*, *) 'warning: ', nzeros, ' zeros(s) are too big to be'
+                    write (*, *) 'represented as complex(wp),'
+                    write (*, *) 'the corresponding radii are set to -1'
+                end if
+                if ((temp <= xbig) .and. (temp > max(-xbig, xsmall))) r = exp(temp)
+                ! compute nzeros approximations equally distributed in the disk of
+                ! radius r
+                ang = pi2/nzeros
+                do j = iold, i - 1
+                    jj = j - iold + 1
+                    if ((r <= (1.0_wp/big)) .or. (r == big)) radius(j) = -1.0_wp
+                    y(j) = r*(cos(ang*jj + th*i + sigma) + cmplx(0.0_wp, 1.0_wp, wp)*sin(ang*jj + th*i + sigma))
+                end do
+                iold = i
+            end if
+        end do
+
+    end subroutine start
+
+    subroutine cnvex(n, a, h)
+
+        !! compute the upper convex hull of the set (i,a(i)), i.e., the set of
+        !! vertices (i_k,a(i_k)), k=1,2,...,m, such that the points (i,a(i)) lie
+        !! below the straight lines passing through two consecutive vertices.
+        !! the abscissae of the vertices of the convex hull equal the indices of
+        !! the true  components of the logical output vector h.
+        !! the used method requires o(nlog n) comparisons and is based on a
+        !! divide-and-conquer technique. once the upper convex hull of two
+        !! contiguous sets  (say, {(1,a(1)),(2,a(2)),...,(k,a(k))} and
+        !! {(k,a(k)), (k+1,a(k+1)),...,(q,a(q))}) have been computed, then
+        !! the upper convex hull of their union is provided by the subroutine
+        !! cmerge. the program starts with sets made up by two consecutive
+        !! points, which trivially constitute a convex hull, then obtains sets
+        !! of 3,5,9... points,  up to  arrive at the entire set.
+        !! the program uses the subroutine  cmerge; the subroutine cmerge uses
+        !! the subroutines left, right and ctest. the latter tests the convexity
+        !! of the angle formed by the points (i,a(i)), (j,a(j)), (k,a(k)) in the
+        !! vertex (j,a(j)) up to within a given tolerance toler, where i<j<k.
+
+        implicit none
+
+        integer,intent(in) :: n
+        real(wp) :: a(n)
+        logical,intent(out) :: h(n)
+
+        integer :: i, j, k, m, nj, jc
+
+        do i = 1, n
+            h(i) = .true.
+        end do
+        ! compute k such that n-2<=2**k<n-1
+        k = int(log(n - 2.0_wp)/log(2.0_wp))
+        if (2**(k + 1) <= (n - 2)) k = k + 1
+        ! for each m=1,2,4,8,...,2**k, consider the nj pairs of consecutive
+        ! sets made up by m+1 points having the common vertex
+        ! (jc,a(jc)), where jc=m*(2*j+1)+1 and j=0,...,nj,
+        ! nj=max(0,int((n-2-m)/(m+m))).
+        ! compute the upper convex hull of their union by means of the
+        ! subroutine cmerge
+        m = 1
+        do i = 0, k
+            nj = max(0, int((n - 2 - m)/(m + m)))
+            do j = 0, nj
+                jc = (j + j + 1)*m + 1
+                call cmerge(n, a, jc, m, h)
+            end do
+            m = m + m
+        end do
+
+    end subroutine cnvex
+
+    subroutine left(n, h, i, il)
+
+        !! given as input the integer i and the vector h of logical, compute the
+        !! the maximum integer il such that il<i and h(il) is true.
+
+        implicit none
+
+        integer,intent(in) :: n !! length of the vector h
+        integer,intent(in) :: i !! integer
+        logical,intent(in) :: h(n) !! vector of logical
+        integer,intent(out) :: il !! maximum integer such that il<i, h(il)=.true.
+
+        do il = i - 1, 0, -1
+            if (h(il)) return
+        end do
+
+    end subroutine left
+
+    subroutine right(n, h, i, ir)
+
+        !! given as input the integer i and the vector h of logical, compute the
+        !! the minimum integer ir such that ir>i and h(il) is true.
+
+        implicit none
+
+        integer,intent(in) :: n !! length of the vector h
+        logical ,intent(in):: h(n) !! vector of logical
+        integer,intent(in) :: i !! integer
+        integer,intent(out) :: ir !! minimum integer such that ir>i, h(ir)=.true.
+
+        do ir = i + 1, n
+            if (h(ir)) return
+        end do
+
+    end subroutine right
+
+    subroutine cmerge(n, a, i, m, h)
+
+        !! given the upper convex hulls of two consecutive sets of pairs
+        !! (j,a(j)), compute the upper convex hull of their union
+
+        implicit none
+
+        integer,intent(in) :: n !! length of the vector a
+        real(wp),intent(in) :: a(n) !! vector defining the points (j,a(j))
+        integer,intent(in) :: i !! abscissa of the common vertex of the two sets
+        integer,intent(in) :: m !! the number of elements of each set is m+1
+        logical,intent(out) :: h(n) !! vector defining the vertices of the convex hull, i.e.,
+                                    !! h(j) is .true. if (j,a(j)) is a vertex of the convex hull
+                                    !! this vector is used also as output.
+
+        integer :: ir, il, irr, ill
+        logical :: tstl, tstr
+
+        ! at the left and the right of the common vertex (i,a(i)) determine
+        ! the abscissae il,ir, of the closest vertices of the upper convex
+        ! hull of the left and right sets, respectively
+        call left(n, h, i, il)
+        call right(n, h, i, ir)
+        ! check the convexity of the angle formed by il,i,ir
+        if (ctest(n, a, il, i, ir)) then
+            return
+        else
+            ! continue the search of a pair of vertices in the left and right
+            ! sets which yield the upper convex hull
+            h(i) = .false.
+            do
+                if (il == (i - m)) then
+                    tstl = .true.
+                else
+                    call left(n, h, il, ill)
+                    tstl = ctest(n, a, ill, il, ir)
+                end if
+                if (ir == min(n, i + m)) then
+                    tstr = .true.
+                else
+                    call right(n, h, ir, irr)
+                    tstr = ctest(n, a, il, ir, irr)
+                end if
+                h(il) = tstl
+                h(ir) = tstr
+                if (tstl .and. tstr) return
+                if (.not. tstl) il = ill
+                if (.not. tstr) ir = irr
+            end do
+        end if
+
+    end subroutine cmerge
+
+    function ctest(n, a, il, i, ir)
+
+        !! test the convexity of the angle formed by (il,a(il)), (i,a(i)),
+        !! (ir,a(ir)) at the vertex (i,a(i)), up to within the tolerance
+        !! toler. if convexity holds then the function is set to .true.,
+        !! otherwise ctest=.false. the parameter toler is set to 0.4 by default.
+
+        implicit none
+
+        integer,intent(in) :: n !! length of the vector a
+        integer,intent(in) :: i !! integers such that il<i<ir
+        integer,intent(in) :: il !! integers such that il<i<ir
+        integer,intent(in) :: ir !! integers such that il<i<ir
+        real(wp),intent(in) :: a(n) !! vector of double
+        logical :: ctest !! Result:
+                         !!
+                         !! * .true. if the angle formed by (il,a(il)), (i,a(i)), (ir,a(ir)) at
+                         !!   the vertex (i,a(i)), is convex up to within the tolerance
+                         !!   toler, i.e., if
+                         !!   (a(i)-a(il))*(ir-i)-(a(ir)-a(i))*(i-il)>toler.
+                         !!
+                         !! * .false.,  otherwise.
+
+        real(wp) :: s1, s2
+
+        real(wp), parameter :: toler = 0.4_wp
+
+        s1 = a(i) - a(il)
+        s2 = a(ir) - a(i)
+        s1 = s1*(ir - i)
+        s2 = s2*(i - il)
+        ctest = .false.
+        if (s1 > (s2 + toler)) ctest = .true.
+
+    end function ctest
 
 !*****************************************************************************************
 end module polyroots_module
