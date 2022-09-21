@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">2639 statements</a>
+    title="100.0% of total for modules and submodules.">2932 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -132,6 +132,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-polzeros">polzeros</a>
     </div>
   </div>
 </div>
@@ -193,6 +194,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-polzeros">polzeros</a>
     </div>
   </div>
 </div>
@@ -875,6 +877,75 @@ order of decreasing powers.</p></td>
   <td></td>  <td></td><td>::</td>
   <td><strong>fail</strong></td><td><p>true only if leading coefficient is zero or if cpoly
 has found fewer than <code>degree</code> zeros.</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-polzeros"></span><h3>public subroutine <a href='../proc/polzeros.html'>polzeros</a>(n, poly, nitmax, root, radius, err)</h3></div>
+  <div class="panel-body">
+       
+<p>Numerical computation of the roots of a polynomial having
+  complex coefficients, based on aberth's method.</p><a href="../proc/polzeros.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>degree of the polynomial.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>poly</strong>(n+1)</td><td><p>complex vector of n+1 components, <code>poly(i)</code> is the
+coefficient of <code>x**(i-1), i=1,...,n+1</code> of the polynomial <code>p(x)</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>nitmax</strong></td><td><p>the max number of allowed iterations.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>root</strong>(n)</td><td><p>complex vector of <code>n</code> components, containing the
+approximations to the roots of <code>p(x)</code>.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>radius</strong>(n)</td><td><p>real vector of <code>n</code> components, containing the error bounds to
+the approximations of the roots, i.e. the disk of center
+<code>root(i)</code> and radius <code>radius(i)</code> contains a root of <code>p(x)</code>, for
+<code>i=1,...,n</code>. <code>radius(i)</code> is set to -1 if the corresponding root
+cannot be represented as floating point due to overflow or
+underflow.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>logical,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>err</strong>(n+1)</td><td><p>vector of <code>n</code> components detecting an error condition:</p>
+<ul>
+<li><code>err(j)=.true.</code> if after <code>nitmax</code> iterations the stop condition
+   (3) is not satisfied for x(j)=root(j);</li>
+<li><code>err(j)=.false.</code>  otherwise, i.e., the root is reliable,
+   i.e., it can be viewed as an exact root of a
+   slightly perturbed polynomial.</li>
+</ul>
+<p>the vector <code>err</code> is used also in the routine convex hull for
+storing the abscissae of the vertices of the convex hull.</p></td>
 </tr>
 </tbody>
 </table>

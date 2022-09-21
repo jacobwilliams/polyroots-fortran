@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="18.3% of total for procedures.">401 statements</a>
+    title="17.7% of total for procedures.">401 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -772,7 +772,7 @@ has found fewer than <code>degree</code> zeros.</p></td>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">ar</span><span class="o">&lt;</span><span class="n">ai</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
 <span class="k">       </span><span class="n">cmod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ai</span><span class="o">*</span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">1.0_wp</span><span class="o">+</span><span class="p">(</span><span class="n">ar</span><span class="o">/</span><span class="n">ai</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="n">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">ar</span><span class="o">&lt;=</span><span class="n">ai</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="k">       </span><span class="n">cmod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="o">*</span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">2.0d0</span><span class="p">)</span><span class="w"></span>
+<span class="k">       </span><span class="n">cmod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="o">*</span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">2.0_wp</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">else</span>
 <span class="k">       </span><span class="n">cmod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="o">*</span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">1.0_wp</span><span class="o">+</span><span class="p">(</span><span class="n">ai</span><span class="o">/</span><span class="n">ar</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">end if</span>
