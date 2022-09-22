@@ -171,8 +171,7 @@
         istatus = 0
         call polzeros(degree, cp, 100, r, radius, err)
         if (any(err)) istatus = -1
-        call check_results(0, real(r, wp), aimag(r), degree)
-        !......
+        call check_results(istatus, real(r, wp), aimag(r), degree)
 
         if (wp /= REAL128) then
             write(*, '(/A,1x,i3)') 'polyroots'
@@ -256,7 +255,7 @@
         allocate(r(degree+1))
         allocate(cp(degree+1))
         allocate(radius(degree))
-        allocate(err(degree+1))
+        allocate(err(degree))
 
         end subroutine allocate_arrays
     !********************************************************************
