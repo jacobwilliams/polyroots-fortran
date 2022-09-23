@@ -270,13 +270,13 @@
         p        = [(0, i=1,degree+1)]
         q        = [(0, i=1,degree+1)]
         cp       = [(0, i=1,degree+1)]
-        err      = [(0, i=1,degree+1)]
 
         zr       = [(0, i=1,degree)]
         zi       = [(0, i=1,degree)]
         s        = [(0, i=1,degree)]
         r        = [(0, i=1,degree)]
         radius   = [(0, i=1,degree)]
+        err      = [(0, i=1,degree)]
         rr       = [(0, i=1,degree)]
         rc       = [(0, i=1,degree)]
 
