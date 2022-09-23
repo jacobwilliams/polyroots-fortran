@@ -44,6 +44,7 @@ module polyroots_module
 
     ! general polynomial routines:
     public :: polyroots
+    public :: cpolyroots
     public :: rpoly
     public :: cpoly
     public :: cpzero
@@ -2364,6 +2365,98 @@ subroutine polyroots(n, p, wr, wi, info)
 #endif
 
 end subroutine polyroots
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve for the roots of a complex polynomial equation by
+!  computing the eigenvalues of the companion matrix.
+!
+!  This one uses LAPACK for the eigen solver (`cgeev` or `zgeev`).
+!
+!### Reference
+!  * Based on [[polyroots]]
+!
+!### History
+!  * Jacob Williams, 9/22/2022 : created this routine.
+!
+!@note Works only for single and double precision.
+
+subroutine cpolyroots(n, p, w, info)
+
+    implicit none
+
+    integer, intent(in) :: n !! polynomial degree
+    complex(wp), dimension(n+1), intent(in) :: p !! polynomial coefficients array, in order of decreasing powers
+    complex(wp), dimension(n), intent(out) :: w  !! roots
+    integer, intent(out) :: info !! output from the lapack solver.
+                                 !!
+                                 !! * if `info=0` the routine converged.
+                                 !! * if `info=-999`, then the leading coefficient is zero.
+
+    integer :: i !! counter
+    complex(wp), allocatable, dimension(:,:) :: a !! companion matrix
+    complex(wp), allocatable, dimension(:) :: work !! work array
+    real(wp), allocatable, dimension(:) :: rwork !! rwork array (2*n)
+    complex(wp), dimension(1) :: vl, vr !! not used here
+
+#ifdef REAL32
+    interface
+        !subroutine sgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork,        info)
+        subroutine cgeev( jobvl, jobvr, n, a, lda, w,      vl, ldvl, vr, ldvr, work, lwork, rwork, info )
+            implicit none
+            character :: jobvl, jobvr
+            integer :: info, lda, ldvl, ldvr, lwork, n
+            real :: rwork( * )
+            complex :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), w( * ), work( * )
+        end subroutine cgeev
+    end interface
+#elif REAL128
+    ! do not have a quad solver in lapack
+#else
+    interface
+        subroutine zgeev( jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, lwork, rwork, info )
+            implicit none
+            character :: jobvl, jobvr
+            integer :: info, lda, ldvl, ldvr, lwork, n
+            double precision :: rwork( * )
+            complex*16 :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), w( * ), work( * )
+        end subroutine zgeev
+    end interface
+#endif
+
+    ! error check:
+    if (abs(p(1)) == 0.0_wp) then
+        info = -999
+        return
+    end if
+
+    ! allocate the work array:
+    allocate (work(3*n))
+    allocate(rwork(2*n))
+
+    ! create the companion matrix
+    allocate (a(n, n))
+    a = 0.0_wp
+    do i = 1, n - 1
+        a(i, i + 1) = 1.0_wp
+    end do
+    do i = n, 1, -1
+        a(n, n - i + 1) = -p(i + 1)/p(1)
+    end do
+
+    ! call the lapack solver:
+#ifdef REAL32
+    ! single precision
+    call cgeev('N', 'N', n, a, n, w, vl, 1, vr, 1, work, 3*n, rwork, info)
+#elif REAL128
+    error stop 'do not have a quad solver in lapack'
+#else
+    ! by default, use double precision:
+    call zgeev('N', 'N', n, a, n, w, vl, 1, vr, 1, work, 3*n, rwork, info)
+#endif
+
+end subroutine cpolyroots
 !*****************************************************************************************
 
 !*****************************************************************************************
