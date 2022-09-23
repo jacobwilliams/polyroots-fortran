@@ -31,7 +31,7 @@
     seed = 42
     call random_seed(put=seed)
 
-    do icase = 1, 1 !n_cases
+    do icase = 1, n_cases
 
         write(*,'(/A,I2,A)') '--------CASE ', icase, ' ---------'
 
