@@ -146,13 +146,13 @@
         ! if (fail) istatus = -1
         ! call check_results(istatus, zr, zi, degree)
 
-        write(*, '(/A,1x,i3)') 'cpqr79'
-        write(*, '(a)') '  real part               imaginary part         root'
+        ! write(*, '(/A,1x,i3)') 'cpqr79'
+        ! write(*, '(a)') '  real part               imaginary part         root'
         do i = 1, degree+1
             cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
         end do
-        call cpqr79(degree,cp,r,istatus)
-        call check_results(istatus, real(r,wp), aimag(r), degree)
+        ! call cpqr79(degree,cp,r,istatus)
+        ! call check_results(istatus, real(r,wp), aimag(r), degree)
 
         ! write(*, '(/A,1x,i3)') 'qr_algeq_solver'
         ! write(*, '(a)') '  real part               imaginary part         root'
@@ -162,16 +162,16 @@
         ! !..... these accept the complex coefficients in reverse order
         ! write(*, '(/A,1x,i3)') 'cmplx_roots_gen'
         ! write(*, '(a)') '  real part               imaginary part         root'
-        ! cp = reversez(cp)
+        cp = reversez(cp)
         ! call cmplx_roots_gen(degree, cp, r) ! no status flag
         ! call check_results(0, zr, zi, degree)
 
-        ! write(*, '(/A,1x,i3)') 'polzeros'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! istatus = 0
-        ! call polzeros(degree, cp, 100, r, radius, err)
-        ! if (any(err)) istatus = -1
-        ! call check_results(istatus, real(r, wp), aimag(r), degree)
+        write(*, '(/A,1x,i3)') 'polzeros'
+        write(*, '(a)') '  real part               imaginary part         root'
+        istatus = 0
+        call polzeros(degree, cp, 100, r, radius, err)
+        if (any(err)) istatus = -1
+        call check_results(istatus, real(r, wp), aimag(r), degree)
 
         ! if (wp /= REAL128) then
         !     write(*, '(/A,1x,i3)') 'polyroots'
