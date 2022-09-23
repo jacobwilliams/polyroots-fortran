@@ -29,7 +29,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`qr_algeq_solver`](https://jacobwilliams.github.io/polyroots-fortran/proc/qr_algeq_solver.html) | General | real | complex | [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf)
 [`polzeros`](https://jacobwilliams.github.io/polyroots-fortran/proc/polzeros.html) | General | complex | complex | [Bini (1996)](https://link.springer.com/article/10.1007/BF02207694)
 [`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
-[`fmpl`](https://jacobwilliams.github.io/polyroots-fortran/proc/fmpl.html) | General | complex | complex | [Cameron (2019)](https://link.springer.com/article/10.1007/s11075-018-0641-9)
+[`fpml`](https://jacobwilliams.github.io/polyroots-fortran/proc/fpml.html) | General | complex | complex | [Cameron (2019)](https://link.springer.com/article/10.1007/s11075-018-0641-9)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | --
 [`cpolyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpolyroots.html) | General | complex | complex | --
 
