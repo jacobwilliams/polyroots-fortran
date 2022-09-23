@@ -4362,7 +4362,7 @@ end subroutine cpoly
             err(i) = .true.
         end do
         ! select the starting points
-        call start(n, apolyr, root, radius, nzeros, small, big) !, err)
+        call start(n, apolyr, root, radius, nzeros, small, big)
         ! compute the coefficients of the backward-error polynomial
         do i = 1, n + 1
             apolyr(n - i + 2) = eps*apoly(i)*(3.8_wp*(n - i + 1) + 1)
@@ -4500,7 +4500,7 @@ end subroutine cpoly
 
     end subroutine aberth
 
-    subroutine start(n, a, y, radius, nz, small, big) !, h)
+    subroutine start(n, a, y, radius, nz, small, big)
 
         !! compute the starting approximations of the roots
         !!
