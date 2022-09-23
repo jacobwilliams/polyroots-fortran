@@ -53,6 +53,7 @@ module polyroots_module
     public :: qr_algeq_solver
     public :: cmplx_roots_gen
     public :: polzeros
+    public :: fpml
 
     ! special polynomial routines:
     public :: dcbcrt
@@ -3308,7 +3309,7 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
     stopping_crit2 = 0.0_wp  !  value not important, will be initialized anyway on the first loop (because mod(1,10)==1)
 
     ! next if-endif block is an EXTREME failsafe, not usually needed, and thus turned off in this version.
-    !if(.false.)then ! change false-->true if you would like to use caution about having first coefficient == 0
+    !if (.false.)then ! change false-->true if you would like to use caution about having first coefficient == 0
       if (degree<0) then
           write(*,*) 'Error: cmplx_laguerre2newton: degree<0'
           return
@@ -4766,6 +4767,427 @@ end subroutine cpoly
         if (s1 > (s2 + toler)) ctest = .true.
 
     end function ctest
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  FPML: Fourth order Parallelizable Modification of Laguerre's method
+!
+!### Reference
+!  * Thomas R. Cameron,
+!    "An effective implementation of a modified Laguerre method for the roots of a polynomial",
+!    Numerical Algorithms volume 82, pages 1065-1084 (2019)
+!    [link](https://link.springer.com/article/10.1007/s11075-018-0641-9)
+!
+!### History
+!  * Author: Thomas R. Cameron, Davidson College
+!    Last Modified: 1 November 2018
+!    Original code: https://github.com/trcameron/FPML
+!  * Jacob Williams, 9/21/2022 : refactored this code a bit.
+
+    subroutine fpml(poly, deg, roots, berr, cond, conv, itmax)
+
+        implicit none
+
+        integer, intent(in)      :: deg !! polynomial degree
+        complex(wp), intent(in)  :: poly(deg+1) !! coefficients
+        complex(wp), intent(out) :: roots(:) !! the root approximations
+        real(wp), intent(out)    :: berr(:) !! the backward error in each approximation
+        real(wp), intent(out)    :: cond(:) !! the condition number of each root approximation
+        integer, intent(out)     :: conv(:)
+        integer, intent(in)      :: itmax
+
+        integer                    :: i, j, nz
+        real(wp)                   :: r
+        real(wp), dimension(deg+1) :: alpha
+        complex(wp)                :: b, c, z
+
+        real(wp), parameter :: big = huge(1.0_wp)
+        real(wp), parameter :: small = tiny(1.0_wp)
+
+        ! precheck
+        alpha = abs(poly)
+        if (alpha(deg+1)<small) then
+            write(*,'(A)') 'Warning: leading coefficient too small.'
+            return
+        elseif (deg==1) then
+            roots(1) = -poly(1)/poly(2)
+            conv = 1
+            berr = 0.0_wp
+            cond(1) = (alpha(1) + alpha(2)*abs(roots(1)))/(abs(roots(1))*alpha(2))
+            return
+        elseif (deg==2) then
+            b = -poly(2)/(2.0_wp*poly(3))
+            c = sqrt(poly(2)**2-4.0_wp*poly(3)*poly(1))/(2.0_wp*poly(3))
+            roots(1) = b - c
+            roots(2) = b + c
+            conv = 1
+            berr = 0.0_wp
+            cond(1) = (alpha(1)+alpha(2)*abs(roots(1))+&
+                       alpha(3)*abs(roots(1))**2)/(abs(roots(1))*&
+                       abs(poly(2)+2.0_wp*poly(3)*roots(1)))
+            cond(2) = (alpha(1)+alpha(2)*abs(roots(2))+&
+                       alpha(3)*abs(roots(2))**2)/(abs(roots(2))*&
+                       abs(poly(2)+2.0_wp*poly(3)*roots(2)))
+            return
+        end if
+        ! initial estimates
+        conv = [(0, i=1,deg)]
+        nz = 0
+        call estimates(alpha, deg, roots, conv, nz)
+        ! main loop
+        alpha = [(alpha(i)*(3.8_wp*(i-1)+1),i=1,deg+1)]
+        main : do i=1,itmax
+            do j=1,deg
+                if (conv(j)==0) then
+                    z = roots(j)
+                    r = abs(z)
+                    if (r > 1.0_wp) then
+                        call rcheck_lag(poly, alpha, deg, b, c, z, r, conv(j), berr(j), cond(j))
+                    else
+                        call check_lag(poly, alpha, deg, b, c, z, r, conv(j), berr(j), cond(j))
+                    end if
+                    if (conv(j)==0) then
+                        call modify_lag(deg, b, c, z, j, roots)
+                        roots(j) = roots(j) - c
+                    else
+                        nz = nz + 1
+                        if (nz==deg) exit main
+                    end if
+                end if
+            end do
+        end do main
+        ! final check
+        if (minval(conv)==1) then
+            return
+        else
+            ! display warrning
+            write(*,'(A)') 'Some root approximations did not converge or experienced overflow/underflow.'
+            ! compute backward error and condition number for roots that did not converge;
+            ! note that this may produce overflow/underflow.
+            do j=1,deg
+                if (conv(j) /= 1) then
+                    z = roots(j)
+                    r = abs(z)
+                    if (r>1.0_wp) then
+                        z = 1/z
+                        r = 1/r
+                        c = 0
+                        b = poly(1)
+                        berr(j) = alpha(1)
+                        do i=2,deg+1
+                            c = z*c + b
+                            b = z*b + poly(i)
+                            berr(j) = r*berr(j) + alpha(i)
+                        end do
+                        cond(j) = berr(j)/abs(deg*b-z*c)
+                        berr(j) = abs(b)/berr(j)
+                    else
+                        c = 0
+                        b = poly(deg+1)
+                        berr(j) = alpha(deg+1)
+                        do i=deg,1,-1
+                            c = z*c + b
+                            b = z*b + poly(i)
+                            berr(j) = r*berr(j) + alpha(i)
+                        end do
+                        cond(j) = berr(j)/(r*abs(c))
+                        berr(j) = abs(b)/berr(j)
+                    end if
+                end if
+            end do
+        end if
+
+    contains
+
+    !************************************************
+    ! Computes backward error of root approximation
+    ! with moduli greater than 1.
+    ! If the backward error is less than eps, then
+    ! both backward error and condition number are
+    ! computed. Otherwise, the Laguerre correction terms
+    ! are computed and stored in variables b and c.
+    !************************************************
+    subroutine rcheck_lag(p, alpha, deg, b, c, z, r, conv, berr, cond)
+        implicit none
+        ! argument variables
+        integer, intent(in)        :: deg
+        integer, intent(out)       :: conv
+        real(wp), intent(in)       :: alpha(:), r
+        real(wp), intent(out)      :: berr, cond
+        complex(wp), intent(in)    :: p(:), z
+        complex(wp), intent(out)   :: b, c
+        ! local variables
+        integer     :: k
+        real(wp)    :: rr
+        complex(wp) :: a, zz
+
+        ! evaluate polynomial and derivatives
+        zz = 1.0_wp/z
+        rr = 1.0_wp/r
+        a = p(1)
+        b = 0
+        c = 0
+        berr = alpha(1)
+        do k=2,deg+1
+            c = zz*c + b
+            b = zz*b + a
+            a = zz*a + p(k)
+            berr = rr*berr + alpha(k)
+        end do
+        ! laguerre correction/ backward error and condition
+        if (abs(a)>eps*berr) then
+            b = b/a
+            c = 2.0_wp*(c/a)
+            c = zz**2*(deg-2*zz*b+zz**2*(b**2-c))
+            b = zz*(deg-zz*b)
+            if (check_nan_inf(b) .or. check_nan_inf(c)) conv = -1
+        else
+            cond = berr/abs(deg*a-zz*b)
+            berr = abs(a)/berr
+            conv = 1
+        end if
+    end subroutine rcheck_lag
+
+    !************************************************
+    ! Computes backward error of root approximation
+    ! with moduli less than or equal to 1.
+    ! If the backward error is less than eps, then
+    ! both backward error and condition number are
+    ! computed. Otherwise, the Laguerre correction terms
+    ! Gj and Hj are computed and stored in variables
+    ! b and c, respectively.
+    !************************************************
+    subroutine check_lag(p, alpha, deg, b, c, z, r, conv, berr, cond)
+        implicit none
+        ! argument variables
+        integer, intent(in)        :: deg
+        integer, intent(out)       :: conv
+        real(wp), intent(in)       :: alpha(:), r
+        real(wp), intent(out)      :: berr, cond
+        complex(wp), intent(in)    :: p(:), z
+        complex(wp), intent(out)   :: b, c
+        ! local variables
+        integer                    :: k
+        complex(wp)                :: a
+
+        ! evaluate polynomial and derivatives
+        a = p(deg+1)
+        b = 0.0_wp
+        c = 0.0_wp
+        berr = alpha(deg+1)
+        do k=deg,1,-1
+            c = z*c + b
+            b = z*b + a
+            a = z*a + p(k)
+            berr = r*berr + alpha(k)
+        end do
+        ! laguerre correction/ backward error and condition
+        if (abs(a)>eps*berr) then
+            b = b/a
+            c = b**2 - 2.0_wp*(c/a)
+            if (check_nan_inf(b) .or. check_nan_inf(c)) conv = -1
+        else
+            cond = berr/(r*abs(b))
+            berr = abs(a)/berr
+            conv = 1
+        end if
+    end subroutine check_lag
+
+    !************************************************
+    ! Computes modified Laguerre correction term of
+    ! the jth rooot approximation.
+    ! The coefficients of the polynomial of degree
+    ! deg are stored in p, all root approximations
+    ! are stored in roots. The values b, and c come
+    ! from rcheck_lag or check_lag, c will be used
+    ! to return the correction term.
+    !************************************************
+    subroutine modify_lag(deg, b, c, z, j, roots)
+        implicit none
+        ! argument variables
+        integer, intent(in)        :: deg, j
+        complex(wp), intent(in)    :: roots(:), z
+        complex(wp), intent(inout) :: b, c
+        ! local variables
+        integer                    :: k
+        complex(wp)                :: t
+
+        ! Aberth correction terms
+        do k=1,j-1
+            t = 1.0_wp/(z - roots(k))
+            b = b - t
+            c = c - t**2
+        end do
+        do k=j+1,deg
+            t = 1.0_wp/(z - roots(k))
+            b = b - t
+            c = c - t**2
+        end do
+        ! Laguerre correction
+        t = sqrt((deg-1)*(deg*c-b**2))
+        c = b + t
+        b = b - t
+        if (abs(b)>abs(c)) then
+            c = deg/b
+        else
+            c = deg/c
+        end if
+    end subroutine modify_lag
+
+    !************************************************
+    ! Computes initial estimates for the roots of an
+    ! univariate polynomial of degree deg, whose
+    ! coefficients moduli are stored in alpha. The
+    ! estimates are returned in the array roots.
+    ! The computation is performed as follows: First
+    ! the set (i,log(alpha(i))) is formed and the
+    ! upper envelope of the convex hull of this set
+    ! is computed, its indices are returned in the
+    ! array h (in descending order). For i=c-1,1,-1
+    ! there are h(i) - h(i+1) zeros placed on a
+    ! circle of radius alpha(h(i+1))/alpha(h(i))
+    ! raised to the 1/(h(i)-h(i+1)) power.
+    !************************************************
+    subroutine estimates(alpha, deg, roots, conv, nz)
+        implicit none
+
+        real(wp), intent(in)       :: alpha(:)
+        integer, intent(in)        :: deg
+        complex(wp), intent(inout) :: roots(:)
+        integer, intent(inout)     :: conv(:)
+        integer, intent(inout)     :: nz
+
+        integer                    :: c, i, j, k, nzeros
+        real(wp)                   :: a1, a2, ang, r, th
+        integer, dimension(deg+1)  :: h
+        real(wp), dimension(deg+1) :: a
+
+        real(wp), parameter :: pi2 = 2.0_wp * pi
+        real(wp), parameter :: sigma = 0.7_wp
+
+        ! Log of absolute value of coefficients
+        do i=1,deg+1
+            if (alpha(i)>0) then
+                a(i) = log(alpha(i))
+            else
+                a(i) = -1.0e30_wp
+            end if
+        end do
+        call conv_hull(deg+1, a, h, c)
+        k=0
+        th=pi2/deg
+        ! Initial Estiamtes
+        do i=c-1,1,-1
+            nzeros = h(i)-h(i+1)
+            a1 = alpha(h(i+1))**(1.0_wp/nzeros)
+            a2 = alpha(h(i))**(1.0_wp/nzeros)
+            if (a1 <= a2*small) then
+                ! r is too small
+                r = 0.0_wp
+                nz = nz + nzeros
+                conv(k+1:k+nzeros) = -1
+                roots(k+1:k+nzeros) = cmplx(0.0_wp,0.0_wp,wp)
+            else if (a1 >= a2*big) then
+                ! r is too big
+                r = big
+                nz = nz+nzeros
+                conv(k+1:k+nzeros) = -1
+                ang = pi2/nzeros
+                do j=1,nzeros
+                    roots(k+j) = r*cmplx(cos(ang*j+th*h(i)+sigma),sin(ang*j+th*h(i)+sigma),wp)
+                end do
+            else
+                ! r is just right
+                r = a1/a2
+                ang = pi2/nzeros
+                do j=1,nzeros
+                    roots(k+j) = r*cmplx(cos(ang*j+th*h(i)+sigma),sin(ang*j+th*h(i)+sigma),wp)
+                end do
+            end if
+            k = k+nzeros
+        end do
+    end subroutine estimates
+
+    !************************************************
+    ! Computex upper envelope of the convex hull of
+    ! the points in the array a, which has size n.
+    ! The number of vertices in the hull is equal to
+    ! c, and they are returned in the first c entries
+    ! of the array h.
+    ! The computation follows Andrew's monotone chain
+    ! algorithm: Each consecutive three pairs are
+    ! tested via cross to determine if they form
+    ! a clockwise angle, if so that current point
+    ! is rejected from the returned set.
+    !
+    !@note The original version of this code had a bug
+    !************************************************
+    subroutine conv_hull(n, a, h, c)
+        implicit none
+        ! argument variables
+        integer, intent(in)    :: n
+        integer, intent(inout) :: c
+        integer, intent(inout) :: h(:)
+        real(wp), intent(in)   :: a(:)
+        ! local variables
+        integer :: i
+
+        ! covex hull
+        c=0
+        do i=n,1,-1
+            !do while(c>=2 .and. cross(h, a, c, i)<eps) ! bug in original code here
+            do while (c>=2) ! bug in original code here
+               if (cross(h, a, c, i)>=eps) exit
+                c = c - 1
+            end do
+            c = c + 1
+            h(c) = i
+        end do
+    end subroutine conv_hull
+
+    !************************************************
+    ! Returns 2D cross product of OA and OB vectors,
+    ! where
+    ! O=(h(c-1),a(h(c-1))),
+    ! A=(h(c),a(h(c))),
+    ! B=(i,a(i)).
+    ! If det>0, then OAB makes counter-clockwise turn.
+    !************************************************
+    function cross(h, a, c, i) result(det)
+        implicit none
+        ! argument variables
+        integer, intent(in)  :: c, i
+        integer, intent(in)  :: h(:)
+        real(wp), intent(in) :: a(:)
+        ! local variables
+        real(wp) :: det
+
+        ! determinant
+        det = (a(i)-a(h(c-1)))*(h(c)-h(c-1)) - (a(h(c))-a(h(c-1)))*(i-h(c-1))
+
+    end function cross
+
+    !************************************************
+    ! Check if real or imaginary part of complex
+    ! number a is either NaN or Inf.
+    !************************************************
+    function check_nan_inf(a) result(res)
+        implicit none
+        ! argument variables
+        complex(wp),intent(in) :: a
+        ! local variables
+        logical  :: res
+        real(wp) :: re_a, im_a
+
+        ! check for nan and inf
+        re_a = real(a,wp)
+        im_a = aimag(a)
+        res = isnan(re_a) .or. isnan(im_a) .or. (abs(re_a)>big) .or. (abs(im_a)>big)
+
+    end function check_nan_inf
+
+    end subroutine fpml
 
 !*****************************************************************************************
 end module polyroots_module

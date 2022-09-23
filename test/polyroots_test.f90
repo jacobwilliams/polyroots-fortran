@@ -12,7 +12,8 @@
     integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 30 !! number of cases to run
 
-    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc
+    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc, berr,cond
+    integer,dimension(:),allocatable :: conv
     complex(wp),dimension(:),allocatable :: r, cp
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
@@ -175,6 +176,11 @@
         rc = aimag(r)
         call check_results(istatus, rr, rc, degree)
 
+        write(*, '(/A,1x,i3)') 'fpml'
+        write(*, '(a)') '  real part               imaginary part         root'
+        call fpml(cp, degree, r, berr, cond, conv, itmax=100)
+        call check_results(0, real(r, wp), aimag(r), degree)
+
         if (wp /= REAL128) then
             write(*, '(/A,1x,i3)') 'polyroots'
             write(*, '(a)') '  real part               imaginary part         root'
@@ -244,6 +250,7 @@
         p        = [(0, i=1,degree+1)]
         q        = [(0, i=1,degree+1)]
         cp       = [(0, i=1,degree+1)]
+        berr     = [(0, i=1,degree+1)]
 
         zr       = [(0, i=1,degree)]
         zi       = [(0, i=1,degree)]
@@ -253,6 +260,8 @@
         err      = [(.false., i=1,degree)]
         rr       = [(0, i=1,degree)]
         rc       = [(0, i=1,degree)]
+        cond     = [(0, i=1,degree)]
+        conv     = [(0, i=1,degree)]
 
         end subroutine allocate_arrays
     !********************************************************************
