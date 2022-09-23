@@ -104,67 +104,67 @@
 
         q = reverse(p) ! the following two accept the coefficients in reverse order
 
-        ! if (degree==2) then
-        !     ! also test this one (only for quadratic equations):
-        !     write(*, '(A,1x,i3)') 'dqdcrt'
-        !     write(*, '(a)') '  real part               imaginary part         root'
-        !     call dqdcrt(q, zr, zi)
-        !     call check_results(0, zr, zi, degree)
-        ! end if
+        if (degree==2) then
+            ! also test this one (only for quadratic equations):
+            write(*, '(A,1x,i3)') 'dqdcrt'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call dqdcrt(q, zr, zi)
+            call check_results(0, zr, zi, degree)
+        end if
 
-        ! if (degree==3) then
-        !     ! also test this one (only for cubic equations):
-        !     write(*, '(A,1x,i3)') 'dcbcrt'
-        !     write(*, '(a)') '  real part               imaginary part         root'
-        !     call dcbcrt(q, zr, zi)
-        !     call check_results(0, zr, zi, degree)
-        ! end if
+        if (degree==3) then
+            ! also test this one (only for cubic equations):
+            write(*, '(A,1x,i3)') 'dcbcrt'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call dcbcrt(q, zr, zi)
+            call check_results(0, zr, zi, degree)
+        end if
 
-        ! write(*, '(A,1x,i3)') 'rpoly'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! call rpoly(p, degree, zr, zi, istatus)
-        ! call check_results(istatus, zr, zi, degree)
+        write(*, '(A,1x,i3)') 'rpoly'
+        write(*, '(a)') '  real part               imaginary part         root'
+        call rpoly(p, degree, zr, zi, istatus)
+        call check_results(istatus, zr, zi, degree)
 
-        ! write(*, '(/A,1x,i3)') 'rpzero'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! istatus = 0 ! no estimates input
-        ! call rpzero(degree,p,r,istatus,s)
-        ! call check_results(istatus,real(r,wp), aimag(r), degree)
+        write(*, '(/A,1x,i3)') 'rpzero'
+        write(*, '(a)') '  real part               imaginary part         root'
+        istatus = 0 ! no estimates input
+        call rpzero(degree,p,r,istatus,s)
+        call check_results(istatus,real(r,wp), aimag(r), degree)
 
-        ! write(*, '(/A,1x,i3)') 'rpqr79'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! call rpqr79(degree,p,r,istatus)
-        ! call check_results(istatus,real(r,wp), aimag(r), degree)
+        write(*, '(/A,1x,i3)') 'rpqr79'
+        write(*, '(a)') '  real part               imaginary part         root'
+        call rpqr79(degree,p,r,istatus)
+        call check_results(istatus,real(r,wp), aimag(r), degree)
 
-        ! ! for now, just test the following two with the real coefficients only:
+        ! for now, just test the following two with the real coefficients only:
 
-        ! write(*, '(/A,1x,i3)') 'cpoly'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! q = 0.0_wp
-        ! istatus = 0
-        ! call cpoly(p,q,degree,zr,zi,fail)
-        ! if (fail) istatus = -1
-        ! call check_results(istatus, zr, zi, degree)
+        write(*, '(/A,1x,i3)') 'cpoly'
+        write(*, '(a)') '  real part               imaginary part         root'
+        q = 0.0_wp
+        istatus = 0
+        call cpoly(p,q,degree,zr,zi,fail)
+        if (fail) istatus = -1
+        call check_results(istatus, zr, zi, degree)
 
-        ! write(*, '(/A,1x,i3)') 'cpqr79'
-        ! write(*, '(a)') '  real part               imaginary part         root'
+        write(*, '(/A,1x,i3)') 'cpqr79'
+        write(*, '(a)') '  real part               imaginary part         root'
         do i = 1, degree+1
             cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
         end do
-        ! call cpqr79(degree,cp,r,istatus)
-        ! call check_results(istatus, real(r,wp), aimag(r), degree)
+        call cpqr79(degree,cp,r,istatus)
+        call check_results(istatus, real(r,wp), aimag(r), degree)
 
-        ! write(*, '(/A,1x,i3)') 'qr_algeq_solver'
-        ! write(*, '(a)') '  real part               imaginary part         root'
-        ! call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
-        ! call check_results(istatus, real(r,wp), aimag(r), degree)
+        write(*, '(/A,1x,i3)') 'qr_algeq_solver'
+        write(*, '(a)') '  real part               imaginary part         root'
+        call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
+        call check_results(istatus, real(r,wp), aimag(r), degree)
 
-        ! !..... these accept the complex coefficients in reverse order
-        ! write(*, '(/A,1x,i3)') 'cmplx_roots_gen'
-        ! write(*, '(a)') '  real part               imaginary part         root'
+        !..... these accept the complex coefficients in reverse order
+        write(*, '(/A,1x,i3)') 'cmplx_roots_gen'
+        write(*, '(a)') '  real part               imaginary part         root'
         cp = reversez(cp)
-        ! call cmplx_roots_gen(degree, cp, r) ! no status flag
-        ! call check_results(0, zr, zi, degree)
+        call cmplx_roots_gen(degree, cp, r) ! no status flag
+        call check_results(0, zr, zi, degree)
 
         write(*, '(/A,1x,i3)') 'polzeros'
         write(*, '(a)') '  real part               imaginary part         root'
@@ -175,12 +175,12 @@
         rc = aimag(r)
         call check_results(istatus, rr, rc, degree)
 
-        ! if (wp /= REAL128) then
-        !     write(*, '(/A,1x,i3)') 'polyroots'
-        !     write(*, '(a)') '  real part               imaginary part         root'
-        !     call polyroots(degree, p, zr, zi, istatus)
-        !     call check_results(istatus, zr, zi, degree)
-        ! end if
+        if (wp /= REAL128) then
+            write(*, '(/A,1x,i3)') 'polyroots'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call polyroots(degree, p, zr, zi, istatus)
+            call check_results(istatus, zr, zi, degree)
+        end if
 
     end do
 
@@ -287,7 +287,7 @@
             real(wp),parameter :: tol = 1.0e-2_wp  !! acceptable root tolerance for tests
             real(wp),parameter :: ftol = 1.0e-8_wp !! desired root tolerance
             real(wp),parameter :: ztol = 10*epsilon(1.0_wp) !! newton tol for x
-            logical,parameter :: polish = .false. !! skip polishing
+            logical,parameter :: polish = .true.
 
             if (istatus /= 0) then
                 failure = .true.
