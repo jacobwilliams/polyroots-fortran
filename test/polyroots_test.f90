@@ -12,7 +12,7 @@
     integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 30 !! number of cases to run
 
-    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius
+    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc
     complex(wp),dimension(:),allocatable :: r, cp
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
@@ -171,7 +171,9 @@
         istatus = 0
         call polzeros(degree, cp, 100, r, radius, err)
         if (any(err)) istatus = -1
-        call check_results(istatus, real(r, wp), aimag(r), degree)
+        rr = real(r, wp)
+        rc = aimag(r)
+        call check_results(istatus, rr, rc, degree)
 
         if (wp /= REAL128) then
             write(*, '(/A,1x,i3)') 'polyroots'
@@ -235,27 +237,22 @@
 
         integer,intent(in) :: d
 
+        integer :: i
+
         degree = d
 
-        if (allocated(p))  deallocate(p)
-        if (allocated(zr)) deallocate(zr)
-        if (allocated(zi)) deallocate(zi)
-        if (allocated(s))  deallocate(s)
-        if (allocated(r))  deallocate(r)
-        if (allocated(cp)) deallocate(cp)
-        if (allocated(q))  deallocate(q)
-        if (allocated(radius))  deallocate(radius)
-        if (allocated(err))  deallocate(err)
+        p        = [(0, i=1,degree+1)]
+        q        = [(0, i=1,degree+1)]
+        cp       = [(0, i=1,degree+1)]
 
-        allocate(p(degree+1))
-        allocate(q(degree+1))
-        allocate(zr(degree+1))
-        allocate(zi(degree+1))
-        allocate(s(degree+1))
-        allocate(r(degree+1))
-        allocate(cp(degree+1))
-        allocate(radius(degree))
-        allocate(err(degree))
+        zr       = [(0, i=1,degree)]
+        zi       = [(0, i=1,degree)]
+        s        = [(0, i=1,degree)]
+        r        = [(0, i=1,degree)]
+        radius   = [(0, i=1,degree)]
+        err      = [(.false., i=1,degree)]
+        rr       = [(0, i=1,degree)]
+        rc       = [(0, i=1,degree)]
 
         end subroutine allocate_arrays
     !********************************************************************
@@ -279,6 +276,7 @@
             real(wp),parameter :: tol = 1.0e-2_wp  !! acceptable root tolerance for tests
             real(wp),parameter :: ftol = 1.0e-8_wp !! desired root tolerance
             real(wp),parameter :: ztol = 10*epsilon(1.0_wp) !! newton tol for x
+            logical,parameter :: polish = .true.
 
             if (istatus /= 0) then
                 failure = .true.
@@ -293,7 +291,7 @@
                     root = root * z + p(i) ! horner's rule
                 end do
                 write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
-                if (abs(root) > ftol) then
+                if (polish .and. abs(root) > ftol) then
                     ! attempt to polish the root:
                     zr = re(j)
                     zi = im(j)
