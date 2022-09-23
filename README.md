@@ -31,6 +31,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
 [`fmpl`](https://jacobwilliams.github.io/polyroots-fortran/proc/fmpl.html) | General | complex | complex | [Cameron (2019)](https://link.springer.com/article/10.1007/s11075-018-0641-9)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | --
+[`cpolyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpolyroots.html) | General | complex | complex | --
 
 ## Compiling
 

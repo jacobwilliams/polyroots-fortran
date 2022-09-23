@@ -104,10 +104,13 @@
         write(*,'(A,1X/,*(g23.15/))') ' Coefficients: ', p(1:degree+1)
 
         q = reverse(p) ! the following two accept the coefficients in reverse order
+        do i = 1, degree+1
+            cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
+        end do
 
         if (degree==2) then
             ! also test this one (only for quadratic equations):
-            write(*, '(A,1x,i3)') 'dqdcrt'
+            write(*, '(/A,1x,i3)') 'dqdcrt'
             write(*, '(a)') '  real part               imaginary part         root'
             call dqdcrt(q, zr, zi)
             call check_results(0, zr, zi, degree)
@@ -115,13 +118,25 @@
 
         if (degree==3) then
             ! also test this one (only for cubic equations):
-            write(*, '(A,1x,i3)') 'dcbcrt'
+            write(*, '(/A,1x,i3)') 'dcbcrt'
             write(*, '(a)') '  real part               imaginary part         root'
             call dcbcrt(q, zr, zi)
             call check_results(0, zr, zi, degree)
         end if
 
-        write(*, '(A,1x,i3)') 'rpoly'
+        if (wp /= REAL128) then
+            write(*, '(/A,1x,i3)') 'polyroots'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call polyroots(degree, p, zr, zi, istatus)
+            call check_results(istatus, zr, zi, degree)
+
+            write(*, '(/A,1x,i3)') 'cpolyroots'
+            write(*, '(a)') '  real part               imaginary part         root'
+            call cpolyroots(degree, cp, r, istatus)
+            call check_results(istatus, real(r, wp), aimag(r), degree)
+        end if
+
+        write(*, '(/A,1x,i3)') 'rpoly'
         write(*, '(a)') '  real part               imaginary part         root'
         call rpoly(p, degree, zr, zi, istatus)
         call check_results(istatus, zr, zi, degree)
@@ -149,9 +164,6 @@
 
         write(*, '(/A,1x,i3)') 'cpqr79'
         write(*, '(a)') '  real part               imaginary part         root'
-        do i = 1, degree+1
-            cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
-        end do
         call cpqr79(degree,cp,r,istatus)
         call check_results(istatus, real(r,wp), aimag(r), degree)
 
@@ -165,7 +177,9 @@
         write(*, '(a)') '  real part               imaginary part         root'
         cp = reversez(cp)
         call cmplx_roots_gen(degree, cp, r) ! no status flag
-        call check_results(0, zr, zi, degree)
+        rr = real(r, wp)
+        rc = aimag(r)
+        call check_results(0, rr, rc, degree)
 
         write(*, '(/A,1x,i3)') 'polzeros'
         write(*, '(a)') '  real part               imaginary part         root'
@@ -180,13 +194,6 @@
         write(*, '(a)') '  real part               imaginary part         root'
         call fpml(cp, degree, r, berr, cond, conv, itmax=100)
         call check_results(0, real(r, wp), aimag(r), degree)
-
-        if (wp /= REAL128) then
-            write(*, '(/A,1x,i3)') 'polyroots'
-            write(*, '(a)') '  real part               imaginary part         root'
-            call polyroots(degree, p, zr, zi, istatus)
-            call check_results(istatus, zr, zi, degree)
-        end if
 
     end do
 
