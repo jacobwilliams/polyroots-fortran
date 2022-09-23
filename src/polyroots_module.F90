@@ -4963,9 +4963,9 @@ end subroutine cpoly
                     z = roots(j)
                     r = abs(z)
                     if (r>1.0_wp) then
-                        z = 1/z
-                        r = 1/r
-                        c = 0
+                        z = 1.0_wp/z
+                        r = 1.0_wp/r
+                        c = 0.0_wp
                         b = poly(1)
                         berr(j) = alpha(1)
                         do i=2,deg+1
@@ -5170,7 +5170,7 @@ end subroutine cpoly
         call conv_hull(deg+1, a, h, c)
         k=0
         th=pi2/deg
-        ! Initial Estiamtes
+        ! Initial Estimates
         do i=c-1,1,-1
             nzeros = h(i)-h(i+1)
             a1 = alpha(h(i+1))**(1.0_wp/nzeros)
