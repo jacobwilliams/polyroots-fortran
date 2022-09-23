@@ -4314,7 +4314,7 @@ end subroutine cpoly
                                           !! `i=1,...,n`. `radius(i)` is set to -1 if the corresponding root
                                           !! cannot be represented as floating point due to overflow or
                                           !! underflow.
-        logical,intent(out) :: err(n + 1) !! vector of `n` components detecting an error condition:
+        logical,intent(out) :: err(n)     !! vector of `n` components detecting an error condition:
                                           !!
                                           !!  * `err(j)=.true.` if after `nitmax` iterations the stop condition
                                           !!    (3) is not satisfied for x(j)=root(j);
