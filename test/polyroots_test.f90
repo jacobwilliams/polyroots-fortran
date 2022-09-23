@@ -279,6 +279,7 @@
             real(wp),parameter :: tol = 1.0e-2_wp  !! acceptable root tolerance for tests
             real(wp),parameter :: ftol = 1.0e-8_wp !! desired root tolerance
             real(wp),parameter :: ztol = 10*epsilon(1.0_wp) !! newton tol for x
+            logical,parameter :: polish = .false. !! skip polishing
 
             if (istatus /= 0) then
                 failure = .true.
@@ -293,7 +294,7 @@
                     root = root * z + p(i) ! horner's rule
                 end do
                 write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
-                if (abs(root) > ftol) then
+                if (polish .and. abs(root) > ftol) then
                     ! attempt to polish the root:
                     zr = re(j)
                     zi = im(j)
