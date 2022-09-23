@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">3206 statements</a>
+    title="100.0% of total for modules and submodules.">3243 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -128,6 +128,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolyroots">cpolyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
@@ -191,6 +192,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpzero">rpzero</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rpqr79">rpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolyroots">cpolyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
@@ -631,6 +633,51 @@ if these are known. On output: ith zero.</p></td>
 <td>intent(out),</td>
   <td></td>  <td>dimension(n)</td><td>::</td>
   <td><strong>wi</strong></td><td><p>imaginary parts of roots</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>info</strong></td><td><p>output from the lapack solver.</p>
+<ul>
+<li>if <code>info=0</code> the routine converged.</li>
+<li>if <code>info=-999</code>, then the leading coefficient is zero.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpolyroots"></span><h3>public subroutine <a href='../proc/cpolyroots.html'>cpolyroots</a>(n, p, w, info)</h3></div>
+  <div class="panel-body">
+       
+<p>Solve for the roots of a complex polynomial equation by
+  computing the eigenvalues of the companion matrix.</p><a href="../proc/cpolyroots.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>polynomial degree</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>p</strong></td><td><p>polynomial coefficients array, in order of decreasing powers</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out),</td>
+  <td></td>  <td>dimension(n)</td><td>::</td>
+  <td><strong>w</strong></td><td><p>roots</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
