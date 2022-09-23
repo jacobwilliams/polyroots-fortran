@@ -276,7 +276,7 @@
         s        = [(0, i=1,degree)]
         r        = [(0, i=1,degree)]
         radius   = [(0, i=1,degree)]
-        err      = [(0, i=1,degree)]
+        err      = [(.false., i=1,degree)]
         rr       = [(0, i=1,degree)]
         rc       = [(0, i=1,degree)]
 
