@@ -237,33 +237,48 @@
 
         integer,intent(in) :: d
 
+        integer :: i
+
         degree = d
 
-        if (allocated(p))  deallocate(p)
-        if (allocated(q))  deallocate(q)
-        if (allocated(cp)) deallocate(cp)
+        ! if (allocated(p))  deallocate(p)
+        ! if (allocated(q))  deallocate(q)
+        ! if (allocated(cp)) deallocate(cp)
 
-        if (allocated(zr)) deallocate(zr)
-        if (allocated(zi)) deallocate(zi)
-        if (allocated(s))  deallocate(s)
-        if (allocated(r))  deallocate(r)
-        if (allocated(radius))  deallocate(radius)
-        if (allocated(err))  deallocate(err)
-        if (allocated(rr))  deallocate(rr)
-        if (allocated(rc))  deallocate(rc)
+        ! if (allocated(zr)) deallocate(zr)
+        ! if (allocated(zi)) deallocate(zi)
+        ! if (allocated(s))  deallocate(s)
+        ! if (allocated(r))  deallocate(r)
+        ! if (allocated(radius))  deallocate(radius)
+        ! if (allocated(err))  deallocate(err)
+        ! if (allocated(rr))  deallocate(rr)
+        ! if (allocated(rc))  deallocate(rc)
 
-        allocate(p(degree+1))
-        allocate(q(degree+1))
-        allocate(cp(degree+1))
+        ! allocate(p(degree+1))
+        ! allocate(q(degree+1))
+        ! allocate(cp(degree+1))
 
-        allocate(zr(degree))
-        allocate(zi(degree))
-        allocate(s(degree))
-        allocate(r(degree))
-        allocate(radius(degree))
-        allocate(err(degree))
-        allocate(rr(degree))
-        allocate(rc(degree))
+        ! allocate(zr(degree))
+        ! allocate(zi(degree))
+        ! allocate(s(degree))
+        ! allocate(r(degree))
+        ! allocate(radius(degree))
+        ! allocate(err(degree))
+        ! allocate(rr(degree))
+        ! allocate(rc(degree))
+
+        p        = [(0, i=1,degree+1)]
+        q        = [(0, i=1,degree+1)]
+        cp       = [(0, i=1,degree+1)]
+
+        zr       = [(0, i=1,degree)]
+        zi       = [(0, i=1,degree)]
+        s        = [(0, i=1,degree)]
+        r        = [(0, i=1,degree)]
+        radius   = [(0, i=1,degree)]
+        err      = [(0, i=1,degree)]
+        rr       = [(0, i=1,degree)]
+        rc       = [(0, i=1,degree)]
 
         end subroutine allocate_arrays
     !********************************************************************
