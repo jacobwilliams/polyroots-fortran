@@ -12,7 +12,7 @@
     integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 30 !! number of cases to run
 
-    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius
+    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc
     complex(wp),dimension(:),allocatable :: r, cp
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
@@ -171,7 +171,9 @@
         istatus = 0
         call polzeros(degree, cp, 100, r, radius, err)
         if (any(err)) istatus = -1
-        call check_results(istatus, real(r, wp), aimag(r), degree)
+        rr = real(r, wp)
+        rc = aimag(r)
+        call check_results(istatus, rr, rc, degree)
 
         ! if (wp /= REAL128) then
         !     write(*, '(/A,1x,i3)') 'polyroots'
@@ -238,24 +240,30 @@
         degree = d
 
         if (allocated(p))  deallocate(p)
+        if (allocated(q))  deallocate(q)
+        if (allocated(cp)) deallocate(cp)
+
         if (allocated(zr)) deallocate(zr)
         if (allocated(zi)) deallocate(zi)
         if (allocated(s))  deallocate(s)
         if (allocated(r))  deallocate(r)
-        if (allocated(cp)) deallocate(cp)
-        if (allocated(q))  deallocate(q)
         if (allocated(radius))  deallocate(radius)
         if (allocated(err))  deallocate(err)
+        if (allocated(rr))  deallocate(rr)
+        if (allocated(rc))  deallocate(rc)
 
         allocate(p(degree+1))
         allocate(q(degree+1))
-        allocate(zr(degree+1))
-        allocate(zi(degree+1))
-        allocate(s(degree+1))
-        allocate(r(degree+1))
         allocate(cp(degree+1))
+
+        allocate(zr(degree))
+        allocate(zi(degree))
+        allocate(s(degree))
+        allocate(r(degree))
         allocate(radius(degree))
         allocate(err(degree))
+        allocate(rr(degree))
+        allocate(rc(degree))
 
         end subroutine allocate_arrays
     !********************************************************************
