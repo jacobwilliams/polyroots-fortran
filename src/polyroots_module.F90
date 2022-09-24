@@ -59,6 +59,7 @@ module polyroots_module
     ! special polynomial routines:
     public :: dcbcrt
     public :: dqdcrt
+    public :: lebedev
 
     ! utility routines:
     public :: newton_root_polish
@@ -5281,6 +5282,135 @@ end subroutine cpoly
     end function check_nan_inf
 
     end subroutine fpml
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Compute the roots of a cubic equation with real coefficients.
+!
+!### Reference
+!  * V. I. Lebedev, "On formulae for roots of cubic equation",
+!    Sov. J. Numer. Anal. Math. Modelling, Vol.6, No.4, pp. 315-324 (1991)
+!
+!### History
+!  * Jacob Williams, 9/23/2022 : based on the `TC` routine in the reference.
+
+    subroutine lebedev(coeffs,zr,zi)
+
+        implicit none
+
+        real(wp),dimension(4),intent(in) :: coeffs !! vector of coefficients in order of decreasing powers
+        real(wp), dimension(3), intent(out) :: zr !! output vector of real parts of the zeros
+        real(wp), dimension(3), intent(out) :: zi !! output vector of imaginary parts of the zeros
+
+        integer :: l !! number of complex roots (0 or 2)
+        real(wp) :: a,b,c,d,p,t1,t2,t3,t4,t,x1,x2,x3
+
+        real(wp),parameter :: sqrt3 = sqrt(3.0_wp)
+        real(wp),parameter :: s = 1.0_wp / 3.0_wp
+        real(wp),parameter :: small = 10.0_wp**int(log(epsilon(1.0_wp)))  ! this was 1.0d-32 in the original code
+
+        ! coefficients:
+        a = coeffs(1)
+        b = coeffs(2)
+        c = coeffs(3)
+        d = coeffs(4)
+
+        main : block
+            t = sqrt3
+            t2 = b*b
+            t3 = 3.0_wp*a
+            t4 = t3*c
+            p = t2 - t4
+            x3 = abs(p)
+            x3 = sqrt(x3)
+            x1 = b*(t4-p-p) - 3.0_wp*t3*t3*d
+            x2 = abs(x1)
+            x2 = x2**s
+            t2 = 1.0_wp/t3
+            t3 = b*t2
+            if ( x3>small*x2 ) then
+                t1 = 0.5_wp*x1/(p*x3)
+                x2 = abs(t1)
+                t2 = x3*t2
+                t = t*t2
+                t4 = x2*x2
+                if ( p<0.0_wp ) then
+                    p = x2 + sqrt(t4+1.0_wp)
+                    p = p**s
+                    t4 = -1.0_wp/p
+                    if ( t1>=0.0_wp ) t2 = -t2
+                    x1 = (p+t4)*t2
+                    x2 = -0.5_wp*x1
+                    x3 = 0.5_wp*t*(p-t4)
+                    l = 2
+                    exit main
+                else
+                    x3 = abs(1.0_wp-t4)
+                    x3 = sqrt(x3)
+                    if ( t4>1.0_wp ) then
+                        p = (x2+x3)**s
+                        t4 = 1.0_wp/p
+                        if ( t1<0 ) t2 = -t2
+                        x1 = (p+t4)*t2
+                        x2 = -0.5_wp*x1
+                        x3 = 0.5_wp*t*(p-t4)
+                        l = 2
+                        exit main
+                    else
+                        t4 = atan2(x3,t1)*s
+                        x3 = cos(t4)
+                        t4 = sqrt(1.0_wp-x3*x3)*t
+                        x3 = x3*t2
+                        x1 = x3 + x3
+                        x2 = t4 - x3
+                        x3 = -(t4+x3)
+                        if ( x2<=x3 ) then
+                            t2 = x2
+                            x2 = x3
+                            x3 = t2
+                        endif
+                    endif
+                endif
+            else
+                if ( x1<0.0_wp ) x2 = -x2
+                x1 = x2*t2
+                x2 = -0.5_wp*x1
+                x3 = -t*x2
+                if ( abs(x3)>small ) then
+                    l = 2
+                    exit main
+                end if
+                x3 = x2
+            endif
+            l = 0
+            if ( x1<=x2 ) then
+                t2 = x1
+                x1 = x2
+                x2 = t2
+                if ( t2<=x3 ) then
+                    x2 = x3
+                    x3 = t2
+                endif
+            endif
+            x3 = x3 - t3
+        end block main
+
+        x1 = x1 - t3
+        x2 = x2 - t3
+
+        ! outputs:
+        select case (l)
+        case(0) ! three real roots
+            zr = [x1,x2,x3]
+            zi = 0.0_wp
+        case(2) ! one real and two commplex roots
+            zr = [x1, x2, x2]
+            zi = [0.0_wp, x3, -x3]
+        end select
+
+    end subroutine lebedev
+!*****************************************************************************************
 
 !*****************************************************************************************
 end module polyroots_module

@@ -10,7 +10,7 @@
     implicit none
 
     integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
-    integer,parameter :: n_cases = 30 !! number of cases to run
+    integer,parameter :: n_cases = 14 + 110 !! number of cases to run
 
     real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc, berr,cond
     integer,dimension(:),allocatable :: conv
@@ -21,8 +21,10 @@
     logical :: fail
     logical :: failure !! if any of the tests failed
     logical,dimension(:),allocatable :: err
-
-    !--------------------------------------
+    real(wp) :: x1,x2,x3
+    integer :: l
+    integer :: idegree !! counter for degrees to test
+    integer :: n_degree !! number of tests run for each degree so far
 
     failure = .false.
 
@@ -31,10 +33,12 @@
     allocate(seed(n))
     seed = 42
     call random_seed(put=seed)
+    idegree = 0
+    n_degree = 1
 
     do icase = 1, n_cases
 
-        write(*,'(/A,I2,A)') '--------CASE ', icase, ' ---------'
+        write(*,'(/A,I3,A)') '--------CASE ', icase, ' ---------'
 
         select case (icase)
         case(1)
@@ -84,7 +88,6 @@
         case(12)
             call allocate_arrays(3)
             p = [ -8.0e18_wp,3.0e12_wp,5.0e6_wp,1.0_wp]
-
         case(13)
             call allocate_arrays(3)
             p = [4.0_wp, 3.0_wp, 2.0_wp, 1.0_wp]
@@ -93,8 +96,14 @@
             p = [3.0_wp, 2.0_wp, 1.0_wp]
 
         case default
-            ! random coefficients
-            call allocate_arrays(get_random_integer_number(3,max_degree))
+            ! test a set of random coefficients for each degree:
+            if (idegree>10) then
+                idegree = 0
+                n_degree = n_degree + 1
+            end if
+            idegree = idegree + 1
+            call allocate_arrays(n_degree)
+
             do i = 1, degree+1
                 p(i)  = get_random_number(-1000.0_wp,1000.0_wp)
             end do
@@ -110,90 +119,67 @@
 
         if (degree==2) then
             ! also test this one (only for quadratic equations):
-            write(*, '(/A,1x,i3)') 'dqdcrt'
-            write(*, '(a)') '  real part               imaginary part         root'
             call dqdcrt(q, zr, zi)
-            call check_results(0, zr, zi, degree)
+            call check_results('dqdcrt', 0, zr, zi, degree)
         end if
 
         if (degree==3) then
-            ! also test this one (only for cubic equations):
-            write(*, '(/A,1x,i3)') 'dcbcrt'
-            write(*, '(a)') '  real part               imaginary part         root'
+            ! also test these (only for cubic equations):
             call dcbcrt(q, zr, zi)
-            call check_results(0, zr, zi, degree)
+            call check_results('dcbcrt', 0, zr, zi, degree)
+
+            call lebedev(p, zr, zi)
+            call check_results('lebedev', 0, zr, zi, degree)
         end if
 
         if (wp /= REAL128) then
-            write(*, '(/A,1x,i3)') 'polyroots'
-            write(*, '(a)') '  real part               imaginary part         root'
             call polyroots(degree, p, zr, zi, istatus)
-            call check_results(istatus, zr, zi, degree)
+            call check_results('polyroots', istatus, zr, zi, degree)
 
-            write(*, '(/A,1x,i3)') 'cpolyroots'
-            write(*, '(a)') '  real part               imaginary part         root'
             call cpolyroots(degree, cp, r, istatus)
-            call check_results(istatus, real(r, wp), aimag(r), degree)
+            call check_results('cpolyroots', istatus, real(r, wp), aimag(r), degree)
         end if
 
-        write(*, '(/A,1x,i3)') 'rpoly'
-        write(*, '(a)') '  real part               imaginary part         root'
         call rpoly(p, degree, zr, zi, istatus)
-        call check_results(istatus, zr, zi, degree)
+        call check_results('rpoly', istatus, zr, zi, degree)
 
-        write(*, '(/A,1x,i3)') 'rpzero'
-        write(*, '(a)') '  real part               imaginary part         root'
         istatus = 0 ! no estimates input
         call rpzero(degree,p,r,istatus,s)
-        call check_results(istatus,real(r,wp), aimag(r), degree)
+        call check_results('rpzero', istatus, real(r,wp), aimag(r), degree)
 
-        write(*, '(/A,1x,i3)') 'rpqr79'
-        write(*, '(a)') '  real part               imaginary part         root'
         call rpqr79(degree,p,r,istatus)
-        call check_results(istatus,real(r,wp), aimag(r), degree)
+        call check_results('rpqr79', istatus, real(r,wp), aimag(r), degree)
 
         ! for now, just test the following two with the real coefficients only:
 
-        write(*, '(/A,1x,i3)') 'cpoly'
-        write(*, '(a)') '  real part               imaginary part         root'
         q = 0.0_wp
         istatus = 0
         call cpoly(p,q,degree,zr,zi,fail)
         if (fail) istatus = -1
-        call check_results(istatus, zr, zi, degree)
+        call check_results('cpoly', istatus, zr, zi, degree)
 
-        write(*, '(/A,1x,i3)') 'cpqr79'
-        write(*, '(a)') '  real part               imaginary part         root'
         call cpqr79(degree,cp,r,istatus)
-        call check_results(istatus, real(r,wp), aimag(r), degree)
+        call check_results('cpqr79', istatus, real(r,wp), aimag(r), degree)
 
-        write(*, '(/A,1x,i3)') 'qr_algeq_solver'
-        write(*, '(a)') '  real part               imaginary part         root'
         call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
-        call check_results(istatus, real(r,wp), aimag(r), degree)
+        call check_results('qr_algeq_solver', istatus, real(r,wp), aimag(r), degree)
 
         !..... these accept the complex coefficients in reverse order
-        write(*, '(/A,1x,i3)') 'cmplx_roots_gen'
-        write(*, '(a)') '  real part               imaginary part         root'
         cp = reversez(cp)
         call cmplx_roots_gen(degree, cp, r) ! no status flag
         rr = real(r, wp)
         rc = aimag(r)
-        call check_results(0, rr, rc, degree)
+        call check_results('cmplx_roots_gen', 0, rr, rc, degree)
 
-        write(*, '(/A,1x,i3)') 'polzeros'
-        write(*, '(a)') '  real part               imaginary part         root'
         istatus = 0
         call polzeros(degree, cp, 100, r, radius, err)
         if (any(err)) istatus = -1
         rr = real(r, wp)
         rc = aimag(r)
-        call check_results(istatus, rr, rc, degree)
+        call check_results('polzeros', istatus, rr, rc, degree)
 
-        write(*, '(/A,1x,i3)') 'fpml'
-        write(*, '(a)') '  real part               imaginary part         root'
         call fpml(cp, degree, r, berr, cond, conv, itmax=100)
-        call check_results(0, real(r, wp), aimag(r), degree)
+        call check_results('fpml', 0, real(r, wp), aimag(r), degree)
 
     end do
 
@@ -274,12 +260,13 @@
     !********************************************************************
 
     !*****************************************************************************************
-        subroutine check_results(istatus, re, im, degree)
+        subroutine check_results(name, istatus, re, im, degree)
 
             !! check the results.
             !! if any are not within the tolerance,
             !! then also try to polish them using the newton method.
 
+            character(len=*),intent(in) :: name !! name of method
             integer,intent(in) :: istatus !! status flag (0 = success)
             real(wp),dimension(:),intent(in) :: re, im
             integer,intent(in) :: degree
@@ -294,11 +281,15 @@
             real(wp),parameter :: ztol = 10*epsilon(1.0_wp) !! newton tol for x
             logical,parameter :: polish = .true.
 
+            write(*, '(/A,1x,i3)') trim(name)
+
             if (istatus /= 0) then
                 failure = .true.
                 write(*,'(A,1x,i3)') 'Error: method did not converge. istatus = ', istatus
                 return
             end if
+
+            write(*, '(a)') '  real part               imaginary part         root'
 
             do j = 1, degree
                 z = cmplx(re(j), im(j), wp)
@@ -373,35 +364,6 @@
 
         end function get_random_integer_number
     !*****************************************************************************************
-
-    subroutine sort(x)
-
-    !! sort the vector x, according to nonincreasing real parts
-
-    complex(wp),dimension(:),intent(inout) :: x
-
-    integer     :: n,k,i,imax
-    complex(wp) :: temp
-    real(wp)    :: amax,rxi
-
-    n = size(x)
-
-    do k=1,n-1
-        amax=real(x(k), wp)
-        imax=k
-        do i=k+1,n
-            rxi=real(x(i), wp)
-            if (amax<rxi) then
-                amax=rxi
-                imax=i
-            endif
-        end do
-        temp=x(k)
-        x(k)=x(imax)
-        x(imax)=temp
-    end do
-
-    end subroutine sort
 
 !*****************************************************************************************
     end program polyroots_test
