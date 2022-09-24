@@ -3273,7 +3273,7 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
         !denom_sqrt=sqrt( (degree-1)*(degree*H-G2) )
 
         ! NEXT LINE PROBABLY CAN BE COMMENTED OUT
-        if (real(denom_sqrt)>=0.0_wp) then
+        if (real(denom_sqrt, wp)>=0.0_wp) then
           ! real part of a square root is positive for probably all compilers. You can
           ! test this on your compiler and if so, you can omit this check
           denom=c_one_nth+n_1_nth*denom_sqrt
