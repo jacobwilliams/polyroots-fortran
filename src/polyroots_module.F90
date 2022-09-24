@@ -3313,12 +3313,12 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
 
       complex(wp), intent(out) :: x0, x1
       complex(wp), dimension(*), intent(in) :: poly !! coeffs of the polynomial
-                                                         !! an array of polynomial cooefs,
-                                                         !! length = degree+1, poly(1) is constant
-                                                         !!```
-                                                         !!        1              2             3
-                                                         !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2
-                                                         !!```
+                                                    !! an array of polynomial cooefs,
+                                                    !! length = degree+1, poly(1) is constant
+                                                    !!```
+                                                    !!        1              2             3
+                                                    !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2
+                                                    !!```
       complex(wp) :: a, b, c, b2, delta
 
       a=poly(3)
