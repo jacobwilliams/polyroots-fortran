@@ -452,7 +452,7 @@ very rough idea where some of the roots can be.
 <span class="w">        </span><span class="c">!denom_sqrt=sqrt( (degree-1)*(degree*H-G2) )</span>
 
 <span class="w">        </span><span class="c">! NEXT LINE PROBABLY CAN BE COMMENTED OUT</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">real</span><span class="p">(</span><span class="n">denom_sqrt</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">real</span><span class="p">(</span><span class="n">denom_sqrt</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
 <span class="w">          </span><span class="c">! real part of a square root is positive for probably all compilers. You can</span>
 <span class="w">          </span><span class="c">! test this on your compiler and if so, you can omit this check</span>
 <span class="w">          </span><span class="n">denom</span><span class="o">=</span><span class="n">c_one_nth</span><span class="o">+</span><span class="n">n_1_nth</span><span class="o">*</span><span class="n">denom_sqrt</span><span class="w"></span>
