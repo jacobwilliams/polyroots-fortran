@@ -167,14 +167,10 @@
   <td></td>  <td></td><td>::</td>
   <td><strong>istat</strong></td><td><p>status output:</p>
 <ul>
-<li>0 : success</li>
-<li>-1 : leading coefficient is zero</li>
-<li>-2 : no roots found</li>
-<li>
-<blockquote>
-<p>0 : the number of zeros found</p>
-</blockquote>
-</li>
+<li><code>0</code> : success</li>
+<li><code>-1</code> : leading coefficient is zero</li>
+<li><code>-2</code> : no roots found</li>
+<li><code>&gt;0</code> : the number of zeros found</li>
 </ul></td>
 </tr>
 </tbody>
@@ -216,10 +212,10 @@
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zeroi</span><span class="w"> </span><span class="c">!! output vector of imaginary parts of the zeros</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">istat</span><span class="w"> </span><span class="c">!! status output:</span>
 <span class="w">                                  </span><span class="c">!!</span>
-<span class="w">                                  </span><span class="c">!! * 0 : success</span>
-<span class="w">                                  </span><span class="c">!! * -1 : leading coefficient is zero</span>
-<span class="w">                                  </span><span class="c">!! * -2 : no roots found</span>
-<span class="w">                                  </span><span class="c">!! * &gt;0 : the number of zeros found</span>
+<span class="w">                                  </span><span class="c">!! * `0` : success</span>
+<span class="w">                                  </span><span class="c">!! * `-1` : leading coefficient is zero</span>
+<span class="w">                                  </span><span class="c">!! * `-2` : no roots found</span>
+<span class="w">                                  </span><span class="c">!! * `&gt;0` : the number of zeros found</span>
 
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">qp</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">qk</span><span class="p">,</span><span class="w"> </span><span class="n">svk</span><span class="p">,</span><span class="w"> </span><span class="n">temp</span><span class="p">,</span><span class="w"> </span><span class="n">pt</span><span class="w"></span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sr</span><span class="p">,</span><span class="w"> </span><span class="n">si</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">a1</span><span class="p">,</span><span class="w"> </span><span class="n">a3</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
