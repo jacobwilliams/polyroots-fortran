@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">3457 statements</a>
+    title="100.0% of total for modules and submodules.">3697 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -137,6 +137,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-fpml">fpml</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rroots_chebyshev_cubic">rroots_chebyshev_cubic</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-sort_roots">sort_roots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-dpolz">dpolz</a>
     </div>
   </div>
 </div>
@@ -203,6 +204,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-fpml">fpml</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rroots_chebyshev_cubic">rroots_chebyshev_cubic</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-sort_roots">sort_roots</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-dpolz">dpolz</a>
     </div>
   </div>
 </div>
@@ -1122,6 +1124,64 @@ increasing order (<code>x(1) &lt;= ... &lt;= x(n)</code>)</p></td>
 <td>intent(inout),</td>
   <td></td>  <td>dimension(:)</td><td>::</td>
   <td><strong>y</strong></td><td><p>the imaginary parts to be sorted</p></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-dpolz"></span><h3>public subroutine <a href='../proc/dpolz.html'>dpolz</a>(ndeg, a, zr, zi, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>Given coefficients <code>A(1),...,A(NDEG+1)</code> this subroutine computes the
+  <code>NDEG</code> roots of the polynomial <code>A(1)*X**NDEG + ... + A(NDEG+1)</code>
+  storing the roots as complex numbers in the array <code>Z</code>.
+  Require <code>NDEG &gt;= 1</code> and <code>A(1) /= 0</code>.</p><a href="../proc/dpolz.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ndeg</strong></td><td><p>Degree of the polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(ndeg+1)</td><td><p>Contains the coefficients of a polynomial, high
+order coefficient first with <code>A(1)/=0</code>.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zr</strong>(ndeg)</td><td><p>Contains the real parts of the roots</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zi</strong>(ndeg)</td><td><p>Contains the imaginary parts of the roots</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>Error flag:</p>
+<ul>
+<li>Set by the subroutine to <code>0</code> on normal termination.</li>
+<li>Set to <code>-1</code> if <code>A(1)=0</code>.</li>
+<li>Set to <code>-2</code> if <code>NDEG&lt;=0</code>.</li>
+<li>Set to <code>J &gt; 0</code> if the iteration count limit
+  has been exceeded and roots 1 through <code>J</code> have not been
+  determined.</li>
+</ul></td>
 </tr>
 </tbody>
 </table>
