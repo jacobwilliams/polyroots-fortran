@@ -98,23 +98,20 @@ The polyroots-fortran source code and related files and documentation are distri
 * Julia: [PolynomialRoots.jl](https://github.com/giordano/PolynomialRoots.jl), [FastPolynomialRoots.jl](https://github.com/andreasnoack/FastPolynomialRoots.jl), [Polynomials.jl](https://github.com/JuliaMath/Polynomials.jl)
 * Python: [numpy.polynomial.polynomial](https://docs.scipy.org/doc//numpy-1.10.4/reference/routines.polynomials.polynomial.html)
 
-## References
+## Other references and codes
 
 * [GAMS Class F1a](https://gams.nist.gov/cgi-bin/serve.cgi/Class/F1a).
-* `RPOLY` and `CPOLY` from Jenkins and Traub (1975) which can be found on Netlib. See also [Alan Miller's updated version](https://jblevins.org/mirror/amiller/rpoly.f90).
-* `qralg.f` (part of [`/opt/companion.tgz`](https://netlib.org/opt/companion.tgz) on Netlib) from [Edelman & Murakami (1995)](https://www.ams.org/journals/mcom/1995-64-210/S0025-5718-1995-1262279-2/S0025-5718-1995-1262279-2.pdf),
-* [Codes from Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/) and
 * [eiscor - eigensolvers based on unitary core transformations](https://github.com/eiscor/eiscor) containing the AMVW method from the work of [Aurentz et al. (2015), Fast and Backward Stable Computation of Roots of Polynomials](https://doi.org/10.1137/140983434) (an earlier version can be picked up from [the website of Ran Vandebril](https://people2.cs.kuleuven.be/~raf.vandebril/homepage/software/companion_qr.php?menu=5), one of the co-authors of that paper).
-* [a solver using the companion matrix and LAPACK](https://fortran-lang.discourse.group/t/cardanos-solution-of-the-cubic-equation/111/5?u=ivanpribec)
+* [PA03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
+* [PA05](https://www.hsl.rl.ac.uk/archive/specs/pa05.pdf) HSL Archive code for computing all the roots of a quartic polynomial
+* [PA16](https://www.hsl.rl.ac.uk/catalogue/pa16.html), [PA17](https://www.hsl.rl.ac.uk/catalogue/pa17.html) HSL codes for computing zeros of polynomials using method of Madsen and Reid
+* Various codes from [Alan Miller](https://jblevins.org/mirror/amiller/)
+* [A solver using the companion matrix and LAPACK](https://fortran-lang.discourse.group/t/cardanos-solution-of-the-cubic-equation/111/5?u=ivanpribec)
 * [Root-finding algorithms: Roots of Polynomials | Wikipedia](https://en.wikipedia.org/wiki/Root-finding_algorithms#Roots_of_polynomials)
 * [Polynomial Roots | Wolfram MathWorld](https://mathworld.wolfram.com/PolynomialRoots.html)
 * [What is a Companion Matrix | Nick Higham](https://nhigham.com/2021/03/23/what-is-a-companion-matrix/)
 * [19 Dubious Ways to Compute the Zeros of a Polynomial | Cleve's Corner](https://blogs.mathworks.com/cleve/2016/06/27/19-dubious-ways-to-compute-the-zeros-of-a-polynomial/)
 * [New Progress in Polynomial Root-finding | Victor Y. Pan](https://arxiv.org/pdf/1805.12042.pdf)
-* [PA03](https://www.hsl.rl.ac.uk/archive/specs/pa03.pdf) HSL Archive code for computing all the roots of a cubic polynomial
-* [PA05](https://www.hsl.rl.ac.uk/archive/specs/pa05.pdf) HSL Archive code for computing all the roots of a quartic polynomial
-* [PA16](https://www.hsl.rl.ac.uk/catalogue/pa16.html), [PA17](https://www.hsl.rl.ac.uk/catalogue/pa17.html) HSL codes for computing zeros of polynomials using method of Madsen and Reid
-* `POLZEROS` - Polynomial zeros using Aberth's method, [_Numer Algor_ **13**, 179–200 (1996).](https://doi.org/10.1007/BF02207694) Fortran source code at Netlib: [`numeralgo/na10`](https://netlib.org/numeralgo/na10), several versions provided also by [Alan Miller](https://jblevins.org/mirror/amiller/)
 
 ## See also
 
