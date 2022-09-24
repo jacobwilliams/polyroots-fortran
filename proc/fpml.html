@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="10.6% of total for procedures.">273 statements</a>
+    title="10.2% of total for procedures.">273 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -300,9 +300,9 @@
 <span class="k">                    </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"></span>
 <span class="w">                    </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"></span>
 <span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="o">&gt;</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="k">                        </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="n">z</span><span class="w"></span>
-<span class="w">                        </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="n">r</span><span class="w"></span>
-<span class="w">                        </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="k">                        </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span><span class="o">/</span><span class="n">z</span><span class="w"></span>
+<span class="w">                        </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span><span class="o">/</span><span class="n">r</span><span class="w"></span>
+<span class="w">                        </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"></span>
 <span class="w">                        </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 <span class="w">                        </span><span class="n">berr</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 <span class="w">                        </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">deg</span><span class="o">+</span><span class="mi">1</span><span class="w"></span>
@@ -507,7 +507,7 @@
 <span class="k">        call </span><span class="n">conv_hull</span><span class="p">(</span><span class="n">deg</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="w"></span>
 <span class="w">        </span><span class="n">th</span><span class="o">=</span><span class="n">pi2</span><span class="o">/</span><span class="n">deg</span><span class="w"></span>
-<span class="w">        </span><span class="c">! Initial Estiamtes</span>
+<span class="w">        </span><span class="c">! Initial Estimates</span>
 <span class="w">        </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
 <span class="w">            </span><span class="n">nzeros</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">a1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mf">1.0_wp</span><span class="o">/</span><span class="n">nzeros</span><span class="p">)</span><span class="w"></span>
