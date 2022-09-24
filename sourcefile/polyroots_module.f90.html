@@ -212,7 +212,7 @@
 <a id="ln-59" name="ln-59" href="#ln-59"></a><span class="w">    </span><span class="c">! special polynomial routines:</span>
 <a id="ln-60" name="ln-60" href="#ln-60"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dcbcrt</span><span class="w"></span>
 <a id="ln-61" name="ln-61" href="#ln-61"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dqdcrt</span><span class="w"></span>
-<a id="ln-62" name="ln-62" href="#ln-62"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lebedev</span><span class="w"></span>
+<a id="ln-62" name="ln-62" href="#ln-62"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rroots_chebyshev_cubic</span><span class="w"></span>
 <a id="ln-63" name="ln-63" href="#ln-63"></a>
 <a id="ln-64" name="ln-64" href="#ln-64"></a><span class="w">    </span><span class="c">! utility routines:</span>
 <a id="ln-65" name="ln-65" href="#ln-65"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">newton_root_polish</span><span class="w"></span>
@@ -5448,7 +5448,7 @@
 <a id="ln-5295" name="ln-5295" href="#ln-5295"></a><span class="c">!### History</span>
 <a id="ln-5296" name="ln-5296" href="#ln-5296"></a><span class="c">!  * Jacob Williams, 9/23/2022 : based on the `TC` routine in the reference.</span>
 <a id="ln-5297" name="ln-5297" href="#ln-5297"></a>
-<a id="ln-5298" name="ln-5298" href="#ln-5298"></a><span class="w">    </span><span class="k">subroutine </span><span class="n">lebedev</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span><span class="n">zr</span><span class="p">,</span><span class="n">zi</span><span class="p">)</span><span class="w"></span>
+<a id="ln-5298" name="ln-5298" href="#ln-5298"></a><span class="w">    </span><span class="k">subroutine </span><span class="n">rroots_chebyshev_cubic</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span><span class="n">zr</span><span class="p">,</span><span class="n">zi</span><span class="p">)</span><span class="w"></span>
 <a id="ln-5299" name="ln-5299" href="#ln-5299"></a>
 <a id="ln-5300" name="ln-5300" href="#ln-5300"></a><span class="w">        </span><span class="k">implicit none</span>
 <a id="ln-5301" name="ln-5301" href="#ln-5301"></a>
@@ -5562,7 +5562,7 @@
 <a id="ln-5409" name="ln-5409" href="#ln-5409"></a><span class="w">            </span><span class="n">zi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="w"> </span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">x3</span><span class="p">]</span><span class="w"></span>
 <a id="ln-5410" name="ln-5410" href="#ln-5410"></a><span class="w">        </span><span class="k">end select</span>
 <a id="ln-5411" name="ln-5411" href="#ln-5411"></a>
-<a id="ln-5412" name="ln-5412" href="#ln-5412"></a><span class="k">    end subroutine </span><span class="n">lebedev</span><span class="w"></span>
+<a id="ln-5412" name="ln-5412" href="#ln-5412"></a><span class="k">    end subroutine </span><span class="n">rroots_chebyshev_cubic</span><span class="w"></span>
 <a id="ln-5413" name="ln-5413" href="#ln-5413"></a><span class="c">!*****************************************************************************************</span>
 <a id="ln-5414" name="ln-5414" href="#ln-5414"></a>
 <a id="ln-5415" name="ln-5415" href="#ln-5415"></a><span class="c">!*****************************************************************************************</span>
