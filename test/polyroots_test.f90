@@ -260,7 +260,7 @@
     !********************************************************************
 
     !*****************************************************************************************
-        subroutine check_results(name, istatus, re, im, degree)
+        subroutine check_results(name, istatus, zr, zi, degree)
 
             !! check the results.
             !! if any are not within the tolerance,
@@ -268,12 +268,13 @@
 
             character(len=*),intent(in) :: name !! name of method
             integer,intent(in) :: istatus !! status flag (0 = success)
-            real(wp),dimension(:),intent(in) :: re, im
+            real(wp),dimension(:),intent(in) :: zr, zi
             integer,intent(in) :: degree
 
+            real(wp) :: zr_, zi_ ! copy of inputs for polishing
+            real(wp),dimension(size(zr)) :: re, im ! copy of inputs for sorting
             complex(wp) :: z, root
             integer :: i,j !! counter
-            real(wp) :: zr, zi ! copy of inputs for polishing
             integer :: istat
 
             real(wp),parameter :: tol = 1.0e-2_wp  !! acceptable root tolerance for tests
@@ -289,6 +290,11 @@
                 return
             end if
 
+            ! sort them in increasing order:
+            re = zr
+            im = zi
+            call sort_roots(re, im)
+
             write(*, '(a)') '  real part               imaginary part         root'
 
             do j = 1, degree
@@ -300,17 +306,17 @@
                 write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
                 if (polish .and. abs(root) > ftol) then
                     ! attempt to polish the root:
-                    zr = re(j)
-                    zi = im(j)
-                    call newton_root_polish(degree, p, zr, zi, &
+                    zr_ = re(j)
+                    zi_ = im(j)
+                    call newton_root_polish(degree, p, zr_, zi_, &
                                             ftol=ftol, ztol=ztol, maxiter=10, &
                                             istat=istat)
-                    z = cmplx(zr, zi, wp) ! recompute root with possibly updated values
+                    z = cmplx(zr_, zi_, wp) ! recompute root with possibly updated values
                     root = p(1)
                     do i = 2, degree+1
                         root = root * z + p(i) ! horner's rule
                     end do
-                    write(*, '(3(2g23.15,1x),1X,A)') zr, zi, abs(root), 'POLISHED'
+                    write(*, '(3(2g23.15,1x),1X,A)') zr_, zi_, abs(root), 'POLISHED'
                     if (abs(root) > tol) then
                         failure = .true.
                         write(*,'(A)') 'Error: insufficient accuracy *******'

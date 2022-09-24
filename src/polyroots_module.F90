@@ -63,6 +63,7 @@ module polyroots_module
 
     ! utility routines:
     public :: newton_root_polish
+    public :: sort_roots
 
 contains
 !*****************************************************************************************
@@ -2615,7 +2616,7 @@ subroutine comqr(nm, n, low, igh, hr, hi, wr, wi, ierr)
 
     integer :: i, j, l, en, ll, itn, its, lp1, enm1
     real(wp) :: si, sr, ti, tr, xi, xr, yi, yr, zzi, &
-                zzr, norm, tst1, tst2
+                zzr, norm, tst1, tst2, xr2, xi2
 
     ierr = 0
     if (low /= igh) then
@@ -2704,7 +2705,9 @@ subroutine comqr(nm, n, low, igh, hr, hi, wr, wi, ierr)
                             zzr = -zzr
                             zzi = -zzi
                         end if
-                        call cdiv(xr, xi, yr + zzr, yi + zzi, xr, xi)
+                        call cdiv(xr, xi, yr + zzr, yi + zzi, xr2, xi2)
+                        xr = xr2
+                        xi = xi2
                         sr = sr - xr
                         si = si - xi
                     end if
@@ -5410,6 +5413,158 @@ end subroutine cpoly
         end select
 
     end subroutine rroots_chebyshev_cubic
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Sorts a set of complex numbers (with real and imag parts
+!  in different vectors) in increasing order.
+!
+!  Uses a non-recursive quicksort, reverting to insertion sort on arrays of
+!  size \(\le 20\). Dimension of `stack` limits array size to about \(2^{32}\).
+!
+!### License
+!  * [Original LAPACK license](http://www.netlib.org/lapack/LICENSE.txt)
+!
+!### History
+!  * Based on the LAPACK routine [DLASRT](http://www.netlib.org/lapack/explore-html/df/ddf/dlasrt_8f.html).
+!  * Extensively modified by Jacob Williams,Feb. 2016. Converted to
+!    modern Fortran and removed the descending sort option.
+
+    pure subroutine sort_roots(x,y)
+
+    implicit none
+
+    real(wp),dimension(:),intent(inout) :: x  !! the real parts to be sorted.
+                                              !! on exit,`x` has been sorted into
+                                              !! increasing order (`x(1) <= ... <= x(n)`)
+    real(wp),dimension(:),intent(inout) :: y  !! the imaginary parts to be sorted
+
+    integer,parameter :: stack_size = 32 !! size for the stack arrays
+    integer,parameter :: max_size_for_insertion_sort = 20 !! max size for using insertion sort.
+
+    integer,dimension(2,stack_size) :: stack
+    integer :: endd,i,j,n,start,stkpnt
+    real(wp) :: d1,d2,d3
+    real(wp) :: dmnmx,tmpx
+    real(wp) :: dmnmy,tmpy
+
+    ! number of elements to sort:
+    n = size(x)
+
+    if ( n>1 ) then
+
+        stkpnt     = 1
+        stack(1,1) = 1
+        stack(2,1) = n
+
+        do
+
+            start  = stack(1,stkpnt)
+            endd   = stack(2,stkpnt)
+            stkpnt = stkpnt - 1
+            if ( endd-start<=max_size_for_insertion_sort .and. endd>start ) then
+
+                ! do insertion sort on x( start:endd )
+                insertion: do i = start + 1,endd
+                    do j = i,start + 1,-1
+                        if ( x(j) < x(j-1)  ) then
+                            dmnmx  = x(j)
+                            x(j)   = x(j-1)
+                            x(j-1) = dmnmx
+                            dmnmy  = y(j)
+                            y(j)   = y(j-1)
+                            y(j-1) = dmnmy
+                        else
+                            exit
+                        end if
+                    end do
+                end do insertion
+
+            elseif ( endd-start>max_size_for_insertion_sort ) then
+
+                ! partition x( start:endd ) and stack parts,largest one first
+                ! choose partition entry as median of 3
+
+                d1 = x(start)
+                d2 = x(endd)
+                i  = (start+endd)/2
+                d3 = x(i)
+                if ( d1 < d2 ) then
+                    if ( d3 < d1 ) then
+                        dmnmx = d1
+                    elseif ( d3 < d2 ) then
+                        dmnmx = d3
+                    else
+                        dmnmx = d2
+                    endif
+                elseif ( d3 < d2 ) then
+                    dmnmx = d2
+                elseif ( d3 < d1 ) then
+                    dmnmx = d3
+                else
+                    dmnmx = d1
+                endif
+
+                i = start - 1
+                j = endd + 1
+                do
+                    do
+                        j = j - 1
+                        if ( x(j) <= dmnmx ) exit
+                    end do
+                    do
+                        i = i + 1
+                        if ( x(i) >= dmnmx ) exit
+                    end do
+                    if ( i<j ) then
+                        tmpx = x(i)
+                        x(i) = x(j)
+                        x(j) = tmpx
+                        tmpy = y(i)
+                        y(i) = y(j)
+                        y(j) = tmpy
+                    else
+                        exit
+                    endif
+                end do
+                if ( j-start>endd-j-1 ) then
+                    stkpnt          = stkpnt + 1
+                    stack(1,stkpnt) = start
+                    stack(2,stkpnt) = j
+                    stkpnt          = stkpnt + 1
+                    stack(1,stkpnt) = j + 1
+                    stack(2,stkpnt) = endd
+                else
+                    stkpnt          = stkpnt + 1
+                    stack(1,stkpnt) = j + 1
+                    stack(2,stkpnt) = endd
+                    stkpnt          = stkpnt + 1
+                    stack(1,stkpnt) = start
+                    stack(2,stkpnt) = j
+                endif
+
+            endif
+
+            if ( stkpnt<=0 ) exit
+
+        end do
+
+    end if
+
+    ! check the imag parts:
+    do i = 1, size(x)-1
+        if (x(i)==x(i+1)) then
+            if (y(i)>y(i+1)) then
+                ! swap
+                tmpy = y(i)
+                y(i) = y(i+1)
+                y(i+1) = tmpy
+             end if
+        end if
+    end do
+
+    end subroutine sort_roots
 !*****************************************************************************************
 
 !*****************************************************************************************
