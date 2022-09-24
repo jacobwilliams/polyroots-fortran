@@ -35,6 +35,49 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
 [`fpml`](https://jacobwilliams.github.io/polyroots-fortran/proc/fpml.html) | General | complex | complex | [Cameron (2019)](https://link.springer.com/article/10.1007/s11075-018-0641-9)
 
+## Example
+
+An example of using `polyroots` to compute the zeros for a 5th order real polynomial $$P(x) = x^5 + 2x^4 + 3x^3 + 4x^2 + 5x + 6$$
+
+```fortran
+program example
+
+use iso_fortran_env
+use polyroots_module, wp => polyroots_module_rk
+
+implicit none
+
+integer,parameter :: degree = 5 !! polynomial degree
+real(wp),dimension(degree+1) :: p = [1,2,3,4,5,6] !! coefficients
+
+integer :: i !! counter
+integer :: istatus !! status code
+real(wp),dimension(degree) :: zr !! real components of roots
+real(wp),dimension(degree) :: zi !! imaginary components of roots
+
+call polyroots(degree, p, zr, zi, istatus)
+
+write(*,'(A,1x,I3)') 'istatus: ', istatus
+write(*, '(*(a22,1x))') 'real part', 'imaginary part'
+do i = 1, degree
+    write(*,'(*(e22.15,1x))') zr(i), zi(i)
+end do
+
+end program example
+```
+
+The result is:
+
+```
+istatus:    0
+             real part         imaginary part
+ 0.551685463458982E+00  0.125334886027721E+01
+ 0.551685463458982E+00 -0.125334886027721E+01
+-0.149179798813990E+01  0.000000000000000E+00
+-0.805786469389031E+00  0.122290471337441E+01
+-0.805786469389031E+00 -0.122290471337441E+01
+```
+
 ## Compiling
 
 A `fmp.toml` file is provided for compiling polyroots-fortran with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
