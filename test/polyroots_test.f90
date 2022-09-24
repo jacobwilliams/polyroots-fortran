@@ -9,7 +9,6 @@
 
     implicit none
 
-    integer,parameter :: max_degree = 10 !! max degree polynomials to test for random cases
     integer,parameter :: n_cases = 14 + 110 !! number of cases to run
 
     real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc, berr,cond
@@ -21,8 +20,6 @@
     logical :: fail
     logical :: failure !! if any of the tests failed
     logical,dimension(:),allocatable :: err
-    real(wp) :: x1,x2,x3
-    integer :: l
     integer :: idegree !! counter for degrees to test
     integer :: n_degree !! number of tests run for each degree so far
 
@@ -149,6 +146,9 @@
 
         call rpqr79(degree,p,r,istatus)
         call check_results('rpqr79', istatus, real(r,wp), aimag(r), degree)
+
+        call dpolz(degree,p,zr,zi,istatus)
+        call check_results('dpolz', istatus, zr, zi, degree)
 
         ! for now, just test the following two with the real coefficients only:
 
@@ -348,27 +348,6 @@
             x = a + (b-a)*x
 
         end function get_random_number
-    !*****************************************************************************************
-
-    !*****************************************************************************************
-    !>
-    !  Returns a uniform integer random number `x`, such that: `a <= x < b`.
-
-        function get_random_integer_number(a,b) result(i)
-
-            implicit none
-
-            integer            :: i
-            integer,intent(in) :: a
-            integer,intent(in) :: b
-
-            real(wp) :: x
-
-            call random_number(x)
-
-            i = ceiling(a + (b-a)*x)
-
-        end function get_random_integer_number
     !*****************************************************************************************
 
 !*****************************************************************************************
