@@ -247,6 +247,25 @@ Copyright 2012 Jan Skowron & Andrew Gould
 This library also contains code derived from EISPACK, presumed to be in the public domain
 https://netlib.org/eispack/
 
+EISPACK is a collection of double-precision Fortran subroutines that
+compute the eigenvalues and eigenvectors of nine classes of matrices:
+complex general, complex Hermitian, real general, real symmetric, real
+symmetric banded, real symmetric tridiagonal, special real
+tridiagonal, generalized real, and generalized real symmetric matices.
+In addition, two routines are included that use singular value
+decomposition to solve certain least-squares problems.  The
+single-precsion versions are in SEISPACK.
+
+----------------------------------------------------------------------------------
+
+This library also contains code derived from SLATEC, presumed to be in the public domain
+https://netlib.org/slatec/
+
+SLATEC Common Mathematical Library, Version 4.1, July 1993
+a comprehensive software library containing over
+1400 general purpose mathematical and statistical routines
+written in Fortran 77.
+
 ----------------------------------------------------------------------------------
 
 FPML: Fourth order Parallelizable Modification of Laguerre's method
