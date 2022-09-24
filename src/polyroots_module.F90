@@ -89,10 +89,10 @@ subroutine rpoly(op, degree, zeror, zeroi, istat)
     real(wp), dimension(degree), intent(out) :: zeroi !! output vector of imaginary parts of the zeros
     integer, intent(out) :: istat !! status output:
                                   !!
-                                  !! * 0 : success
-                                  !! * -1 : leading coefficient is zero
-                                  !! * -2 : no roots found
-                                  !! * >0 : the number of zeros found
+                                  !! * `0` : success
+                                  !! * `-1` : leading coefficient is zero
+                                  !! * `-2` : no roots found
+                                  !! * `>0` : the number of zeros found
 
     real(wp), dimension(:), allocatable :: p, qp, k, qk, svk, temp, pt
     real(wp) :: sr, si, u, v, a, b, c, d, a1, a3, &
