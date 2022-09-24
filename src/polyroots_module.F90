@@ -55,6 +55,7 @@ module polyroots_module
     public :: cmplx_roots_gen
     public :: polzeros
     public :: fpml
+    public :: dpolz
 
     ! special polynomial routines:
     public :: dcbcrt
@@ -5565,6 +5566,372 @@ end subroutine cpoly
     end do
 
     end subroutine sort_roots
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Given coefficients `A(1),...,A(NDEG+1)` this subroutine computes the
+!  `NDEG` roots of the polynomial `A(1)*X**NDEG + ... + A(NDEG+1)`
+!  storing the roots as complex numbers in the array `Z`.
+!  Require `NDEG >= 1` and `A(1) /= 0`.
+!
+!### Reference
+!  * Original code from [JPL MATH77 Library](https://netlib.org/math/)
+!
+!### History
+!  * C.L.Lawson & S.Y.Chan, JPL, June 3, 1986.
+!  * 1987-09-16 DPOLZ  Lawson  Initial code.
+!  * 1988-06-07 DPOLZ  CLL Reordered spec stmts for ANSI standard.
+!  * 1988-11-16        CLL More editing of spec stmts.
+!  * 1992-05-11 CLL IERR was not being set when N = 0 or 1. Fixed this. Added type stmts for all variables.
+!  * 1992-05-11 DPOLZ  CLL
+!  * 1994-10-19 DPOLZ  Krogh  Changes to use M77CON
+!  * 1995-01-25 DPOLZ  Krogh Automate C conversion.
+!  * 1995-11-17 DPOLZ  Krogh SFTRAN converted to Fortran 77
+!  * 1996-03-30 DPOLZ  Krogh Added external statement, MIN0 => MIN.
+!  * 1996-04-27 DPOLZ  Krogh Changes to use .C. and C%%.
+!  * 2001-05-25 DPOLZ  Krogh Minor change for making .f90 version.
+!  * 2022-09-24, Jacob Williams modernized this routine
+
+    subroutine dpolz(ndeg,a,zr,zi,ierr)
+
+        implicit none
+
+        integer,intent(in) :: ndeg !! Degree of the polynomial
+        real(wp),intent(in) :: a(ndeg+1) !! Contains the coefficients of a polynomial, high
+                                         !! order coefficient first with `A(1)/=0`.
+        real(wp),intent(out) :: zr(ndeg) !! Contains the real parts of the roots
+        real(wp),intent(out) :: zi(ndeg) !! Contains the imaginary parts of the roots
+        integer,intent(out) :: ierr !! Error flag:
+                                    !!
+                                    !! * Set by the subroutine to `0` on normal termination.
+                                    !! * Set to `-1` if `A(1)=0`.
+                                    !! * Set to `-2` if `NDEG<=0`.
+                                    !! * Set to `J > 0` if the iteration count limit
+                                    !!   has been exceeded and roots 1 through `J` have not been
+                                    !!   determined.
+
+        integer :: i,j,k,l,m,n,en,ll,mm,na,its,low,mp2,enm2
+        real(wp) :: p,q,r,s,t,w,x,y,zz
+        real(wp) :: c,f,g
+        logical :: notlas , more
+        real(wp),dimension(:,:),allocatable :: h !! Array of work space `(ndeg,ndeg)`
+        real(wp),dimension(:),allocatable :: z !! Contains the polynomial roots stored as complex
+                                               !! numbers. The real and imaginary parts of the Jth roots
+                                               !! will be stored in `Z(2*J-1)` and `Z(2*J)` respectively.
+
+        real(wp),parameter :: zero = 0.0_wp
+        real(wp),parameter :: one  = 1.0_wp
+        real(wp),parameter :: c75  = 0.75_wp
+        real(wp),parameter :: half = 0.5_wp
+        real(wp),parameter :: c43  = -0.4375_wp
+        real(wp),parameter :: c95  = 0.95_wp
+        real(wp),parameter :: machep = eps        !! d1mach(4)
+        integer,parameter :: base = radix(1.0_wp) !! i1mach(10)
+        integer,parameter :: b2 = base*base
+
+        ierr = 0
+
+        if ( ndeg<=0 ) then
+            ierr = -2
+            write(*,*) 'ndeg <= 0'
+            return
+        endif
+
+        if ( a(1)==zero ) then
+           ierr = -1
+           write(*,*) 'a(1) == zero'
+           return
+        endif
+
+        n = ndeg
+        ierr = 0
+        allocate(h(n,n)); h = zero ! workspace arrays
+        allocate(z(2*n)); z = zero
+
+        ! build first row of companion matrix.
+
+        do i = 2 , ndeg + 1
+           h(1,i-1) = -(a(i)/a(1))
+        enddo
+
+        ! extract any exact zero roots and set n = degree of
+        ! remaining polynomial.
+
+        do j = ndeg , 1 , -1
+           if ( h(1,j)/=zero ) exit
+           z(2*j-1) = zero
+           z(2*j) = zero
+           n = n - 1
+        enddo
+
+        ! special for n = 0 or 1.
+
+        if ( n==0 ) return
+        if ( n==1 ) then
+           z(1) = h(1,1)
+           return
+        endif
+
+        ! build rows 2 thru n of the companion matrix.
+
+        do i = 2 , n
+           do j = 1 , n
+              h(i,j) = zero
+           enddo
+           h(i,i-1) = one
+        enddo
+
+  ! ***************** balance the matrix ***********************
+  !
+  !     this is an adaption of the eispack subroutine balanc to
+  !     the special case of a companion matrix. the eispack balance
+  !     is a translation of the algol procedure balance, num. math.
+  !     13, 293-304(1969) by parlett and reinsch.
+  !     handbook for auto. comp., vol.ii-linear algebra, 315-326(1971).
+
+        do
+            ! ********** iterative loop for norm reduction **********
+            more = .false.
+            do i = 1 , n
+                ! compute r = sum of magnitudes in row i skipping diagonal.
+                !         c = sum of magnitudes in col i skipping diagonal.
+                if ( i==1 ) then
+                    r = abs(h(1,2))
+                    do j = 3 , n
+                        r = r + abs(h(1,j))
+                    enddo
+                    c = abs(h(2,1))
+                else
+                    r = abs(h(i,i-1))
+                    c = abs(h(1,i))
+                    if ( i/=n ) c = c + abs(h(i+1,i))
+                endif
+
+                ! determine column scale factor, f.
+
+                g = r/base
+                f = one
+                s = c + r
+
+                do
+                    if ( c>=g ) exit
+                    f = f*base
+                    c = c*b2
+                end do
+                g = r*base
+                do
+                    if ( c<g ) exit
+                    f = f/base
+                    c = c/b2
+                end do
+
+                ! will the factor f have a significant effect ?
+
+                if ( (c+r)/f<c95*s ) then
+
+                    ! yes, so do the scaling.
+
+                    g = one/f
+                    more = .true.
+
+                    ! scale row i
+
+                    if ( i==1 ) then
+                        do j = 1 , n
+                            h(1,j) = h(1,j)*g
+                        enddo
+                    else
+                        h(i,i-1) = h(i,i-1)*g
+                    endif
+
+                    ! scale column i
+
+                    h(1,i) = h(1,i)*f
+                    if ( i/=n ) h(i+1,i) = h(i+1,i)*f
+
+                endif
+            enddo
+            if ( .not. more ) exit
+        end do
+
+  ! ***************** qr eigenvalue algorithm ***********************
+  !
+  !     this is the eispack subroutine hqr that uses the qr
+  !     algorithm to compute all eigenvalues of an upper
+  !     hessenberg matrix. original algol code was due to martin,
+  !     peters, and wilkinson, numer. math., 14, 219-231(1970).
+  !
+        low = 1
+        en = n
+        t = zero
+
+        main : do
+
+            ! ********** search for next eigenvalues **********
+            if ( en<low ) exit main
+            its = 0
+            na = en - 1
+            enm2 = na - 1
+
+            sub : do
+                ! ********** look for single small sub-diagonal element
+                !            for l=en step -1 until low do -- **********
+                do ll = low , en
+                   l = en + low - ll
+                   if ( l==low ) exit
+                   if ( abs(h(l,l-1))<=machep*(abs(h(l-1,l-1))+abs(h(l,l))) ) exit
+                enddo
+
+                ! ********** form shift **********
+                x = h(en,en)
+                if ( l==en ) then
+                   ! ********** one root found **********
+                   z(2*en-1) = x + t
+                   z(2*en) = zero
+                   en = na
+                else
+                   y = h(na,na)
+                   w = h(en,na)*h(na,en)
+                   if ( l==na ) then
+                      ! ********** two roots found **********
+                      p = (y-x)*half
+                      q = p*p + w
+                      zz = sqrt(abs(q))
+                      x = x + t
+                      if ( q<zero ) then
+                         ! ********** complex pair **********
+                         z(2*na-1) = x + p
+                         z(2*na) = zz
+                         z(2*en-1) = x + p
+                         z(2*en) = -zz
+                      else
+                         ! ********** pair of reals **********
+                         zz = p + sign(zz,p)
+                         z(2*na-1) = x + zz
+                         z(2*na) = zero
+                         z(2*en-1) = z(2*na-1)
+                         z(2*en) = z(2*na)
+                         if ( zz/=zero ) then
+                            z(2*en-1) = x - w/zz
+                            z(2*en) = zero
+                         endif
+                      endif
+                      en = enm2
+                   elseif ( its==30 ) then
+                      ! ********** set error -- no convergence to an eigenvalue after 30 iterations **********
+                      ierr = en
+                      exit main
+                   else
+                      if ( its==10 .or. its==20 ) then
+                         ! ********** form exceptional shift **********
+                         t = t + x
+
+                         do i = low , en
+                            h(i,i) = h(i,i) - x
+                         enddo
+
+                         s = abs(h(en,na)) + abs(h(na,enm2))
+                         x = c75*s
+                         y = x
+                         w = c43*s*s
+                      endif
+                      its = its + 1
+                      !     ********** look for two consecutive small
+                      !                sub-diagonal elements.
+                      !                for m=en-2 step -1 until l do -- **********
+                      do mm = l , enm2
+                         m = enm2 + l - mm
+                         zz = h(m,m)
+                         r = x - zz
+                         s = y - zz
+                         p = (r*s-w)/h(m+1,m) + h(m,m+1)
+                         q = h(m+1,m+1) - zz - r - s
+                         r = h(m+2,m+1)
+                         s = abs(p) + abs(q) + abs(r)
+                         p = p/s
+                         q = q/s
+                         r = r/s
+                         if ( m==l ) exit
+                         if ( abs(h(m,m-1))*(abs(q)+abs(r))<=machep*abs(p) &
+                              *(abs(h(m-1,m-1))+abs(zz)+abs(h(m+1,m+1))) ) &
+                              exit
+                      enddo
+
+                      mp2 = m + 2
+
+                      do i = mp2 , en
+                         h(i,i-2) = zero
+                         if ( i/=mp2 ) h(i,i-3) = zero
+                      enddo
+                      ! ********** double qr step involving rows l to en and
+                      !            columns m to en **********
+                      do k = m , na
+                         notlas = k/=na
+                         if ( k/=m ) then
+                            p = h(k,k-1)
+                            q = h(k+1,k-1)
+                            r = zero
+                            if ( notlas ) r = h(k+2,k-1)
+                            x = abs(p) + abs(q) + abs(r)
+                            if ( x==zero ) cycle !goto 640
+                            p = p/x
+                            q = q/x
+                            r = r/x
+                         endif
+                         s = sign(sqrt(p*p+q*q+r*r),p)
+                         if ( k==m ) then
+                            if ( l/=m ) h(k,k-1) = -h(k,k-1)
+                         else
+                            h(k,k-1) = -s*x
+                         endif
+                         p = p + s
+                         x = p/s
+                         y = q/s
+                         zz = r/s
+                         q = q/p
+                         r = r/p
+                         ! ********** row modification **********
+                         do j = k , en
+                            p = h(k,j) + q*h(k+1,j)
+                            if ( notlas ) then
+                               p = p + r*h(k+2,j)
+                               h(k+2,j) = h(k+2,j) - p*zz
+                            endif
+                            h(k+1,j) = h(k+1,j) - p*y
+                            h(k,j) = h(k,j) - p*x
+                         enddo
+
+                         j = min(en,k+3)
+                         ! ********** column modification **********
+                         do i = l , j
+                            p = x*h(i,k) + y*h(i,k+1)
+                            if ( notlas ) then
+                               p = p + zz*h(i,k+2)
+                               h(i,k+2) = h(i,k+2) - p*r
+                            endif
+                            h(i,k+1) = h(i,k+1) - p*q
+                            h(i,k) = h(i,k) - p
+                         enddo
+
+                      enddo
+                      cycle sub
+                   endif
+                endif
+                exit sub
+            end do sub
+
+        end do main
+
+        if ( ierr/=0 ) write(*,*) 'convergence failure'
+
+        ! return the computed roots:
+        do i = 1, ndeg
+            zr(i) = Z(2*i-1)
+            zi(i) = Z(2*i)
+        end do
+
+    end subroutine dpolz
 !*****************************************************************************************
 
 !*****************************************************************************************
