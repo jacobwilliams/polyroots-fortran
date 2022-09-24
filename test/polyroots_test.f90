@@ -128,8 +128,8 @@
             call dcbcrt(q, zr, zi)
             call check_results('dcbcrt', 0, zr, zi, degree)
 
-            call lebedev(p, zr, zi)
-            call check_results('lebedev', 0, zr, zi, degree)
+            call rroots_chebyshev_cubic(p, zr, zi)
+            call check_results('rroots_chebyshev_cubic', 0, zr, zi, degree)
         end if
 
         if (wp /= REAL128) then

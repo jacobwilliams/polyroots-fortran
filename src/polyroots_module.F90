@@ -59,7 +59,7 @@ module polyroots_module
     ! special polynomial routines:
     public :: dcbcrt
     public :: dqdcrt
-    public :: lebedev
+    public :: rroots_chebyshev_cubic
 
     ! utility routines:
     public :: newton_root_polish
@@ -5295,7 +5295,7 @@ end subroutine cpoly
 !### History
 !  * Jacob Williams, 9/23/2022 : based on the `TC` routine in the reference.
 
-    subroutine lebedev(coeffs,zr,zi)
+    subroutine rroots_chebyshev_cubic(coeffs,zr,zi)
 
         implicit none
 
@@ -5409,7 +5409,7 @@ end subroutine cpoly
             zi = [0.0_wp, x3, -x3]
         end select
 
-    end subroutine lebedev
+    end subroutine rroots_chebyshev_cubic
 !*****************************************************************************************
 
 !*****************************************************************************************
