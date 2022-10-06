@@ -27,6 +27,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dpolz`](https://jacobwilliams.github.io/polyroots-fortran/proc/dpolz.html) | General | real | complex | [MATH77 Library](https://netlib.org/math/)
+[`cpolz`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpolz.html) | General | complex | complex | [MATH77 Library](https://netlib.org/math/)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | [LAPACK](https://netlib.org/lapack/explore-html/index.html)
 [`cpolyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpolyroots.html) | General | complex | complex | [LAPACK](https://netlib.org/lapack/explore-html/index.html)
 [`rroots_chebyshev_cubic`](https://jacobwilliams.github.io/polyroots-fortran/proc/rroots_chebyshev_cubic.html) | Cubic | real | complex | [Lebedev (1991)](https://doi.org/10.1515/rnam.1991.6.4.315)

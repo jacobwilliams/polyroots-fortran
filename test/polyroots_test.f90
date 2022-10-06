@@ -150,7 +150,10 @@
         call dpolz(degree,p,zr,zi,istatus)
         call check_results('dpolz', istatus, zr, zi, degree)
 
-        ! for now, just test the following two with the real coefficients only:
+        ! for now, just test the following with the real coefficients only:
+
+        call cpolz(cp,degree,r,istatus)
+        call check_results('cpolz', istatus, real(r,wp), aimag(r), degree)
 
         q = 0.0_wp
         istatus = 0
