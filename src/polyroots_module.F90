@@ -6172,84 +6172,84 @@ end subroutine cpoly
         end do
     end do
 
-    ! ***************** BALANCE THE MATRIX ***********************
+    ! ***************** balance the matrix ***********************
     !
-    !     This is an adaption of the EISPACK subroutine BALANC to
-    !     the special case of a complex companion matrix. The EISPACK
-    !     BALANCE is a translation of the ALGOL procedure BALANCE,
-    !     NUM. MATH. 13, 293-304(1969) by Parlett and Reinsch.
-    !     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 315-326(1971).
+    !     this is an adaption of the eispack subroutine balanc to
+    !     the special case of a complex companion matrix. the eispack
+    !     balance is a translation of the algol procedure balance,
+    !     num. math. 13, 293-304(1969) by parlett and reinsch.
+    !     handbook for auto. comp., vol.ii-linear algebra, 315-326(1971).
 
-    ! ********** ITERATIVE LOOP FOR NORM REDUCTION **********
+    ! ********** iterative loop for norm reduction **********
     do
-        MORE = .FALSE.
-        DO I = 1, N
-          ! Compute R = sum of magnitudes in row I skipping diagonal.
-          !         C = sum of magnitudes in col I skipping diagonal.
-          IF (I == 1) THEN
-            R = ABS(H(1,2,1)) + ABS(H(1,2,2))
-            DO J = 3,N
-              R = R + ABS(H(1,J,1)) + ABS(H(1,J,2))
+        more = .false.
+        do i = 1, n
+          ! compute r = sum of magnitudes in row i skipping diagonal.
+          !         c = sum of magnitudes in col i skipping diagonal.
+          if (i == 1) then
+            r = abs(h(1,2,1)) + abs(h(1,2,2))
+            do j = 3,n
+              r = r + abs(h(1,j,1)) + abs(h(1,j,2))
             end do
-            C = ABS(H(2,1,1)) + ABS(H(2,1,2))
-          ELSE
-            R = ABS(H(I,I-1,1)) + ABS(H(I,I-1,2))
-            C = ABS(H(1,I,1)) + ABS(H(1,I,2))
-            IF (I /= N) THEN
-              C = C + ABS(H(I+1,I,1)) + ABS(H(I+1,I,2))
-            END IF
-          END IF
+            c = abs(h(2,1,1)) + abs(h(2,1,2))
+          else
+            r = abs(h(i,i-1,1)) + abs(h(i,i-1,2))
+            c = abs(h(1,i,1)) + abs(h(1,i,2))
+            if (i /= n) then
+              c = c + abs(h(i+1,i,1)) + abs(h(i+1,i,2))
+            end if
+          end if
 
-          ! Determine column scale factor, F.
+          ! determine column scale factor, f.
 
-          G = R / BASE
-          F = ONE
-          S = C + R
+          g = r / base
+          f = one
+          s = c + r
 
           do
-            IF (C >= G) exit
-            F = F * BASE
-            C = C * B2
+            if (c >= g) exit
+            f = f * base
+            c = c * b2
           end do
-          G = R * BASE
+          g = r * base
           do
-            IF (C < G) exit
-            F = F / BASE
-            C = C / B2
+            if (c < g) exit
+            f = f / base
+            c = c / b2
           end do
-          ! Will the factor F have a significant effect ?
+          ! will the factor f have a significant effect ?
 
-          IF ((C + R) / F < C95 * S) THEN
+          if ((c + r) / f < c95 * s) then
 
-            ! Yes, so do the scaling.
+            ! yes, so do the scaling.
 
-            G = ONE / F
-            MORE = .TRUE.
+            g = one / f
+            more = .true.
 
-            ! Scale Row I
+            ! scale row i
 
-            IF (I == 1) THEN
-              DO J = 1,N
-                H(1,J,1) = H(1,J,1)*G
-                H(1,J,2) = H(1,J,2)*G
+            if (i == 1) then
+              do j = 1,n
+                h(1,j,1) = h(1,j,1)*g
+                h(1,j,2) = h(1,j,2)*g
               end do
-            ELSE
-              H(I,I-1,1) = H(I,I-1,1)*G
-              H(I,I-1,2) = H(I,I-1,2)*G
-            END IF
+            else
+              h(i,i-1,1) = h(i,i-1,1)*g
+              h(i,i-1,2) = h(i,i-1,2)*g
+            end if
 
-            ! Scale Column I
+            ! scale column i
 
-            H(1,I,1) = H(1,I,1) * F
-            H(1,I,2) = H(1,I,2) * F
-            IF (I /= N) THEN
-              H(I+1,I,1) = H(I+1,I,1) * F
-              H(I+1,I,2) = H(I+1,I,2) * F
-            END IF
+            h(1,i,1) = h(1,i,1) * f
+            h(1,i,2) = h(1,i,2) * f
+            if (i /= n) then
+              h(i+1,i,1) = h(i+1,i,1) * f
+              h(i+1,i,2) = h(i+1,i,2) * f
+            end if
 
-          END IF
+          end if
         end do
-        IF (.not. MORE) exit
+        if (.not. more) exit
     end do
 
     call scomqr(ndeg,n,1,n,h(1,1,1),h(1,1,2),z,ierr)
@@ -6328,7 +6328,7 @@ end subroutine cpoly
 
     ierr = 0
     if (low /= igh) then
-        ! ********** create real subdiagonal elements **********
+        ! create real subdiagonal elements
         l = low + 1
 
         do i = l, igh
@@ -6354,7 +6354,7 @@ end subroutine cpoly
         end do
     end if
 
-      ! ********** store roots isolated by cbal **********
+      ! store roots isolated by cbal
       do i = 1, n
          if (i >= low .and. i <= igh) cycle
          z(i) = cmplx(hr(i,i),hi(i,i),wp)
@@ -6365,123 +6365,124 @@ end subroutine cpoly
       ti = 0.0_wp
 
     main : do
-          ! ********** search for next eigenvalue **********
+          ! search for next eigenvalue
           if (en < low) return
           its = 0
           enm1 = en - 1
 
-          ! ********** look for single small sub-diagonal element
-          ! for l=en step -1 until low  -- **********
-  240     do ll = low, en
-             l = en + low - ll
-             if (l == low) exit
-             if (abs(hr(l,l-1)) <= &
-                      eps * (abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) &
-                      + abs(hr(l,l)) +abs(hi(l,l)))) exit
-          end do
-          ! ********** form shift **********
-          if (l == en) then
-          ! ********** a root found **********
-            z(en) = cmplx(hr(en,en)+tr,hi(en,en)+ti,wp)
-            en = enm1
-            cycle main
-          end if
-          if (its == 30) exit main
-          if (its == 10 .or. its == 20) then
-            ! ********** form exceptional shift **********
-            sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
-            si = 0.0_wp
-          else
-            sr = hr(en,en)
-            si = hi(en,en)
-            xr = hr(enm1,en) * hr(en,enm1)
-            xi = hi(enm1,en) * hr(en,enm1)
-            if (xr /= 0.0_wp .or. xi /= 0.0_wp) then
-                yr = (hr(enm1,enm1) - sr) / 2.0_wp
-                yi = (hi(enm1,enm1) - si) / 2.0_wp
-                z3 = sqrt(cmplx(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,wp))
-                zzr = real(z3,wp)
-                zzi = aimag(z3)
-                if (yr * zzr + yi * zzi < 0.0_wp) then
-                    zzr = -zzr
-                    zzi = -zzi
+          do
+              ! look for single small sub-diagonal element
+              ! for l=en step -1 until low
+              do ll = low, en
+                 l = en + low - ll
+                 if (l == low) exit
+                 if (abs(hr(l,l-1)) <= &
+                          eps * (abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) &
+                          + abs(hr(l,l)) +abs(hi(l,l)))) exit
+              end do
+              ! form shift
+              if (l == en) then
+              ! a root found
+                z(en) = cmplx(hr(en,en)+tr,hi(en,en)+ti,wp)
+                en = enm1
+                cycle main
+              end if
+              if (its == 30) exit main
+              if (its == 10 .or. its == 20) then
+                ! form exceptional shift
+                sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
+                si = 0.0_wp
+              else
+                sr = hr(en,en)
+                si = hi(en,en)
+                xr = hr(enm1,en) * hr(en,enm1)
+                xi = hi(enm1,en) * hr(en,enm1)
+                if (xr /= 0.0_wp .or. xi /= 0.0_wp) then
+                    yr = (hr(enm1,enm1) - sr) / 2.0_wp
+                    yi = (hi(enm1,enm1) - si) / 2.0_wp
+                    z3 = sqrt(cmplx(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,wp))
+                    zzr = real(z3,wp)
+                    zzi = aimag(z3)
+                    if (yr * zzr + yi * zzi < 0.0_wp) then
+                        zzr = -zzr
+                        zzi = -zzi
+                    end if
+                    z3 = cmplx(xr,xi,wp) / cmplx(yr+zzr,yi+zzi,wp)
+                    sr = sr - real(z3,wp)
+                    si = si - aimag(z3)
                 end if
-                z3 = cmplx(xr,xi,wp) / cmplx(yr+zzr,yi+zzi,wp)
-                sr = sr - real(z3,wp)
-                si = si - aimag(z3)
-            end if
-          end if
+              end if
 
-          do i = low, en
-             hr(i,i) = hr(i,i) - sr
-             hi(i,i) = hi(i,i) - si
+              do i = low, en
+                 hr(i,i) = hr(i,i) - sr
+                 hi(i,i) = hi(i,i) - si
+              end do
+
+              tr = tr + sr
+              ti = ti + si
+              its = its + 1
+              ! reduce to triangle (rows)
+              lp1 = l + 1
+
+              do i = lp1, en
+                 sr = hr(i,i-1)
+                 hr(i,i-1) = 0.0_wp
+                 norm = sqrt(hr(i-1,i-1)*hr(i-1,i-1)+hi(i-1,i-1)*hi(i-1,i-1)+sr*sr)
+                 xr = hr(i-1,i-1) / norm
+                 xi = hi(i-1,i-1) / norm
+                 z(i-1) = cmplx(xr,xi,wp)
+                 hr(i-1,i-1) = norm
+                 hi(i-1,i-1) = 0.0_wp
+                 hi(i,i-1) = sr / norm
+                 do j = i, en
+                    yr = hr(i-1,j)
+                    yi = hi(i-1,j)
+                    zzr = hr(i,j)
+                    zzi = hi(i,j)
+                    hr(i-1,j) = xr * yr + xi * yi + hi(i,i-1) * zzr
+                    hi(i-1,j) = xr * yi - xi * yr + hi(i,i-1) * zzi
+                    hr(i,j) = xr * zzr - xi * zzi - hi(i,i-1) * yr
+                    hi(i,j) = xr * zzi + xi * zzr - hi(i,i-1) * yi
+                 end do
+              end do
+
+              si = hi(en,en)
+              if (si /= 0.0_wp) then
+                norm = abs(cmplx(hr(en,en),si,wp))
+                sr = hr(en,en) / norm
+                si = si / norm
+                hr(en,en) = norm
+                hi(en,en) = 0.0_wp
+              end if
+              ! inverse operation (columns)
+              do j = lp1, en
+                 xr = real(z(j-1),wp)
+                 xi = aimag(z(j-1))
+                 do i = l, j
+                    yr = hr(i,j-1)
+                    yi = 0.0
+                    zzr = hr(i,j)
+                    zzi = hi(i,j)
+                    if (i /= j) then
+                        yi = hi(i,j-1)
+                        hi(i,j-1) = xr * yi + xi * yr + hi(j,j-1) * zzi
+                    end if
+                    hr(i,j-1) = xr * yr - xi * yi + hi(j,j-1) * zzr
+                    hr(i,j) = xr * zzr + xi * zzi - hi(j,j-1) * yr
+                    hi(i,j) = xr * zzi - xi * zzr - hi(j,j-1) * yi
+                 end do
+              end do
+
+              if (si /= 0.0_wp) then
+                do i = l, en
+                    yr = hr(i,en)
+                    yi = hi(i,en)
+                    hr(i,en) = sr * yr - si * yi
+                    hi(i,en) = sr * yi + si * yr
+                end do
+              end if
+
           end do
-
-          tr = tr + sr
-          ti = ti + si
-          its = its + 1
-          ! ********** reduce to triangle (rows) **********
-          lp1 = l + 1
-
-          do i = lp1, en
-             sr = hr(i,i-1)
-             hr(i,i-1) = 0.0_wp
-             norm = sqrt(hr(i-1,i-1)*hr(i-1,i-1)+hi(i-1,i-1)*hi(i-1,i-1)+sr*sr)
-             xr = hr(i-1,i-1) / norm
-             xi = hi(i-1,i-1) / norm
-             z(i-1) = cmplx(xr,xi,wp)
-             hr(i-1,i-1) = norm
-             hi(i-1,i-1) = 0.0_wp
-             hi(i,i-1) = sr / norm
-             do j = i, en
-                yr = hr(i-1,j)
-                yi = hi(i-1,j)
-                zzr = hr(i,j)
-                zzi = hi(i,j)
-                hr(i-1,j) = xr * yr + xi * yi + hi(i,i-1) * zzr
-                hi(i-1,j) = xr * yi - xi * yr + hi(i,i-1) * zzi
-                hr(i,j) = xr * zzr - xi * zzi - hi(i,i-1) * yr
-                hi(i,j) = xr * zzi + xi * zzr - hi(i,i-1) * yi
-             end do
-          end do
-
-          si = hi(en,en)
-          if (si /= 0.0_wp) then
-            norm = abs(cmplx(hr(en,en),si,wp))
-            sr = hr(en,en) / norm
-            si = si / norm
-            hr(en,en) = norm
-            hi(en,en) = 0.0_wp
-          end if
-          ! ********** inverse operation (columns) **********
-          do j = lp1, en
-             xr = real(z(j-1),wp)
-             xi = aimag(z(j-1))
-             do i = l, j
-                yr = hr(i,j-1)
-                yi = 0.0
-                zzr = hr(i,j)
-                zzi = hi(i,j)
-                if (i /= j) then
-                    yi = hi(i,j-1)
-                    hi(i,j-1) = xr * yi + xi * yr + hi(j,j-1) * zzi
-                end if
-                hr(i,j-1) = xr * yr - xi * yi + hi(j,j-1) * zzr
-                hr(i,j) = xr * zzr + xi * zzi - hi(j,j-1) * yr
-                hi(i,j) = xr * zzi - xi * zzr - hi(j,j-1) * yi
-             end do
-          end do
-
-          if (si == 0.0) go to 240
-
-          do i = l, en
-             yr = hr(i,en)
-             yi = hi(i,en)
-             hr(i,en) = sr * yr - si * yi
-             hi(i,en) = sr * yi + si * yr
-          end do
-
-          go to 240
 
     end do main
 
