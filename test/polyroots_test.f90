@@ -312,7 +312,7 @@
                 z = cmplx(re(j), im(j), wp)
                 root = p(1)
                 do i = 2, degree+1
-                    root = root * z + p(i) ! horner's rule     !>..need to test ones with complex coefficients
+                    root = root * z + p(i) ! horner's rule
                 end do
                 write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
                 if (polish .and. abs(root) > ftol) then
@@ -381,7 +381,7 @@
                 z = cmplx(re(j), im(j), wp)
                 root = cp(1)
                 do i = 2, degree+1
-                    root = root * z + cp(i) ! horner's rule     !>..need to test ones with complex coefficients
+                    root = root * z + cp(i) ! horner's rule
                 end do
                 write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
                 if (polish .and. abs(root) > ftol) then
