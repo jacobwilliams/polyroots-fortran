@@ -19,7 +19,7 @@ real(wp),dimension(degree) :: zi !! imaginary components of roots
 
 call polyroots(degree, p, zr, zi, istatus)
 
-write(*,'(A,1x,I3)') 'istatus: ', istatus
+write(*,'(/A,1x,I3)') 'istatus: ', istatus
 write(*, '(*(a22,1x))') 'real part', 'imaginary part'
 do i = 1, degree
     write(*,'(*(e22.15,1x))') zr(i), zi(i)

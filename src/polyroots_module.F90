@@ -21,6 +21,7 @@
 module polyroots_module
 
     use iso_fortran_env
+    use ieee_arithmetic
 
     implicit none
 
@@ -56,6 +57,7 @@ module polyroots_module
     public :: polzeros
     public :: fpml
     public :: dpolz
+    public :: cpolz
 
     ! special polynomial routines:
     public :: dcbcrt
@@ -65,6 +67,11 @@ module polyroots_module
     ! utility routines:
     public :: newton_root_polish
     public :: sort_roots
+
+    interface newton_root_polish
+        module procedure :: newton_root_polish_real, &
+                            newton_root_polish_complex
+    end interface
 
 contains
 !*****************************************************************************************
@@ -2910,7 +2917,7 @@ end function pythag
 !### History
 !  * Jacob Williams, 9/15/2023, created this routine.
 
-subroutine newton_root_polish(n, p, zr, zi, ftol, ztol, maxiter, istat)
+subroutine newton_root_polish_real(n, p, zr, zi, ftol, ztol, maxiter, istat)
 
     implicit none
 
@@ -3015,7 +3022,123 @@ contains
 
     end subroutine func
 
-end subroutine newton_root_polish
+end subroutine newton_root_polish_real
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  "Polish" a root using a complex Newton Raphson method.
+!  This routine will perform a Newton iteration and update the roots only if they improve,
+!  otherwise, they are left as is.
+!
+!@note Same as [[newton_root_polish_real]] except that `p` is `complex(wp)`
+
+subroutine newton_root_polish_complex(n, p, zr, zi, ftol, ztol, maxiter, istat)
+
+    implicit none
+
+    integer, intent(in) :: n                     !! degree of polynomial
+    complex(wp), dimension(n+1), intent(in) :: p !! vector of coefficients in order of decreasing powers
+    real(wp), intent(inout) :: zr                !! real part of the zero
+    real(wp), intent(inout) :: zi                !! imaginary part of the zero
+    real(wp), intent(in) :: ftol                 !! convergence tolerance for the root
+    real(wp), intent(in) :: ztol                 !! convergence tolerance for `x`
+    integer, intent(in) :: maxiter               !! maximum number of iterations
+    integer, intent(out) :: istat                !! status flag:
+                                                 !!
+                                                 !! * 0  = converged in `f`
+                                                 !! * 1  = converged in `x`
+                                                 !! * -1 = singular
+                                                 !! * -2 = max iterations reached
+
+    complex(wp) :: z !! complex number for `(zr,zi)`
+    complex(wp) :: f !! function evaluation
+    complex(wp) :: z_prev !! previous value of `z`
+    complex(wp) :: z_best !! best `z` so far
+    complex(wp) :: f_best !! best `f` so far
+    complex(wp) :: dfdx !! derivative evaluation
+    integer :: i !! counter
+
+    real(wp), parameter :: alpha = 1.0_wp !! newton step size
+
+    ! first evaluate initial point:
+    z = cmplx(zr, zi, wp)
+    call func(z, f, dfdx)
+
+    ! initialize:
+    istat = 0
+    z_prev = z
+    z_best = z
+    f_best = f
+
+    main: do i = 1, maxiter
+
+        if (i > 1) call func(z, f, dfdx)
+        if (abs(f) < abs(f_best)) then
+            ! best so far
+            zr = real(z, wp)
+            zi = aimag(z)
+            z_best = z
+            f_best = f
+        end if
+        if (abs(f) <= ftol) exit main
+
+        if (i == maxiter) then ! max iterations reached
+            istat = -2
+            exit main
+        end if
+
+        if (dfdx == 0.0_wp) then  ! can't proceed
+            istat = -1
+            exit main
+        end if
+
+        ! Newton correction for next step:
+        z = z - alpha*(f/dfdx)
+
+        if (abs(z - z_prev) <= ztol) then
+            ! convergence in x. try this point and see if there is any improvement
+            istat = 1
+            call func(z, f, dfdx)
+            if (abs(f) < abs(f_best)) then ! best so far
+                zr = real(z, wp)
+                zi = aimag(z)
+            end if
+            exit main
+        end if
+        z_prev = z
+
+    end do main
+
+contains
+
+    subroutine func(x, f, dfdx)
+
+        !! evaluate the polynomial:
+        !! `f = p(1)*x**n + p(2)*x**(n-1) + ... + p(n)*x + p(n+1)`
+        !! and its derivative using Horner's Rule.
+        !!
+        !! See: "Roundoff in polynomial evaluation", W. Kahan, 1986
+        !! https://rosettacode.org/wiki/Horner%27s_rule_for_polynomial_evaluation#Fortran
+
+        implicit none
+
+        complex(wp), intent(in) :: x
+        complex(wp), intent(out) :: f    !! function value at `x`
+        complex(wp), intent(out) :: dfdx !! function derivative at `x`
+
+        integer :: i !! counter
+
+        f = p(1)
+        dfdx = 0.0_wp
+        do i = 2, n + 1
+            dfdx = dfdx*x + f
+            f = f*x + p(i)
+        end do
+
+    end subroutine func
+
+end subroutine newton_root_polish_complex
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -4522,7 +4645,7 @@ end subroutine cpoly
         az = abs(z)
         ! if |z|<=1 then apply ruffini-horner's rule for p(z)/p'(z)
         ! and for the computation of the inclusion radius
-        if (az <= 1) then
+        if (az <= 1.0_wp) then
             p = poly(n + 1)
             ap = apoly(n + 1)
             p1 = p
@@ -4538,7 +4661,6 @@ end subroutine cpoly
             ap = ap
             again = (absp > (small + ap))
             if (.not. again) radius = n*(absp + ap)/abs(p1)
-            return
         else
             ! if |z|>1 then apply ruffini-horner's rule to the reversed polynomial
             ! and use formula (2) for p(z)/p'(z). analogously do for the inclusion
@@ -5281,7 +5403,8 @@ end subroutine cpoly
         ! check for nan and inf
         re_a = real(a,wp)
         im_a = aimag(a)
-        res = isnan(re_a) .or. isnan(im_a) .or. (abs(re_a)>big) .or. (abs(im_a)>big)
+        res = ieee_is_nan(re_a) .or. ieee_is_nan(im_a) .or. &
+              (abs(re_a)>big) .or. (abs(im_a)>big)
 
     end function check_nan_inf
 
@@ -5933,6 +6056,443 @@ end subroutine cpoly
 
     end subroutine dpolz
 !*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  In the discussion below, the notation A([*,],k} should be interpreted
+!  as the complex number A(k) if A is declared complex, and should be
+!  interpreted as the complex number A(1,k) + i * A(2,k) if A is not
+!  declared to be of type complex.  Similar statements apply for Z(k).
+!
+!  Given complex coefficients A([*,[1),...,A([*,]NDEG+1) this
+!  subr computes the NDEG roots of the polynomial
+!              A([*,]1)*X**NDEG + ... + A([*,]NDEG+1)
+!  storing the roots as complex numbers in the array Z( ).
+!  Require NDEG >= 1 and A([*,]1) /= 0.
+!
+!### Reference
+!  * Original code from [JPL MATH77 Library](https://netlib.org/math/)
+!
+!### License
+!  Copyright (c) 1996 California Institute of Technology, Pasadena, CA.
+!  ALL RIGHTS RESERVED.
+!  Based on Government Sponsored Research NAS7-03001.
+!
+!### History
+!  * C.L.Lawson & S.Y.Chan, JPL, June 3,1986.
+!  * 1987-02-25 CPOLZ  Lawson  Initial code.
+!  * 1989-10-20 CLL Delcared all variables.
+!  * 1992-05-11 CLL IERR was not being set when N = 0 or 1. Fixed this.
+!  * 1995-01-18 CPOLZ  Krogh More M77CON for conversion to C.
+!  * 1995-11-17 CPOLZ  Krogh Added M77CON statements for conversion to C
+!  * 1995-11-17 CPOLZ  Krogh Converted SFTRAN to Fortran 77.
+!  * 1996-03-30 CPOLZ  Krogh Added external statement.
+!  * 1996-04-27 CPOLZ  Krogh Changes to use .C. and C%%.
+!  * 2001-05-25 CPOLZ  Krogh Minor change for making .f90 version.
+!  * 2022-10-06, Jacob Williams modernized this routine
+
+    subroutine cpolz(a,ndeg,z,ierr)
+
+    integer,intent(in) :: ndeg !! degree of the polynomial
+    complex(wp),intent(in) :: a(ndeg+1) !! contains the complex coefficients of a polynomial
+                                        !! high order coefficient first, with a([*,]1)/=0. the
+                                        !! real and imaginary parts of the jth coefficient must
+                                        !! be provided in a([*],j). the contents of this array will
+                                        !! not be modified by the subroutine.
+    complex(wp),intent(out) :: z(ndeg) !! contains the polynomial roots stored as complex
+                                       !! numbers.  the real and imaginary parts of the jth root
+                                       !! will be stored in z([*,]j).
+    integer,intent(out) :: ierr !! error flag. set by the subroutine to 0 on normal
+                                !! termination. set to -1 if a([*,]1)=0. set to -2 if ndeg
+                                !! <= 0. set to  j > 0 if the iteration count limit
+                                !! has been exceeded and roots 1 through j have not been
+                                !! determined.
+
+    complex(wp) :: temp
+    integer :: i, j, n
+    real(wp) :: c, f, g, r, s
+    logical :: more, first
+    real(wp) :: h(ndeg,ndeg,2) !! array of work space
+
+    real(wp),parameter :: zero = 0.0_wp
+    real(wp),parameter :: one = 1.0_wp
+    real(wp),parameter :: c95 = 0.95_wp
+    integer,parameter :: base = radix(1.0_wp)   !! i1mach(10)
+    integer,parameter :: b2 = base * base
+
+    if (ndeg <= 0) then
+        ierr = -2
+        write(*,*) 'ndeg <= 0'
+        return
+    end if
+
+    if (a(1) == cmplx(zero, zero, wp)) then
+        ierr = -1
+        write(*,*) 'a(*,1) == zero'
+        return
+    end if
+
+    n = ndeg
+    ierr = 0
+
+    ! build first row of companion matrix.
+
+    do i = 2,n+1
+        temp = -(a(i)/a(1))
+        h(1,i-1,1) = real(temp,wp)
+        h(1,i-1,2) = aimag(temp)
+    end do
+
+    ! extract any exact zero roots and set n = degree of
+    ! remaining polynomial.
+
+    do j = ndeg,1,-1
+        if (h(1,j,1)/=zero .or. h(1,j,2)/=zero) exit
+        z(j) = zero
+        n = n - 1
+    end do
+
+    ! special for n = 0 or 1.
+
+    if (n == 0) return
+    if (n == 1) then
+        z(1) = cmplx(h(1,1,1),h(1,1,2),wp)
+        return
+    end if
+
+    ! build rows 2 thru n of the companion matrix.
+
+    do i = 2,n
+        do j = 1,n
+            if (j == i-1) then
+                h(i,j,1) = one
+                h(i,j,2) = zero
+            else
+                h(i,j,1) = zero
+                h(i,j,2) = zero
+            end if
+        end do
+    end do
+
+    ! ***************** balance the matrix ***********************
+    !
+    !     this is an adaption of the eispack subroutine balanc to
+    !     the special case of a complex companion matrix. the eispack
+    !     balance is a translation of the algol procedure balance,
+    !     num. math. 13, 293-304(1969) by parlett and reinsch.
+    !     handbook for auto. comp., vol.ii-linear algebra, 315-326(1971).
+
+    ! ********** iterative loop for norm reduction **********
+    do
+        more = .false.
+        do i = 1, n
+          ! compute r = sum of magnitudes in row i skipping diagonal.
+          !         c = sum of magnitudes in col i skipping diagonal.
+          if (i == 1) then
+            r = abs(h(1,2,1)) + abs(h(1,2,2))
+            do j = 3,n
+              r = r + abs(h(1,j,1)) + abs(h(1,j,2))
+            end do
+            c = abs(h(2,1,1)) + abs(h(2,1,2))
+          else
+            r = abs(h(i,i-1,1)) + abs(h(i,i-1,2))
+            c = abs(h(1,i,1)) + abs(h(1,i,2))
+            if (i /= n) then
+              c = c + abs(h(i+1,i,1)) + abs(h(i+1,i,2))
+            end if
+          end if
+
+          ! determine column scale factor, f.
+
+          g = r / base
+          f = one
+          s = c + r
+
+          do
+            if (c >= g) exit
+            f = f * base
+            c = c * b2
+          end do
+          g = r * base
+          do
+            if (c < g) exit
+            f = f / base
+            c = c / b2
+          end do
+          ! will the factor f have a significant effect ?
+
+          if ((c + r) / f < c95 * s) then
+
+            ! yes, so do the scaling.
+
+            g = one / f
+            more = .true.
+
+            ! scale row i
+
+            if (i == 1) then
+              do j = 1,n
+                h(1,j,1) = h(1,j,1)*g
+                h(1,j,2) = h(1,j,2)*g
+              end do
+            else
+              h(i,i-1,1) = h(i,i-1,1)*g
+              h(i,i-1,2) = h(i,i-1,2)*g
+            end if
+
+            ! scale column i
+
+            h(1,i,1) = h(1,i,1) * f
+            h(1,i,2) = h(1,i,2) * f
+            if (i /= n) then
+              h(i+1,i,1) = h(i+1,i,1) * f
+              h(i+1,i,2) = h(i+1,i,2) * f
+            end if
+
+          end if
+        end do
+        if (.not. more) exit
+    end do
+
+    call scomqr(ndeg,n,1,n,h(1,1,1),h(1,1,2),z,ierr)
+
+    if (ierr /= 0) write(*,*) 'Convergence failure in cpolz'
+
+    end subroutine cpolz
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  This subroutine finds the eigenvalues of a complex
+!  upper hessenberg matrix by the qr method.
+!
+!  This subroutine is a translation of a unitary analogue of the
+!  algol procedure  comlr, num. math. 12, 369-376(1968) by martin
+!  and wilkinson.
+!  handbook for auto. comp., vol.ii-linear algebra, 396-403(1971).
+!  the unitary analogue substitutes the qr algorithm of francis
+!  (comp. jour. 4, 332-345(1962)) for the lr algorithm.
+!
+!### Reference
+!  * Original code from [JPL MATH77 Library](https://netlib.org/math/)
+!
+!### License
+!  Copyright (c) 1996 California Institute of Technology, Pasadena, CA.
+!  ALL RIGHTS RESERVED.
+!  Based on Government Sponsored Research NAS7-03001.
+!
+!### History
+!  * 1987-11-12 SCOMQR Lawson  Initial code.
+!  * 1992-03-13 SCOMQR FTK  Removed implicit statements.
+!  * 1995-01-03 SCOMQR WVS  Added EXTERNAL CQUO, CSQRT so VAX won't gripe
+!  * 1996-01-18 SCOMQR Krogh  Added M77CON statements for conv. to C.
+!  * 1996-03-30 SCOMQR Krogh  Added external statement.
+!  * 1996-04-27 SCOMQR Krogh  Changes to use .C. and C%%.
+!  * 2001-01-24 SCOMQR Krogh  CSQRT -> CSQRTX to avoid C lib. conflicts.
+!  * 2022-10-06, Jacob Williams modernized this routine
+
+    subroutine scomqr(nm,n,low,igh,hr,hi,z,ierr)
+
+    integer,intent(in) :: nm !! the row dimension of two-dimensional array
+                             !! parameters as declared in the calling program
+                             !! dimension statement
+    integer,intent(in) :: n !! the order of the matrix
+    integer,intent(in) :: low !! low and igh are integers determined by the balancing
+                              !! subroutine  cbal.  if  cbal  has not been used,
+                              !! set low=1, igh=n
+    integer,intent(in) :: igh !! low and igh are integers determined by the balancing
+                              !! subroutine  cbal.  if  cbal  has not been used,
+                              !! set low=1, igh=n
+    real(wp),intent(inout) :: hi(nm,n) !! Input: hr and hi contain the real and imaginary parts,
+                                       !! respectively, of the complex upper hessenberg matrix.
+                                       !! their lower triangles below the subdiagonal contain
+                                       !! information about the unitary transformations used in
+                                       !! the reduction by  corth, if performed.
+                                       !!
+                                       !! Output: the upper hessenberg portions of hr and hi have been
+                                       !! destroyed.  therefore, they must be saved before
+                                       !! calling  comqr  if subsequent calculation of
+                                       !! eigenvectors is to be performed,
+    real(wp),intent(inout) :: hr(nm,n) !! see `hi` description
+    complex(wp),intent(out) :: z(n) !! the real and imaginary parts,
+                                    !! respectively, of the eigenvalues.  if an error
+                                    !! exit is made, the eigenvalues should be correct
+                                    !! for indices ierr+1,...,n,
+    integer,intent(out) :: ierr !! is set to:
+                                !!
+                                !!  * zero -- for normal return,
+                                !!  * j -- if the j-th eigenvalue has not been
+                                !!    determined after 30 iterations.
+
+    integer :: en,enm1,i,its,j,l,ll,lp1
+    real(wp) :: norm,si,sr,ti,tr,xi,xr,yi,yr,zzi,zzr
+    complex(wp) :: z3
+
+    ierr = 0
+    if (low /= igh) then
+        ! create real subdiagonal elements
+        l = low + 1
+
+        do i = l, igh
+            ll = min(i+1,igh)
+            if (hi(i,i-1) == 0.0_wp) cycle
+            norm = abs(cmplx(hr(i,i-1),hi(i,i-1),wp))
+            yr = hr(i,i-1) / norm
+            yi = hi(i,i-1) / norm
+            hr(i,i-1) = norm
+            hi(i,i-1) = 0.0_wp
+
+            do j = i, igh
+                si = yr * hi(i,j) - yi * hr(i,j)
+                hr(i,j) = yr * hr(i,j) + yi * hi(i,j)
+                hi(i,j) = si
+            end do
+
+            do j = low, ll
+                si = yr * hi(j,i) + yi * hr(j,i)
+                hr(j,i) = yr * hr(j,i) - yi * hi(j,i)
+                hi(j,i) = si
+            end do
+        end do
+    end if
+
+      ! store roots isolated by cbal
+      do i = 1, n
+         if (i >= low .and. i <= igh) cycle
+         z(i) = cmplx(hr(i,i),hi(i,i),wp)
+      end do
+
+      en = igh
+      tr = 0.0_wp
+      ti = 0.0_wp
+
+    main : do
+          ! search for next eigenvalue
+          if (en < low) return
+          its = 0
+          enm1 = en - 1
+
+          do
+              ! look for single small sub-diagonal element
+              ! for l=en step -1 until low
+              do ll = low, en
+                 l = en + low - ll
+                 if (l == low) exit
+                 if (abs(hr(l,l-1)) <= &
+                          eps * (abs(hr(l-1,l-1)) + abs(hi(l-1,l-1)) &
+                          + abs(hr(l,l)) +abs(hi(l,l)))) exit
+              end do
+              ! form shift
+              if (l == en) then
+              ! a root found
+                z(en) = cmplx(hr(en,en)+tr,hi(en,en)+ti,wp)
+                en = enm1
+                cycle main
+              end if
+              if (its == 30) exit main
+              if (its == 10 .or. its == 20) then
+                ! form exceptional shift
+                sr = abs(hr(en,enm1)) + abs(hr(enm1,en-2))
+                si = 0.0_wp
+              else
+                sr = hr(en,en)
+                si = hi(en,en)
+                xr = hr(enm1,en) * hr(en,enm1)
+                xi = hi(enm1,en) * hr(en,enm1)
+                if (xr /= 0.0_wp .or. xi /= 0.0_wp) then
+                    yr = (hr(enm1,enm1) - sr) / 2.0_wp
+                    yi = (hi(enm1,enm1) - si) / 2.0_wp
+                    z3 = sqrt(cmplx(yr**2-yi**2+xr,2.0_wp*yr*yi+xi,wp))
+                    zzr = real(z3,wp)
+                    zzi = aimag(z3)
+                    if (yr * zzr + yi * zzi < 0.0_wp) then
+                        zzr = -zzr
+                        zzi = -zzi
+                    end if
+                    z3 = cmplx(xr,xi,wp) / cmplx(yr+zzr,yi+zzi,wp)
+                    sr = sr - real(z3,wp)
+                    si = si - aimag(z3)
+                end if
+              end if
+
+              do i = low, en
+                 hr(i,i) = hr(i,i) - sr
+                 hi(i,i) = hi(i,i) - si
+              end do
+
+              tr = tr + sr
+              ti = ti + si
+              its = its + 1
+              ! reduce to triangle (rows)
+              lp1 = l + 1
+
+              do i = lp1, en
+                 sr = hr(i,i-1)
+                 hr(i,i-1) = 0.0_wp
+                 norm = sqrt(hr(i-1,i-1)*hr(i-1,i-1)+hi(i-1,i-1)*hi(i-1,i-1)+sr*sr)
+                 xr = hr(i-1,i-1) / norm
+                 xi = hi(i-1,i-1) / norm
+                 z(i-1) = cmplx(xr,xi,wp)
+                 hr(i-1,i-1) = norm
+                 hi(i-1,i-1) = 0.0_wp
+                 hi(i,i-1) = sr / norm
+                 do j = i, en
+                    yr = hr(i-1,j)
+                    yi = hi(i-1,j)
+                    zzr = hr(i,j)
+                    zzi = hi(i,j)
+                    hr(i-1,j) = xr * yr + xi * yi + hi(i,i-1) * zzr
+                    hi(i-1,j) = xr * yi - xi * yr + hi(i,i-1) * zzi
+                    hr(i,j) = xr * zzr - xi * zzi - hi(i,i-1) * yr
+                    hi(i,j) = xr * zzi + xi * zzr - hi(i,i-1) * yi
+                 end do
+              end do
+
+              si = hi(en,en)
+              if (si /= 0.0_wp) then
+                norm = abs(cmplx(hr(en,en),si,wp))
+                sr = hr(en,en) / norm
+                si = si / norm
+                hr(en,en) = norm
+                hi(en,en) = 0.0_wp
+              end if
+              ! inverse operation (columns)
+              do j = lp1, en
+                 xr = real(z(j-1),wp)
+                 xi = aimag(z(j-1))
+                 do i = l, j
+                    yr = hr(i,j-1)
+                    yi = 0.0
+                    zzr = hr(i,j)
+                    zzi = hi(i,j)
+                    if (i /= j) then
+                        yi = hi(i,j-1)
+                        hi(i,j-1) = xr * yi + xi * yr + hi(j,j-1) * zzi
+                    end if
+                    hr(i,j-1) = xr * yr - xi * yi + hi(j,j-1) * zzr
+                    hr(i,j) = xr * zzr + xi * zzi - hi(j,j-1) * yr
+                    hi(i,j) = xr * zzi - xi * zzr - hi(j,j-1) * yi
+                 end do
+              end do
+
+              if (si /= 0.0_wp) then
+                do i = l, en
+                    yr = hr(i,en)
+                    yi = hi(i,en)
+                    hr(i,en) = sr * yr - si * yi
+                    hi(i,en) = sr * yi + si * yr
+                end do
+              end if
+
+          end do
+
+    end do main
+
+    ! set error -- no convergence to an
+    ! eigenvalue after 30 iterations
+    ierr = en
+
+    end subroutine scomqr
 
 !*****************************************************************************************
 end module polyroots_module

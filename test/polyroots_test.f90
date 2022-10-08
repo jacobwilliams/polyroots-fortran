@@ -11,9 +11,9 @@
 
     integer,parameter :: n_cases = 14 + 110 !! number of cases to run
 
-    real(wp),dimension(:),allocatable :: p, zr, zi, s, q, radius,rr,rc, berr,cond
+    real(wp),dimension(:),allocatable :: p, pi, zr, zi, s, q, radius, berr,cond
     integer,dimension(:),allocatable :: conv
-    complex(wp),dimension(:),allocatable :: r, cp
+    complex(wp),dimension(:),allocatable :: r, cp, cp_
     integer :: degree, i, istatus, icase, n
     integer,dimension(:),allocatable :: seed
     real(wp) :: detil
@@ -51,46 +51,60 @@
                  12753576._wp, &
                  -10628640._wp, &
                  3628800._wp ]
+            pi = 0.0_wp
         case(2)
             call allocate_arrays(4)
             p = [1,-3,20,44,54]
+            pi = 0.0_wp
         case(3)
             call allocate_arrays(6)
             p = [1,-2,2,1,6,-6,8]
+            pi = 0.0_wp
         case(4)
             call allocate_arrays(5)
             p = [1,1,-8,-16,7,15]
+            pi = 0.0_wp
         case(5)
             call allocate_arrays(5)
             p = [1,7,5,6,3,2]
+            pi = 0.0_wp
         case(6)
             call allocate_arrays(5)
             p = [2,3,6,5,7,1]
+            pi = 0.0_wp
         case(7)
             call allocate_arrays(6)
             p = [1,0,-14,0,49,0,-36]
+            pi = 0.0_wp
         case(8)
             call allocate_arrays(8)
             p = [1,0,-30,0,273,0,-820,0,576]
+            pi = 0.0_wp
         case(9)
             call allocate_arrays(4)
             p = [1,0,0,0,-16]
+            pi = 0.0_wp
         case(10)
             call allocate_arrays(6)
             p = [1,-2,2,1,6,-6,8]
+            pi = 0.0_wp
         case(11)
             ! a case where 1 is an obvious root
             call allocate_arrays(5)
+            pi = 0.0_wp
             p = [8,-8,16,-16,8,-8]
         case(12)
             call allocate_arrays(3)
             p = [ -8.0e18_wp,3.0e12_wp,5.0e6_wp,1.0_wp]
+            pi = 0.0_wp
         case(13)
             call allocate_arrays(3)
             p = [4.0_wp, 3.0_wp, 2.0_wp, 1.0_wp]
+            pi = 0.0_wp
         case(14)
             call allocate_arrays(2)
             p = [3.0_wp, 2.0_wp, 1.0_wp]
+            pi = 0.0_wp
 
         case default
             ! test a set of random coefficients for each degree:
@@ -103,16 +117,17 @@
 
             do i = 1, degree+1
                 p(i)  = get_random_number(-1000.0_wp,1000.0_wp)
+                pi(i) = get_random_number(-10000.0_wp,10000.0_wp)
             end do
         end select
+        do i = 1, degree+1
+            cp(i) = cmplx(p(i), pi(i), wp) ! put in a complex number
+        end do
+        q = reverse(p)      !
+        cp_ = reversez(cp)  ! for the ones that require reverse order
 
         write(*,'(A,1X,I3)')          ' Degree: ', degree
         write(*,'(A,1X/,*(g23.15/))') ' Coefficients: ', p(1:degree+1)
-
-        q = reverse(p) ! the following two accept the coefficients in reverse order
-        do i = 1, degree+1
-            cp(i) = cmplx(p(i), 0.0_wp, wp) ! put in a complex number
-        end do
 
         if (degree==2) then
             ! also test this one (only for quadratic equations):
@@ -134,7 +149,7 @@
             call check_results('polyroots', istatus, zr, zi, degree)
 
             call cpolyroots(degree, cp, r, istatus)
-            call check_results('cpolyroots', istatus, real(r, wp), aimag(r), degree)
+            call check_results_complex('cpolyroots [complex coefficients]', istatus, real(r, wp), aimag(r), degree)
         end if
 
         call rpoly(p, degree, zr, zi, istatus)
@@ -150,37 +165,33 @@
         call dpolz(degree,p,zr,zi,istatus)
         call check_results('dpolz', istatus, zr, zi, degree)
 
-        ! for now, just test the following two with the real coefficients only:
+        ! for now, just test the following with the real coefficients only:
 
-        q = 0.0_wp
+        call cpolz(cp,degree,r,istatus)
+        call check_results_complex('cpolz [complex coefficients]', istatus, real(r,wp), aimag(r), degree)
+
         istatus = 0
-        call cpoly(p,q,degree,zr,zi,fail)
+        call cpoly(real(cp, wp),aimag(cp),degree,zr,zi,fail)
         if (fail) istatus = -1
-        call check_results('cpoly', istatus, zr, zi, degree)
+        call check_results_complex('cpoly [complex coefficients]', istatus, zr, zi, degree)
 
         call cpqr79(degree,cp,r,istatus)
-        call check_results('cpqr79', istatus, real(r,wp), aimag(r), degree)
+        call check_results_complex('cpqr79 [complex coefficients]', istatus, real(r,wp), aimag(r), degree)
 
         call qr_algeq_solver(degree,p,zr,zi,istatus,detil=detil)
-        call check_results('qr_algeq_solver', istatus, real(r,wp), aimag(r), degree)
+        call check_results('qr_algeq_solver', istatus, zr,zi, degree)
 
-        !..... these accept the complex coefficients in reverse order
-        cp = reversez(cp)
-        call cmplx_roots_gen(degree, cp, r) ! no status flag
-        rr = real(r, wp)
-        rc = aimag(r)
-        call check_results('cmplx_roots_gen', 0, rr, rc, degree)
+        !....
+        ! these accept the complex coefficients in reverse order
+        call cmplx_roots_gen(degree, cp_, r) ! no status flag
+        call check_results_complex('cmplx_roots_gen [complex coefficients]', 0, real(r, wp), aimag(r), degree)
 
-        istatus = 0
-        call polzeros(degree, cp, 100, r, radius, err)
-        if (any(err)) istatus = -1
-        rr = real(r, wp)
-        rc = aimag(r)
-        call check_results('polzeros', istatus, rr, rc, degree)
+        call polzeros(degree, cp_, 100, r, radius, err); istatus = 0; if (any(err)) istatus = -1
+        call check_results_complex('polzeros [complex coefficients]', istatus, real(r, wp), aimag(r), degree)
 
-        call fpml(cp, degree, r, berr, cond, conv, itmax=100)
-        call check_results('fpml', 0, real(r, wp), aimag(r), degree)
-
+        call fpml(cp_, degree, r, berr, cond, conv, itmax=100)
+        call check_results_complex('fpml [complex coefficients]', 0, real(r, wp), aimag(r), degree)
+        !....
     end do
 
     if (failure) error stop 'At least one test failed'
@@ -241,8 +252,10 @@
         degree = d
 
         p        = [(0, i=1,degree+1)]
+        pi       = [(0, i=1,degree+1)]
         q        = [(0, i=1,degree+1)]
         cp       = [(0, i=1,degree+1)]
+        cp_      = [(0, i=1,degree+1)]
         berr     = [(0, i=1,degree+1)]
 
         zr       = [(0, i=1,degree)]
@@ -251,8 +264,6 @@
         r        = [(0, i=1,degree)]
         radius   = [(0, i=1,degree)]
         err      = [(.false., i=1,degree)]
-        rr       = [(0, i=1,degree)]
-        rc       = [(0, i=1,degree)]
         cond     = [(0, i=1,degree)]
         conv     = [(0, i=1,degree)]
 
@@ -326,6 +337,75 @@
             end do
 
         end subroutine check_results
+    !*****************************************************************************************
+
+    !*****************************************************************************************
+        subroutine check_results_complex(name, istatus, zr, zi, degree)
+
+            !! check the results (for complex coefficients).
+            !! if any are not within the tolerance,
+            !! then also try to polish them using the newton method.
+
+            character(len=*),intent(in) :: name !! name of method
+            integer,intent(in) :: istatus !! status flag (0 = success)
+            real(wp),dimension(:),intent(in) :: zr, zi
+            integer,intent(in) :: degree
+
+            real(wp) :: zr_, zi_ ! copy of inputs for polishing
+            real(wp),dimension(size(zr)) :: re, im ! copy of inputs for sorting
+            complex(wp) :: z, root
+            integer :: i,j !! counter
+            integer :: istat
+
+            real(wp),parameter :: tol = 1.0e-2_wp  !! acceptable root tolerance for tests
+            real(wp),parameter :: ftol = 1.0e-8_wp !! desired root tolerance
+            real(wp),parameter :: ztol = 10*epsilon(1.0_wp) !! newton tol for x
+            logical,parameter :: polish = .true.
+
+            write(*, '(/A,1x,i3)') trim(name)
+
+            if (istatus /= 0) then
+                failure = .true.
+                write(*,'(A,1x,i3)') 'Error: method did not converge. istatus = ', istatus
+                return
+            end if
+
+            ! sort them in increasing order:
+            re = zr
+            im = zi
+            call sort_roots(re, im)
+
+            write(*, '(a)') '  real part               imaginary part         root'
+
+            do j = 1, degree
+                z = cmplx(re(j), im(j), wp)
+                root = cp(1)
+                do i = 2, degree+1
+                    root = root * z + cp(i) ! horner's rule
+                end do
+                write(*, '(3(2g23.15,1x))') re(j), im(j), abs(root)
+                if (polish .and. abs(root) > ftol) then
+                    ! attempt to polish the root:
+                    zr_ = re(j)
+                    zi_ = im(j)
+                    call newton_root_polish(degree, cp, zr_, zi_, &
+                                            ftol=ftol, ztol=ztol, maxiter=10, &
+                                            istat=istat)
+                    z = cmplx(zr_, zi_, wp) ! recompute root with possibly updated values
+                    root = cp(1)
+                    do i = 2, degree+1
+                        root = root * z + cp(i) ! horner's rule
+                    end do
+                    write(*, '(3(2g23.15,1x),1X,A)') zr_, zi_, abs(root), 'POLISHED'
+                    if (abs(root) > tol) then
+                        failure = .true.
+                        write(*,'(A)') 'Error: insufficient accuracy *******'
+                        !error stop 'Error: insufficient accuracy'
+                    end if
+                end if
+            end do
+
+        end subroutine check_results_complex
     !*****************************************************************************************
 
     !*****************************************************************************************
