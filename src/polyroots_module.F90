@@ -21,6 +21,7 @@
 module polyroots_module
 
     use iso_fortran_env
+    use ieee_arithmetic
 
     implicit none
 
@@ -5402,7 +5403,8 @@ end subroutine cpoly
         ! check for nan and inf
         re_a = real(a,wp)
         im_a = aimag(a)
-        res = isnan(re_a) .or. isnan(im_a) .or. (abs(re_a)>big) .or. (abs(im_a)>big)
+        res = ieee_is_nan(re_a) .or. ieee_is_nan(im_a) .or. &
+              (abs(re_a)>big) .or. (abs(im_a)>big)
 
     end function check_nan_inf
 
