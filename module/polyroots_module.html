@@ -84,7 +84,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="100.0% of total for modules and submodules.">3697 statements</a>
+    title="100.0% of total for modules and submodules.">4024 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/polyroots_module.F90"> Source File</a></li>
   </ul>
@@ -117,6 +117,14 @@
   </div>
 </div>
 <div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-0">Interfaces</a></h3></div>
+  <div id="inters-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/polyroots_module.html#interface-newton_root_polish">newton_root_polish</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
   <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
   <div class="list-group">
     <div id="subs-0" class="panel-collapse collapse">
@@ -130,7 +138,6 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolyroots">cpolyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polzeros">polzeros</a>
@@ -138,6 +145,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rroots_chebyshev_cubic">rroots_chebyshev_cubic</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-sort_roots">sort_roots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dpolz">dpolz</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolz">cpolz</a>
     </div>
   </div>
 </div>
@@ -163,6 +171,7 @@
       <ul class="list-group">
       <li class="list-group-item">
   <ul class="list-inline">
+    <li><a href="http://fortranwiki.org/fortran/show/ieee_arithmetic">ieee_arithmetic</a></li>
     <li><a href="https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html">iso_fortran_env</a></li>
   </ul>
       </li>
@@ -184,6 +193,14 @@
   </div>
 </div>
 <div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-1">Interfaces</a></h3></div>
+  <div id="inters-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/polyroots_module.html#interface-newton_root_polish">newton_root_polish</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
   <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
   <div class="list-group">
     <div id="subs-1" class="panel-collapse collapse">
@@ -197,7 +214,6 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polyroots">polyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolyroots">cpolyroots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpqr79">cpqr79</a>
-      <a class="list-group-item" href="../module/polyroots_module.html#proc-newton_root_polish">newton_root_polish</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cmplx_roots_gen">cmplx_roots_gen</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-cpoly">cpoly</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-polzeros">polzeros</a>
@@ -205,6 +221,7 @@
       <a class="list-group-item" href="../module/polyroots_module.html#proc-rroots_chebyshev_cubic">rroots_chebyshev_cubic</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-sort_roots">sort_roots</a>
       <a class="list-group-item" href="../module/polyroots_module.html#proc-dpolz">dpolz</a>
+      <a class="list-group-item" href="../module/polyroots_module.html#proc-cpolz">cpolz</a>
     </div>
   </div>
 </div>
@@ -230,6 +247,150 @@
     <br>
     
     
+    <section>
+   <h2>Interfaces</h2>
+     <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-newton_root_polish"></span><h3>public interface <a href='../interface/newton_root_polish.html'>newton_root_polish</a>  </h3></div>
+  <ul class="list-group">
+    <li class="list-group-item">
+    <h3>private subroutine newton_root_polish_real(n, p, zr, zi, ftol, ztol, maxiter, istat)</h3><p>"Polish" a root using a complex Newton Raphson method.
+  This routine will perform a Newton iteration and update the roots only if they improve,
+  otherwise, they are left as is.</p><a href="../proc/newton_root_polish_real.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>p</strong></td><td><p>vector of coefficients in order of decreasing powers</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zr</strong></td><td><p>real part of the zero</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zi</strong></td><td><p>imaginary part of the zero</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ftol</strong></td><td><p>convergence tolerance for the root</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ztol</strong></td><td><p>convergence tolerance for <code>x</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>maxiter</strong></td><td><p>maximum number of iterations</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>istat</strong></td><td><p>status flag:</p>
+<ul>
+<li>0  = converged in <code>f</code></li>
+<li>1  = converged in <code>x</code></li>
+<li>-1 = singular</li>
+<li>-2 = max iterations reached</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+    </li>
+    <li class="list-group-item">
+    <h3>private subroutine newton_root_polish_complex(n, p, zr, zi, ftol, ztol, maxiter, istat)</h3><p>"Polish" a root using a complex Newton Raphson method.
+  This routine will perform a Newton iteration and update the roots only if they improve,
+  otherwise, they are left as is.</p><a href="../proc/newton_root_polish_complex.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong></td><td><p>degree of polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in),</td>
+  <td></td>  <td>dimension(n+1)</td><td>::</td>
+  <td><strong>p</strong></td><td><p>vector of coefficients in order of decreasing powers</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zr</strong></td><td><p>real part of the zero</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(inout)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>zi</strong></td><td><p>imaginary part of the zero</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ftol</strong></td><td><p>convergence tolerance for the root</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ztol</strong></td><td><p>convergence tolerance for <code>x</code></p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>maxiter</strong></td><td><p>maximum number of iterations</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>istat</strong></td><td><p>status flag:</p>
+<ul>
+<li>0  = converged in <code>f</code></li>
+<li>1  = converged in <code>x</code></li>
+<li>-1 = singular</li>
+<li>-2 = max iterations reached</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+    </li>
+  </ul>
+</div>
+
+    </section>
+  <br>
 
     
     
@@ -752,78 +913,6 @@ if these are known. On output: ith zero.</p></td>
   </div>
 
       <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="proc-newton_root_polish"></span><h3>public subroutine <a href='../proc/newton_root_polish.html'>newton_root_polish</a>(n, p, zr, zi, ftol, ztol, maxiter, istat)</h3></div>
-  <div class="panel-body">
-       
-<p>"Polish" a root using a complex Newton Raphson method.
-  This routine will perform a Newton iteration and update the roots only if they improve,
-  otherwise, they are left as is.</p><a href="../proc/newton_root_polish.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>degree of polynomial</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in),</td>
-  <td></td>  <td>dimension(n+1)</td><td>::</td>
-  <td><strong>p</strong></td><td><p>vector of coefficients in order of decreasing powers</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>zr</strong></td><td><p>real part of the zero</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>zi</strong></td><td><p>imaginary part of the zero</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ftol</strong></td><td><p>convergence tolerance for the root</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>real(kind=wp),</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ztol</strong></td><td><p>convergence tolerance for <code>x</code></p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>maxiter</strong></td><td><p>maximum number of iterations</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" ></span>integer,</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>istat</strong></td><td><p>status flag:</p>
-<ul>
-<li>0  = converged in <code>f</code></li>
-<li>1  = converged in <code>x</code></li>
-<li>-1 = singular</li>
-<li>-2 = max iterations reached</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
-
-
-  </div>
-  </div>
-
-      <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-cmplx_roots_gen"></span><h3>public subroutine <a href='../proc/cmplx_roots_gen.html'>cmplx_roots_gen</a>(degree, poly, roots, polish_roots_after, use_roots_as_starting_points)</h3></div>
   <div class="panel-body">
        
@@ -1178,6 +1267,59 @@ order coefficient first with <code>A(1)/=0</code>.</p></td>
   has been exceeded and roots 1 through <code>J</code> have not been
   determined.</li>
 </ul></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpolz"></span><h3>public subroutine <a href='../proc/cpolz.html'>cpolz</a>(a, ndeg, z, ierr)</h3></div>
+  <div class="panel-body">
+       
+<p>In the discussion below, the notation A([*,],k} should be interpreted
+  as the complex number A(k) if A is declared complex, and should be
+  interpreted as the complex number A(1,k) + i * A(2,k) if A is not
+  declared to be of type complex.  Similar statements apply for Z(k).</p><a href="../proc/cpolz.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(ndeg+1)</td><td><p>contains the complex coefficients of a polynomial
+high order coefficient first, with a([<em>,]1)/=0. the
+real and imaginary parts of the jth coefficient must
+be provided in a([</em>],j). the contents of this array will
+not be modified by the subroutine.</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ndeg</strong></td><td><p>degree of the polynomial</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>z</strong>(ndeg)</td><td><p>contains the polynomial roots stored as complex
+numbers.  the real and imaginary parts of the jth root
+will be stored in z([*,]j).</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>ierr</strong></td><td><p>error flag. set by the subroutine to 0 on normal
+termination. set to -1 if a([*,]1)=0. set to -2 if ndeg
+&lt;= 0. set to  j &gt; 0 if the iteration count limit
+has been exceeded and roots 1 through j have not been
+determined.</p></td>
 </tr>
 </tbody>
 </table>
