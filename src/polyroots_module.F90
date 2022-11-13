@@ -2412,7 +2412,6 @@ subroutine cpolyroots(n, p, w, info)
 
 #ifdef REAL32
     interface
-        !subroutine sgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork,        info)
         subroutine cgeev( jobvl, jobvr, n, a, lda, w,      vl, ldvl, vr, ldvr, work, lwork, rwork, info )
             implicit none
             character :: jobvl, jobvr
