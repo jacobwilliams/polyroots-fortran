@@ -17,6 +17,8 @@ integer :: istatus !! status code
 real(wp),dimension(degree) :: zr !! real components of roots
 real(wp),dimension(degree) :: zi !! imaginary components of roots
 
+if (wp==real128) stop ! don't have a quad solver
+
 call polyroots(degree, p, zr, zi, istatus)
 
 write(*,'(/A,1x,I3)') 'istatus: ', istatus
