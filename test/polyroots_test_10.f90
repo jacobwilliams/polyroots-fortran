@@ -4,20 +4,21 @@
 
     program polyroots_test_10
 
-    use polyroots_module, wp => polyroots_module_rk
-    use pyplot_module
+    use polyroots_module, only: dpolz, wp => polyroots_module_rk
+    use pyplot_module,    only: pyplot
 
     implicit none
 
     integer,parameter :: degree = 10
 
-    real(wp) :: a(degree+1) !! coefficients of polynomial
+    real(wp),dimension(degree+1) :: a    !! coefficients of polynomial
     real(wp),dimension(degree) :: zr, zi !! roots
     integer :: ierr,i,j,k,l,m,n,o,p,q,r,s
     type(pyplot) :: plt
 
-    call plt%initialize(grid=.true.,xlabel='Real part',ylabel='Imaginary part',&
-                        title='Degree 10 Polynomial Roots')
+    call plt%initialize(grid=.true.,xlabel='$\Re(z)$',ylabel='$\Im(z)$',&
+                        title='Degree 10 Polynomial Roots',usetex=.true.,&
+                        figsize=[20,10])
     do i = -1, 1, 2
         do j = -1, 1, 2
             do k = -1, 1, 2
