@@ -9,42 +9,36 @@
 
     implicit none
 
-    integer,parameter :: degree = 10
-
-    real(wp),dimension(degree+1) :: a    !! coefficients of polynomial
+    integer,parameter :: degree = 10 !! polynomial degree
+    integer,dimension(*),parameter :: icoeffs = [-1,1] !! set of coefficients
+    integer,dimension (degree+1) :: a !! coefficients of polynomial
     real(wp),dimension(degree) :: zr, zi !! roots
-    integer :: ierr,i,j,k,l,m,n,o,p,q,r,s
-    type(pyplot) :: plt
+    integer :: ierr !! error code from [[dpolz]]
+    type(pyplot) :: plt !! for making the plot
 
     call plt%initialize(grid=.true.,xlabel='$\Re(z)$',ylabel='$\Im(z)$',&
                         title='Degree 10 Polynomial Roots',usetex=.true.,&
                         figsize=[20,10])
-    do i = -1, 1, 2
-        do j = -1, 1, 2
-            do k = -1, 1, 2
-                do l = -1, 1, 2
-                    do m = -1, 1, 2
-                        do n = -1, 1, 2
-                            do o = -1, 1, 2
-                                do p = -1, 1, 2
-                                    do q = -1, 1, 2
-                                        do r = -1, 1, 2
-                                            do s = -1, 1, 2
-                                                a = [i,j,k,l,m,n,o,p,q,r,s]
-                                                call dpolz(degree,a,zr,zi,ierr); if (ierr/=0) error stop ierr
-                                                call plt%add_plot(zr,zi,label='',linestyle='bo',markersize=1)
-                                            end do
-                                        end do
-                                    end do
-                                end do
-                            end do
-                        end do
-                    end do
-                end do
-            end do
-        end do
-    end do
+
+    call generate(1)
     call plt%savefig('roots.png')
+
+    contains
+
+        recursive subroutine generate (i)
+        integer, intent(in) :: i
+        integer :: ix
+        if (i > degree+1) then
+            !write (*, '(*(I2,","))') a
+            call dpolz(degree,real(a,wp),zr,zi,ierr); if (ierr/=0) error stop ierr
+            call plt%add_plot(zr,zi,label='',linestyle='bo',markersize=1)
+        else
+            do ix = 1,size(icoeffs) 
+                a(i) = icoeffs(ix)
+                call generate(i+1)
+            end do
+        end if
+        end subroutine generate
 
     end program polyroots_test_10
 !*****************************************************************************************
