@@ -81,7 +81,7 @@ istatus:    0
 
 ## Compiling
 
-A `fmp.toml` file is provided for compiling polyroots-fortran with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
+A `fpm.toml` file is provided for compiling polyroots-fortran with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
 
 ```
 fpm build --profile release
