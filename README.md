@@ -3,6 +3,7 @@
 
 **polyroots-fortran**: Polynomial Roots with Modern Fortran
 
+[![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)](https://github.com/topics/fortran)
 [![GitHub release](https://img.shields.io/github/release/jacobwilliams/polyroots-fortran.svg)](https://github.com/jacobwilliams/polyroots-fortran/releases/latest)
 [![CI Status](https://github.com/jacobwilliams/polyroots-fortran/actions/workflows/CI.yml/badge.svg)](https://github.com/jacobwilliams/polyroots-fortran/actions)
 [![codecov](https://codecov.io/gh/jacobwilliams/polyroots-fortran/branch/master/graph/badge.svg)](https://codecov.io/gh/jacobwilliams/polyroots-fortran)

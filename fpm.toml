@@ -1,6 +1,6 @@
 name = "polyroots-fortran"
 author = "Jacob Williams"
-copyright  = "Copyright (c) 2022, Jacob Williams"
+copyright  = "Copyright (c) 2022-2024, Jacob Williams"
 license = "BSD-3"
 description = "Polynomial Roots with Modern Fortran"
 homepage = "https://github.com/jacobwilliams/polyroots-fortran"

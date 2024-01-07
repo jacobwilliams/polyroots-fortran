@@ -1,7 +1,7 @@
 Polyroots-Fortran: Root solvers for modern Fortran
 <https://github.com/jacobwilliams/polyroots-fortran>
 
-Copyright (c) 2022, Jacob Williams
+Copyright (c) 2022-2024, Jacob Williams
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
