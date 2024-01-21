@@ -234,8 +234,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
               </ul>
             </li>
             <li class="list-group-item">
@@ -473,6 +473,11 @@ parameter
       <h3>public        interface <a href='../interface/newton_root_polish.html'>newton_root_polish</a> 
       </h3>
     </div>
+      <div class="card-body">
+        <p>"Polish" a root using Newton Raphson.
+This routine will perform a Newton iteration and update
+the roots only if they improve, otherwise, they are left as is.</p>
+      </div>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
@@ -3339,7 +3344,7 @@ for indices <code>ierr+1,...,n</code>.</p>
 <p>array which will hold all roots that had been found.
 If the flag 'use_roots_as_starting_points' is set to
 .true., then instead of point (0,0) we use value from
-this array as starting point for cmplx_laguerre</p>
+this array as starting point for <a>cmplx_laguerre</a></p>
             </td>
         </tr>
         <tr>

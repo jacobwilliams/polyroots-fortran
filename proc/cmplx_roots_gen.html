@@ -231,7 +231,7 @@
                 <p>array which will hold all roots that had been found.
 If the flag 'use_roots_as_starting_points' is set to
 .true., then instead of point (0,0) we use value from
-this array as starting point for cmplx_laguerre</p>
+this array as starting point for <a>cmplx_laguerre</a></p>
             </td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@ very rough idea where some of the roots can be.
 <span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">roots</span><span class="w"> </span><span class="c">!! array which will hold all roots that had been found.</span>
 <span class="w">                                                           </span><span class="c">!! If the flag &#39;use_roots_as_starting_points&#39; is set to</span>
 <span class="w">                                                           </span><span class="c">!! .true., then instead of point (0,0) we use value from</span>
-<span class="w">                                                           </span><span class="c">!! this array as starting point for cmplx_laguerre</span>
+<span class="w">                                                           </span><span class="c">!! this array as starting point for [[cmplx_laguerre]]</span>
 <span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">polish_roots_after</span><span class="w"> </span><span class="c">!! after all roots have been found by dividing</span>
 <span class="w">                                                        </span><span class="c">!! original polynomial by each root found,</span>
 <span class="w">                                                        </span><span class="c">!! you can opt in to polish all roots using full</span>
@@ -391,12 +391,12 @@ very rough idea where some of the roots can be.
 
 <span class="k">    recursive subroutine </span><span class="n">cmplx_laguerre</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">)</span>
 
-<span class="w">    </span><span class="c">!  Subroutine finds one root of a complex polynomial using</span>
-<span class="w">    </span><span class="c">!  Laguerre&#39;s method. In every loop it calculates simplified</span>
-<span class="w">    </span><span class="c">!  Adams&#39; stopping criterion for the value of the polynomial.</span>
-<span class="w">    </span><span class="c">!</span>
-<span class="w">    </span><span class="c">!  For a summary of the method go to:</span>
-<span class="w">    </span><span class="c">!  http://en.wikipedia.org/wiki/Laguerre&#39;s_method</span>
+<span class="w">    </span><span class="c">!!  Subroutine finds one root of a complex polynomial using</span>
+<span class="w">    </span><span class="c">!!  Laguerre&#39;s method. In every loop it calculates simplified</span>
+<span class="w">    </span><span class="c">!!  Adams&#39; stopping criterion for the value of the polynomial.</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  For a summary of the method go to:</span>
+<span class="w">    </span><span class="c">!!  http://en.wikipedia.org/wiki/Laguerre&#39;s_method</span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -580,26 +580,26 @@ very rough idea where some of the roots can be.
 
 <span class="w">  </span><span class="k">recursive subroutine </span><span class="n">cmplx_laguerre2newton</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="n">starting_mode</span><span class="p">)</span>
 
-<span class="w">    </span><span class="c">!  Subroutine finds one root of a complex polynomial using</span>
-<span class="w">    </span><span class="c">!  Laguerre&#39;s method, Second-order General method and Newton&#39;s</span>
-<span class="w">    </span><span class="c">!  method - depending on the value of function F, which is a</span>
-<span class="w">    </span><span class="c">!  combination of second derivative, first derivative and</span>
-<span class="w">    </span><span class="c">!  value of polynomial [F=-(p&quot;*p)/(p&#39;p&#39;)].</span>
-<span class="w">    </span><span class="c">!</span>
-<span class="w">    </span><span class="c">!  Subroutine has 3 modes of operation. It starts with mode=2</span>
-<span class="w">    </span><span class="c">!  which is the Laguerre&#39;s method, and continues until F</span>
-<span class="w">    </span><span class="c">!  becames F&lt;0.50, at which point, it switches to mode=1,</span>
-<span class="w">    </span><span class="c">!  i.e., SG method (see paper). While in the first two</span>
-<span class="w">    </span><span class="c">!  modes, routine calculates stopping criterion once per every</span>
-<span class="w">    </span><span class="c">!  iteration. Switch to the last mode, Newton&#39;s method, (mode=0)</span>
-<span class="w">    </span><span class="c">!  happens when becomes F&lt;0.05. In this mode, routine calculates</span>
-<span class="w">    </span><span class="c">!  stopping criterion only once, at the beginning, under an</span>
-<span class="w">    </span><span class="c">!  assumption that we are already very close to the root.</span>
-<span class="w">    </span><span class="c">!  If there are more than 10 iterations in Newton&#39;s mode,</span>
-<span class="w">    </span><span class="c">!  it means that in fact we were far from the root, and</span>
-<span class="w">    </span><span class="c">!  routine goes back to Laguerre&#39;s method (mode=2).</span>
-<span class="w">    </span><span class="c">!</span>
-<span class="w">    </span><span class="c">!  For a summary of the method see the paper: Skowron &amp; Gould (2012)</span>
+<span class="w">    </span><span class="c">!!  Subroutine finds one root of a complex polynomial using</span>
+<span class="w">    </span><span class="c">!!  Laguerre&#39;s method, Second-order General method and Newton&#39;s</span>
+<span class="w">    </span><span class="c">!!  method - depending on the value of function F, which is a</span>
+<span class="w">    </span><span class="c">!!  combination of second derivative, first derivative and</span>
+<span class="w">    </span><span class="c">!!  value of polynomial [F=-(p&quot;*p)/(p&#39;p&#39;)].</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  Subroutine has 3 modes of operation. It starts with mode=2</span>
+<span class="w">    </span><span class="c">!!  which is the Laguerre&#39;s method, and continues until F</span>
+<span class="w">    </span><span class="c">!!  becames F&lt;0.50, at which point, it switches to mode=1,</span>
+<span class="w">    </span><span class="c">!!  i.e., SG method (see paper). While in the first two</span>
+<span class="w">    </span><span class="c">!!  modes, routine calculates stopping criterion once per every</span>
+<span class="w">    </span><span class="c">!!  iteration. Switch to the last mode, Newton&#39;s method, (mode=0)</span>
+<span class="w">    </span><span class="c">!!  happens when becomes F&lt;0.05. In this mode, routine calculates</span>
+<span class="w">    </span><span class="c">!!  stopping criterion only once, at the beginning, under an</span>
+<span class="w">    </span><span class="c">!!  assumption that we are already very close to the root.</span>
+<span class="w">    </span><span class="c">!!  If there are more than 10 iterations in Newton&#39;s mode,</span>
+<span class="w">    </span><span class="c">!!  it means that in fact we were far from the root, and</span>
+<span class="w">    </span><span class="c">!!  routine goes back to Laguerre&#39;s method (mode=2).</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  For a summary of the method see the paper: Skowron &amp; Gould (2012)</span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 

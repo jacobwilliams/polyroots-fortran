@@ -70,6 +70,9 @@ module polyroots_module
     public :: sort_roots
 
     interface newton_root_polish
+        !! "Polish" a root using Newton Raphson.
+        !! This routine will perform a Newton iteration and update
+        !! the roots only if they improve, otherwise, they are left as is.
         module procedure :: newton_root_polish_real, &
                             newton_root_polish_complex
     end interface
@@ -3550,7 +3553,7 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
     complex(wp), dimension(degree), intent(inout) :: roots !! array which will hold all roots that had been found.
                                                            !! If the flag 'use_roots_as_starting_points' is set to
                                                            !! .true., then instead of point (0,0) we use value from
-                                                           !! this array as starting point for cmplx_laguerre
+                                                           !! this array as starting point for [[cmplx_laguerre]]
     logical, intent(in), optional :: polish_roots_after !! after all roots have been found by dividing
                                                         !! original polynomial by each root found,
                                                         !! you can opt in to polish all roots using full
@@ -3643,12 +3646,12 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
 
     recursive subroutine cmplx_laguerre(poly, degree, root, iter, success)
 
-    !  Subroutine finds one root of a complex polynomial using
-    !  Laguerre's method. In every loop it calculates simplified
-    !  Adams' stopping criterion for the value of the polynomial.
-    !
-    !  For a summary of the method go to:
-    !  http://en.wikipedia.org/wiki/Laguerre's_method
+    !!  Subroutine finds one root of a complex polynomial using
+    !!  Laguerre's method. In every loop it calculates simplified
+    !!  Adams' stopping criterion for the value of the polynomial.
+    !!
+    !!  For a summary of the method go to:
+    !!  http://en.wikipedia.org/wiki/Laguerre's_method
 
     implicit none
 
@@ -3832,26 +3835,26 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
 
   recursive subroutine cmplx_laguerre2newton(poly, degree, root, iter, success, starting_mode)
 
-    !  Subroutine finds one root of a complex polynomial using
-    !  Laguerre's method, Second-order General method and Newton's
-    !  method - depending on the value of function F, which is a
-    !  combination of second derivative, first derivative and
-    !  value of polynomial [F=-(p"*p)/(p'p')].
-    !
-    !  Subroutine has 3 modes of operation. It starts with mode=2
-    !  which is the Laguerre's method, and continues until F
-    !  becames F<0.50, at which point, it switches to mode=1,
-    !  i.e., SG method (see paper). While in the first two
-    !  modes, routine calculates stopping criterion once per every
-    !  iteration. Switch to the last mode, Newton's method, (mode=0)
-    !  happens when becomes F<0.05. In this mode, routine calculates
-    !  stopping criterion only once, at the beginning, under an
-    !  assumption that we are already very close to the root.
-    !  If there are more than 10 iterations in Newton's mode,
-    !  it means that in fact we were far from the root, and
-    !  routine goes back to Laguerre's method (mode=2).
-    !
-    !  For a summary of the method see the paper: Skowron & Gould (2012)
+    !!  Subroutine finds one root of a complex polynomial using
+    !!  Laguerre's method, Second-order General method and Newton's
+    !!  method - depending on the value of function F, which is a
+    !!  combination of second derivative, first derivative and
+    !!  value of polynomial [F=-(p"*p)/(p'p')].
+    !!
+    !!  Subroutine has 3 modes of operation. It starts with mode=2
+    !!  which is the Laguerre's method, and continues until F
+    !!  becames F<0.50, at which point, it switches to mode=1,
+    !!  i.e., SG method (see paper). While in the first two
+    !!  modes, routine calculates stopping criterion once per every
+    !!  iteration. Switch to the last mode, Newton's method, (mode=0)
+    !!  happens when becomes F<0.05. In this mode, routine calculates
+    !!  stopping criterion only once, at the beginning, under an
+    !!  assumption that we are already very close to the root.
+    !!  If there are more than 10 iterations in Newton's mode,
+    !!  it means that in fact we were far from the root, and
+    !!  routine goes back to Laguerre's method (mode=2).
+    !!
+    !!  For a summary of the method see the paper: Skowron & Gould (2012)
 
     implicit none
 
