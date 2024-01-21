@@ -3592,8 +3592,8 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
                                                           !!```
     integer, intent(out) :: iter !! number of iterations performed (the number of polynomial
                                  !! evaluations and stopping criterion evaluation)
-    complex(wp), intent(inout) :: root !! input: guess for the value of a root
-                                       !! output: a root of the polynomial
+    complex(wp), intent(inout) :: root !! * input: guess for the value of a root
+                                       !! * output: a root of the polynomial
                                        !!
                                        !! Uses 'root' value as a starting point (!!!!!)
                                        !! Remember to initialize 'root' to some initial guess or to
@@ -3793,12 +3793,12 @@ subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as
                                                                !!        1              2             3
                                                                !!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...
                                                                !!```
-    complex(wp), intent(inout) :: root !! input: guess for the value of a root
-                                            !! output: a root of the polynomial
-                                            !!
-                                            !! Uses 'root' value as a starting point (!!!!!)
-                                            !! Remember to initialize 'root' to some initial guess or to
-                                            !! point (0,0) if you have no prior knowledge.
+    complex(wp), intent(inout) :: root !! * input: guess for the value of a root
+                                       !! * output: a root of the polynomial
+                                       !!
+                                       !! Uses 'root' value as a starting point (!!!!!)
+                                       !! Remember to initialize 'root' to some initial guess or to
+                                       !! point (0,0) if you have no prior knowledge.
     integer, intent(in) :: starting_mode !! this should be by default = 2. However if you
                                          !! choose to start with SG method put 1 instead.
                                          !! Zero will cause the routine to
@@ -5262,13 +5262,10 @@ end subroutine cpoly
         integer,intent(in) :: il !! integers such that il<i<ir
         integer,intent(in) :: ir !! integers such that il<i<ir
         real(wp),intent(in) :: a(n) !! vector of double
-        logical :: ctest !! Result:
-                         !!
-                         !! * .true. if the angle formed by (il,a(il)), (i,a(i)), (ir,a(ir)) at
+        logical :: ctest !! * .true. if the angle formed by (il,a(il)), (i,a(i)), (ir,a(ir)) at
                          !!   the vertex (i,a(i)), is convex up to within the tolerance
                          !!   toler, i.e., if
                          !!   (a(i)-a(il))*(ir-i)-(a(ir)-a(i))*(i-il)>toler.
-                         !!
                          !! * .false.,  otherwise.
 
         real(wp) :: s1, s2
@@ -6599,16 +6596,16 @@ end subroutine cpoly
     integer,intent(in) :: igh !! low and igh are integers determined by the balancing
                               !! subroutine  cbal.  if  cbal  has not been used,
                               !! set low=1, igh=n
-    real(wp),intent(inout) :: hi(nm,n) !! Input: hr and hi contain the real and imaginary parts,
-                                       !! respectively, of the complex upper hessenberg matrix.
-                                       !! their lower triangles below the subdiagonal contain
-                                       !! information about the unitary transformations used in
-                                       !! the reduction by  corth, if performed.
+    real(wp),intent(inout) :: hi(nm,n) !! * Input: hr and hi contain the real and imaginary parts,
+                                       !!   respectively, of the complex upper hessenberg matrix.
+                                       !!   their lower triangles below the subdiagonal contain
+                                       !!   information about the unitary transformations used in
+                                       !!   the reduction by  corth, if performed.
                                        !!
-                                       !! Output: the upper hessenberg portions of hr and hi have been
-                                       !! destroyed.  therefore, they must be saved before
-                                       !! calling  comqr  if subsequent calculation of
-                                       !! eigenvectors is to be performed,
+                                       !! * Output: the upper hessenberg portions of hr and hi have been
+                                       !!   destroyed.  therefore, they must be saved before
+                                       !!   calling  comqr  if subsequent calculation of
+                                       !!   eigenvectors is to be performed,
     real(wp),intent(inout) :: hr(nm,n) !! see `hi` description
     complex(wp),intent(out) :: z(n) !! the real and imaginary parts,
                                     !! respectively, of the eigenvalues.  if an error

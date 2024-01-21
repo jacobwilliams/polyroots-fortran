@@ -71,7 +71,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="13.3% of total for procedures.">426 statements</a>
+                 title="10.1% of total for procedures.">426 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -409,8 +409,8 @@ very rough idea where some of the roots can be.
 <span class="w">                                                          </span><span class="c">!!```</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="c">!! number of iterations performed (the number of polynomial</span>
 <span class="w">                                 </span><span class="c">!! evaluations and stopping criterion evaluation)</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! input: guess for the value of a root</span>
-<span class="w">                                       </span><span class="c">!! output: a root of the polynomial</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! * input: guess for the value of a root</span>
+<span class="w">                                       </span><span class="c">!! * output: a root of the polynomial</span>
 <span class="w">                                       </span><span class="c">!!</span>
 <span class="w">                                       </span><span class="c">!! Uses &#39;root&#39; value as a starting point (!!!!!)</span>
 <span class="w">                                       </span><span class="c">!! Remember to initialize &#39;root&#39; to some initial guess or to</span>
@@ -610,12 +610,12 @@ very rough idea where some of the roots can be.
 <span class="w">                                                               </span><span class="c">!!        1              2             3</span>
 <span class="w">                                                               </span><span class="c">!!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...</span>
 <span class="w">                                                               </span><span class="c">!!```</span>
-<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! input: guess for the value of a root</span>
-<span class="w">                                            </span><span class="c">!! output: a root of the polynomial</span>
-<span class="w">                                            </span><span class="c">!!</span>
-<span class="w">                                            </span><span class="c">!! Uses &#39;root&#39; value as a starting point (!!!!!)</span>
-<span class="w">                                            </span><span class="c">!! Remember to initialize &#39;root&#39; to some initial guess or to</span>
-<span class="w">                                            </span><span class="c">!! point (0,0) if you have no prior knowledge.</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! * input: guess for the value of a root</span>
+<span class="w">                                       </span><span class="c">!! * output: a root of the polynomial</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!! Uses &#39;root&#39; value as a starting point (!!!!!)</span>
+<span class="w">                                       </span><span class="c">!! Remember to initialize &#39;root&#39; to some initial guess or to</span>
+<span class="w">                                       </span><span class="c">!! point (0,0) if you have no prior knowledge.</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">starting_mode</span><span class="w"> </span><span class="c">!! this should be by default = 2. However if you</span>
 <span class="w">                                         </span><span class="c">!! choose to start with SG method put 1 instead.</span>
 <span class="w">                                         </span><span class="c">!! Zero will cause the routine to</span>
