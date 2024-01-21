@@ -25,6 +25,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`cpzero`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpzero.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpzero.f)
 [`rpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/rpqr79.html) | General | real | complex | [SLATEC](https://netlib.org/slatec/src/rpqr79.f)
 [`cpqr79`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpqr79.html) | General | complex | complex | [SLATEC](https://netlib.org/slatec/src/cpqr79.f)
+[`dqtcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqtcrt.html) | Quartic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dpolz`](https://jacobwilliams.github.io/polyroots-fortran/proc/dpolz.html) | General | real | complex | [MATH77 Library](https://netlib.org/math/)
