@@ -45,5 +45,14 @@
         if (abs(root) > 100*epsilon(1.0_wp)) error stop 'Error: insufficient accuracy'
     end do
 
+    write(*,'(/A)') 'quadpl test:'
+    call quadpl(a(3), a(2), a(1), zr(1), zi(1), zr(2), zi(2))
+    do i = 1, 2
+        z = cmplx(zr(i), zi(i), wp)
+        root = a(1) + a(2)*z + a(3)*z**2
+        write(*,'(A,1x,*(e22.15,1x))') 'root is: ', zr(i), zi(i), abs(root)
+        if (abs(root) > 100*epsilon(1.0_wp)) error stop 'Error: insufficient accuracy'
+    end do
+
     end program dcbcrt_test
 !*****************************************************************************************

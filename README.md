@@ -28,6 +28,7 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`dqtcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqtcrt.html) | Quartic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dcbcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dcbcrt.html) | Cubic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dqdcrt`](https://jacobwilliams.github.io/polyroots-fortran/proc/dqdcrt.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
+[`quadpl`](https://jacobwilliams.github.io/polyroots-fortran/proc/quadpl.html) | Quadratic | real | complex | [NSWC Library](https://github.com/jacobwilliams/nswc)
 [`dpolz`](https://jacobwilliams.github.io/polyroots-fortran/proc/dpolz.html) | General | real | complex | [MATH77 Library](https://netlib.org/math/)
 [`cpolz`](https://jacobwilliams.github.io/polyroots-fortran/proc/cpolz.html) | General | complex | complex | [MATH77 Library](https://netlib.org/math/)
 [`polyroots`](https://jacobwilliams.github.io/polyroots-fortran/proc/polyroots.html) | General | real | complex | [LAPACK](https://netlib.org/lapack/explore-html/index.html)
@@ -37,6 +38,11 @@ Method name | Polynomial type | Coefficients | Roots | Reference
 [`polzeros`](https://jacobwilliams.github.io/polyroots-fortran/proc/polzeros.html) | General | complex | complex | [Bini (1996)](https://link.springer.com/article/10.1007/BF02207694)
 [`cmplx_roots_gen`](https://jacobwilliams.github.io/polyroots-fortran/proc/cmplx_roots_gen.html) | General | complex | complex | [Skowron & Gould (2012)](http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/)
 [`fpml`](https://jacobwilliams.github.io/polyroots-fortran/proc/fpml.html) | General | complex | complex | [Cameron (2019)](https://link.springer.com/article/10.1007/s11075-018-0641-9)
+
+The library also includes some utility routines:
+
+* [newton_root_polish](https://jacobwilliams.github.io/polyroots-fortran/interface/newton_root_polish.html)
+* [sort_roots](https://jacobwilliams.github.io/polyroots-fortran/proc/sort_roots.html)
 
 ## Example
 
