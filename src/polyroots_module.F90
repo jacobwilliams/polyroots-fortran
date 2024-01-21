@@ -61,7 +61,7 @@ module polyroots_module
 
     ! special polynomial routines:
     public :: dcbcrt
-    public :: dqdcrt
+    public :: dqdcrt, quadpl
     public :: dqtcrt
     public :: rroots_chebyshev_cubic
 
@@ -1159,6 +1159,9 @@ end function dcbrt
 !### See also
 ! * A. H. Morris, "NSWC Library of Mathematical Subroutines",
 !   Naval Surface Warfare Center, NSWCDD/TR-92/425, January 1993
+!
+!### See also
+!  * [[quadpl]]
 
 pure subroutine dqdcrt(a, zr, zi)
 
@@ -1253,6 +1256,72 @@ pure subroutine dqdcrt(a, zr, zi)
     end if
 
 end subroutine dqdcrt
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Calculate the zeros of the quadratic `a*z**2 + b*z + c`.
+!
+!  The quadratic formula, modified to avoid overflow,
+!  is used to find the larger zero if the zeros are
+!  real, and both zeros if the zeros are complex.
+!  the smaller real zero is found directly from the
+!  product of the zeros `c/a`.
+!
+!### Source
+!  * NSWC Library.
+!
+!### See also
+!  * [[dqdcrt]]
+
+subroutine quadpl(a,b,c,sr,si,lr,li)
+
+    real(wp),intent(in) :: a , b , c !! coefficients
+    real(wp),intent(out) :: sr !! real part of first root
+    real(wp),intent(out) :: si !! imaginary part of first root
+    real(wp),intent(out) :: lr !! real part of second root
+    real(wp),intent(out) :: li !! imaginary part of second root
+
+    real(wp) :: b1, d, e
+
+    if ( a==0.0_wp ) then
+        sr = 0.0_wp
+        if ( b/=0.0_wp ) sr = -c/b
+        lr = 0.0_wp
+    elseif ( c/=0.0_wp ) then
+        ! compute discriminant avoiding overflow
+        b1 = b/2.0_wp
+        if ( abs(b1)<abs(c) ) then
+            e = a
+            if ( c<0.0_wp ) e = -a
+            e = b1*(b1/abs(c)) - e
+            d = sqrt(abs(e))*sqrt(abs(c))
+        else
+            e = 1.0_wp - (a/b1)*(c/b1)
+            d = sqrt(abs(e))*abs(b1)
+        endif
+        if ( e<0.0_wp ) then
+            ! complex conjugate zeros
+            sr = -b1/a
+            lr = sr
+            si = abs(d/a)
+            li = -si
+            return
+        else
+            ! real zeros
+            if ( b1>=0.0_wp ) d = -d
+            lr = (-b1+d)/a
+            sr = 0.0_wp
+            if ( lr/=0.0_wp ) sr = (c/lr)/a
+        endif
+    else
+        sr = 0.0_wp
+        lr = -b/a
+    endif
+    si = 0.0_wp
+    li = 0.0_wp
+
+end subroutine quadpl
 !*****************************************************************************************
 
 !*****************************************************************************************

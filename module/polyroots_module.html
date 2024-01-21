@@ -71,7 +71,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="100.0% of total for modules and submodules.">4234 statements</a>
+                 title="100.0% of total for modules and submodules.">4275 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -164,6 +164,7 @@
             <a class="list-group-item" href="../module/polyroots_module.html#proc-rpoly">rpoly</a>
             <a class="list-group-item" href="../module/polyroots_module.html#proc-dcbcrt">dcbcrt</a>
             <a class="list-group-item" href="../module/polyroots_module.html#proc-dqdcrt">dqdcrt</a>
+            <a class="list-group-item" href="../module/polyroots_module.html#proc-quadpl">quadpl</a>
             <a class="list-group-item" href="../module/polyroots_module.html#proc-dqtcrt">dqtcrt</a>
             <a class="list-group-item" href="../module/polyroots_module.html#proc-daord">daord</a>
             <a class="list-group-item" href="../module/polyroots_module.html#proc-dcsqrt">dcsqrt</a>
@@ -233,8 +234,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
               </ul>
             </li>
             <li class="list-group-item">
@@ -909,7 +910,7 @@ parameter
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~20"></span>
+              <span class="anchor" id="variable-a~21"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -924,7 +925,7 @@ parameter
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~7"></span>
+              <span class="anchor" id="variable-b~8"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -987,7 +988,7 @@ otherwise ctest=.false. the parameter toler is set to 0.4 by default.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~25"></span>
+              <span class="anchor" id="variable-a~26"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -1311,6 +1312,136 @@ otherwise ctest=.false. the parameter toler is set to 0.4 by default.</p>
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-quadpl"></span> <h3>public  subroutine <a href='../proc/quadpl.html'>quadpl</a>(a, b, c, sr, si, lr, li)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate the zeros of the quadratic <code>a*z**2 + b*z + c</code>.</p><a href="../proc/quadpl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~6"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+<p>coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+<p>coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sr~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sr</strong></td>
+            <td>
+<p>real part of first root</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-si~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>si</strong></td>
+            <td>
+<p>imaginary part of first root</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lr~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lr</strong></td>
+            <td>
+<p>real part of second root</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-li~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>li</strong></td>
+            <td>
+<p>imaginary part of second root</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-dqtcrt"></span> <h3>public  subroutine <a href='../proc/dqtcrt.html'>dqtcrt</a>(a, zr, zi)  
 </h3></div>
     <div class="card-body">
@@ -1330,7 +1461,7 @@ otherwise ctest=.false. the parameter toler is set to 0.4 by default.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~6"></span>
+              <span class="anchor" id="variable-a~7"></span>
               real(kind=wp)
             </td>
 <td></td>
@@ -1402,7 +1533,7 @@ it is assumed that n &gt;= 1.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~7"></span>
+              <span class="anchor" id="variable-a~8"></span>
               real(kind=wp),
             </td>
 <td>intent(inout)</td>
@@ -1527,7 +1658,7 @@ it is assumed that n &gt;= 1.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~6"></span>
+              <span class="anchor" id="variable-c~7"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -1658,7 +1789,7 @@ it is assumed that n &gt;= 1.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~13"></span>
+              <span class="anchor" id="variable-a~14"></span>
               complex(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -1689,7 +1820,7 @@ it is assumed that n &gt;= 1.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~9"></span>
+              <span class="anchor" id="variable-c~10"></span>
               complex(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -1705,7 +1836,7 @@ derivative at <code>Z, I=0,...,M</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~6"></span>
+              <span class="anchor" id="variable-b~7"></span>
               complex(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -1779,7 +1910,7 @@ to be set .TRUE. if bounds are to be computed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~14"></span>
+              <span class="anchor" id="variable-a~15"></span>
               complex(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -1882,7 +2013,7 @@ estimates for zeros if these are known. On output: Ith zero</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~15"></span>
+              <span class="anchor" id="variable-a~16"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -3787,7 +3918,7 @@ aberth correction is computed</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-a~23"></span>
               real(kind=wp),
             </td>
 <td>intent(inout)</td>
@@ -3936,7 +4067,7 @@ vertex (j,a(j)) up to within a given tolerance toler, where i&lt;j&lt;k.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~23"></span>
+              <span class="anchor" id="variable-a~24"></span>
               real(kind=wp)
             </td>
 <td></td>
@@ -4179,7 +4310,7 @@ the minimum integer ir such that ir&gt;i and h(il) is true.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~24"></span>
+              <span class="anchor" id="variable-a~25"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -4542,7 +4673,7 @@ increasing order (<code>x(1) &lt;= ... &lt;= x(n)</code>)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~33"></span>
+              <span class="anchor" id="variable-a~34"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -4631,7 +4762,7 @@ order coefficient first with <code>A(1)/=0</code>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~34"></span>
+              <span class="anchor" id="variable-a~35"></span>
               complex(kind=wp),
             </td>
 <td>intent(in)</td>
