@@ -62,6 +62,7 @@ module polyroots_module
     ! special polynomial routines:
     public :: dcbcrt
     public :: dqdcrt
+    public :: dqtcrt
     public :: rroots_chebyshev_cubic
 
     ! utility routines:
@@ -1252,6 +1253,302 @@ pure subroutine dqdcrt(a, zr, zi)
     end if
 
 end subroutine dqdcrt
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  dqtcrt computes the roots of the real polynomial
+!```
+!        a(1) + a(2)*z + ... + a(5)*z**4
+!```
+!  and stores the results in `zr` and `zi`. it is assumed
+!  that `a(5)` is nonzero.
+!
+!### History
+!  * Original version written by alfred h. morris,
+!    naval surface weapons center, dahlgren, virginia
+!
+!### See also
+!  * A. H. Morris, "NSWC Library of Mathematical Subroutines",
+!    Naval Surface Warfare Center, NSWCDD/TR-92/425, January 1993
+
+subroutine dqtcrt(a,zr,zi)
+
+    real(wp) :: a(5) , zr(4) , zi(4)
+    real(wp) :: b , b2 , c , d , e , h , p , q , r , t , temp(4) , &
+                u , v , v1 , v2 , w(2) , x , x1 , x2 , x3
+
+    if ( a(1)==0.0_wp ) then
+        zr(1) = 0.0_wp
+        zi(1) = 0.0_wp
+        call dcbcrt(a(2),zr(2),zi(2))
+    else
+        b = a(4)/(4.0_wp*a(5))
+        c = a(3)/a(5)
+        d = a(2)/a(5)
+        e = a(1)/a(5)
+        b2 = b*b
+
+        p = 0.5_wp*(c-6.0_wp*b2)
+        q = d - 2.0_wp*b*(c-4.0_wp*b2)
+        r = b2*(c-3.0_wp*b2) - b*d + e
+
+        ! solve the resolvent cubic equation. the cubic has
+        ! at least one nonnegative real root. if w1, w2, w3
+        ! are the roots of the cubic then the roots of the
+        ! originial equation are
+        !
+        !    z = -b + csqrt(w1) + csqrt(w2) + csqrt(w3)
+        !
+        ! where the signs of the square roots are chosen so
+        ! that csqrt(w1) * csqrt(w2) * csqrt(w3) = -q/8.
+
+        temp(1) = -q*q/64.0_wp
+        temp(2) = 0.25_wp*(p*p-r)
+        temp(3) = p
+        temp(4) = 1.0_wp
+        call dcbcrt(temp,zr,zi)
+        if ( zi(2)/=0.0_wp ) then
+
+            ! the resolvent cubic has complex roots
+
+            t = zr(1)
+            x = 0.0_wp
+            if ( t<0 ) then
+                h = abs(zr(2)) + abs(zi(2))
+                if ( abs(t)>h ) then
+                    v = sqrt(abs(t))
+                    zr(1) = -b
+                    zr(2) = -b
+                    zr(3) = -b
+                    zr(4) = -b
+                    zi(1) = v
+                    zi(2) = -v
+                    zi(3) = v
+                    zi(4) = -v
+                    return
+                endif
+            elseif ( t/=0 ) then
+                x = sqrt(t)
+                if ( q>0.0_wp ) x = -x
+            endif
+            w(1) = zr(2)
+            w(2) = zi(2)
+            call dcsqrt(w,w)
+            u = 2.0_wp*w(1)
+            v = 2.0_wp*abs(w(2))
+            t = x - b
+            x1 = t + u
+            x2 = t - u
+            if ( abs(x1)>abs(x2) ) then
+                t = x1
+                x1 = x2
+                x2 = t
+            endif
+            u = -x - b
+            h = u*u + v*v
+            if ( x1*x1<1.0e-2_wp*min(x2*x2,h) ) x1 = e/(x2*h)
+            zr(1) = x1
+            zr(2) = x2
+            zi(1) = 0.0_wp
+            zi(2) = 0.0_wp
+            zr(3) = u
+            zr(4) = u
+            zi(3) = v
+            zi(4) = -v
+
+        else
+
+            ! the resolvent cubic has only real roots
+            ! reorder the roots in increasing order
+            x1 = zr(1)
+            x2 = zr(2)
+            x3 = zr(3)
+            if ( x1>x2 ) then
+                t = x1
+                x1 = x2
+                x2 = t
+            endif
+            if ( x2>x3 ) then
+                t = x2
+                x2 = x3
+                x3 = t
+                if ( x1>x2 ) then
+                    t = x1
+                    x1 = x2
+                    x2 = t
+                endif
+            endif
+
+            u = 0.0_wp
+            if ( x3>0.0_wp ) u = sqrt(x3)
+            tmp : block
+                if ( x2<=0.0_wp ) then
+                    v1 = sqrt(abs(x1))
+                    v2 = sqrt(abs(x2))
+                    if ( q<0.0_wp ) u = -u
+                else
+                    if ( x1<0.0_wp ) then
+                        if ( abs(x1)>x2 ) then
+                            v1 = sqrt(abs(x1))
+                            v2 = 0.0_wp
+                            exit tmp
+                        else
+                            x1 = 0.0_wp
+                        endif
+                    endif
+                    x1 = sqrt(x1)
+                    x2 = sqrt(x2)
+                    if ( q>0.0_wp ) x1 = -x1
+                    zr(1) = ((x1+x2)+u) - b
+                    zr(2) = ((-x1-x2)+u) - b
+                    zr(3) = ((x1-x2)-u) - b
+                    zr(4) = ((-x1+x2)-u) - b
+                    call daord(zr,4)
+                    if ( abs(zr(1))<0.1_wp*abs(zr(4)) ) then
+                        t = zr(2)*zr(3)*zr(4)
+                        if ( t/=0.0_wp ) zr(1) = e/t
+                    endif
+                    zi(1) = 0.0_wp
+                    zi(2) = 0.0_wp
+                    zi(3) = 0.0_wp
+                    zi(4) = 0.0_wp
+                    return
+                endif
+            end block tmp
+            zr(1) = -u - b
+            zi(1) = v1 - v2
+            zr(2) = zr(1)
+            zi(2) = -zi(1)
+            zr(3) = u - b
+            zi(3) = v1 + v2
+            zr(4) = zr(3)
+            zi(4) = -zi(3)
+        endif
+
+    endif
+
+end subroutine dqtcrt
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Used to reorder the elements of the double precision
+!  array a so that abs(a(i)) <= abs(a(i+1)) for i = 1,...,n-1.
+!  it is assumed that n >= 1.
+
+subroutine daord(a,n)
+
+    integer,intent(in) :: n
+    real(wp),intent(inout) :: a(n)
+
+    integer :: i , ii , imax , j , jmax , ki , l , ll
+    real(wp) :: s
+
+    integer,dimension(10),parameter :: k = [1, 4, 13, 40, 121, 364, &
+                                            1093, 3280, 9841, 29524]
+
+    ! selection of the increments k(i) = (3**i-1)/2
+    if ( n<2 ) return
+    imax = 1
+    do i = 3 , 10
+        if ( n<=k(i) ) exit
+        imax = imax + 1
+    enddo
+
+    ! stepping through the increments k(imax),...,k(1)
+    i = imax
+    do ii = 1 , imax
+        ki = k(i)
+        ! sorting elements that are ki positions apart
+        ! so that abs(a(j)) <= abs(a(j+ki))
+        jmax = n - ki
+        do j = 1 , jmax
+            l = j
+            ll = j + ki
+            s = a(ll)
+            do while ( abs(s)<abs(a(l)) )
+                a(ll) = a(l)
+                ll = l
+                l = l - ki
+                if ( l<=0 ) exit
+            enddo
+            a(ll) = s
+        enddo
+        i = i - 1
+    enddo
+
+ end subroutine daord
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  `w = sqrt(z)` for the double precision complex number `z`
+!
+!  z and w are interpreted as double precision complex numbers.
+!  it is assumed that z(1) and z(2) are the real and imaginary
+!  parts of the complex number z, and that w(1) and w(2) are
+!  the real and imaginary parts of w.
+
+subroutine dcsqrt(z,w)
+
+    real(wp),intent(in) :: z(2)
+    real(wp),intent(out) :: w(2)
+
+    real(wp) :: x , y , r
+
+    x = z(1)
+    y = z(2)
+    if ( x<0 ) then
+       if ( y/=0.0_wp ) then
+          r = dcpabs(x,y)
+          w(2) = sqrt(0.5_wp*(r-x))
+          w(2) = sign(w(2),y)
+          w(1) = 0.5_wp*y/w(2)
+       else
+          w(1) = 0.0_wp
+          w(2) = sqrt(abs(x))
+       endif
+    elseif ( x==0.0_wp ) then
+       if ( y/=0.0_wp ) then
+          w(1) = sqrt(0.5_wp*abs(y))
+          w(2) = sign(w(1),y)
+       else
+          w(1) = 0.0_wp
+          w(2) = 0.0_wp
+       endif
+    elseif ( y/=0.0_wp ) then
+       r = dcpabs(x,y)
+       w(1) = sqrt(0.5_wp*(r+x))
+       w(2) = 0.5_wp*y/w(1)
+    else
+       w(1) = sqrt(x)
+       w(2) = 0.0_wp
+    endif
+
+ end subroutine dcsqrt
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  evaluation of `sqrt(x*x + y*y)`
+
+real(wp) function dcpabs(x,y)
+
+    real(wp),intent(in) :: x , y
+    real(wp) :: a
+
+    if ( abs(x)>abs(y) ) then
+        a = y/x
+        dcpabs = abs(x)*sqrt(1.0_wp+a*a)
+    elseif ( y==0.0_wp ) then
+        dcpabs = 0.0_wp
+    else
+        a = x/y
+        dcpabs = abs(y)*sqrt(1.0_wp+a*a)
+    end if
+
+end function dcpabs
 !*****************************************************************************************
 
 !*****************************************************************************************
