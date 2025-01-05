@@ -2674,6 +2674,7 @@ end subroutine hqr
 !@note Works only for single and double precision.
 
 subroutine polyroots(n, p, wr, wi, info)
+    use polyroots_lapack_module
 
     implicit none
 
@@ -2690,28 +2691,6 @@ subroutine polyroots(n, p, wr, wi, info)
     real(wp), allocatable, dimension(:,:) :: a !! companion matrix
     real(wp), allocatable, dimension(:) :: work !! work array
     real(wp), dimension(1) :: vl, vr !! not used here
-
-#ifdef REAL32
-    interface
-        subroutine sgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)
-            implicit none
-            character :: jobvl, jobvr
-            integer :: info, lda, ldvl, ldvr, lwork, n
-            real :: a(lda, *), vl(ldvl, *), vr(ldvr, *), wi(*), work(*), wr(*)
-        end subroutine sgeev
-    end interface
-#elif REAL128
-    ! do not have a quad solver in lapack
-#else
-    interface
-        subroutine dgeev(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)
-            implicit none
-            character :: jobvl, jobvr
-            integer :: info, lda, ldvl, ldvr, lwork, n
-            double precision :: a(lda, *), vl(ldvl, *), vr(ldvr, *), wi(*), work(*), wr(*)
-        end subroutine dgeev
-    end interface
-#endif
 
     ! error check:
     if (abs(p(1)) == 0.0_wp) then
@@ -2737,7 +2716,12 @@ subroutine polyroots(n, p, wr, wi, info)
     ! single precision
     call sgeev('N', 'N', n, a, n, wr, wi, vl, 1, vr, 1, work, 3*n, info)
 #elif REAL128
+#ifdef USE_STDLIB_LAPACK
+    ! quad precision
+    call qgeev('N', 'N', n, a, n, wr, wi, vl, 1, vr, 1, work, 3*n, info)
+#else
     error stop 'do not have a quad solver in lapack'
+#endif
 #else
     ! by default, use double precision:
     call dgeev('N', 'N', n, a, n, wr, wi, vl, 1, vr, 1, work, 3*n, info)
@@ -2763,6 +2747,8 @@ end subroutine polyroots
 
 subroutine cpolyroots(n, p, w, info)
 
+    use polyroots_lapack_module
+
     implicit none
 
     integer, intent(in) :: n !! polynomial degree
@@ -2778,30 +2764,6 @@ subroutine cpolyroots(n, p, w, info)
     complex(wp), allocatable, dimension(:) :: work !! work array
     real(wp), allocatable, dimension(:) :: rwork !! rwork array (2*n)
     complex(wp), dimension(1) :: vl, vr !! not used here
-
-#ifdef REAL32
-    interface
-        subroutine cgeev( jobvl, jobvr, n, a, lda, w,      vl, ldvl, vr, ldvr, work, lwork, rwork, info )
-            implicit none
-            character :: jobvl, jobvr
-            integer :: info, lda, ldvl, ldvr, lwork, n
-            real :: rwork( * )
-            complex :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), w( * ), work( * )
-        end subroutine cgeev
-    end interface
-#elif REAL128
-    ! do not have a quad solver in lapack
-#else
-    interface
-        subroutine zgeev( jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, lwork, rwork, info )
-            implicit none
-            character :: jobvl, jobvr
-            integer :: info, lda, ldvl, ldvr, lwork, n
-            double precision :: rwork( * )
-            complex*16 :: a( lda, * ), vl( ldvl, * ), vr( ldvr, * ), w( * ), work( * )
-        end subroutine zgeev
-    end interface
-#endif
 
     ! error check:
     if (abs(p(1)) == 0.0_wp) then
@@ -2828,7 +2790,12 @@ subroutine cpolyroots(n, p, w, info)
     ! single precision
     call cgeev('N', 'N', n, a, n, w, vl, 1, vr, 1, work, 3*n, rwork, info)
 #elif REAL128
+#ifdef USE_STDLIB_LAPACK
+    ! quad precision
+    call wgeev('N', 'N', n, a, n, w, vl, 1, vr, 1, work, 3*n, rwork, info)
+#else
     error stop 'do not have a quad solver in lapack'
+#endif
 #else
     ! by default, use double precision:
     call zgeev('N', 'N', n, a, n, w, vl, 1, vr, 1, work, 3*n, rwork, info)
@@ -6117,6 +6084,12 @@ end subroutine cpoly
         real(wp),parameter :: machep = eps        !! d1mach(4)
         integer,parameter :: base = radix(1.0_wp) !! i1mach(10)
         integer,parameter :: b2 = base*base
+#if REAL128
+        integer, parameter :: maxiter = 100 !! max iterations. It seems we need more than 30
+                                            !! for quad precision (see test case 11)
+#else
+        integer, parameter :: maxiter = 30  !! max iterations
+#endif
 
         ierr = 0
 
@@ -6306,7 +6279,7 @@ end subroutine cpoly
                          endif
                       endif
                       en = enm2
-                   elseif ( its==30 ) then
+                   elseif ( its==maxiter ) then
                       ! ********** set error -- no convergence to an eigenvalue after 30 iterations **********
                       ierr = en
                       exit main

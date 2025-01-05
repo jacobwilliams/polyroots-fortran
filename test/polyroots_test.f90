@@ -168,12 +168,15 @@
             call check_results('rroots_chebyshev_cubic', 0, zr, zi, degree)
         end if
 
-        if (wp /= real128) then
+        if (wp == real128) then
+#ifdef USE_STDLIB_LAPACK
+            ! if we have a quad solver:
             call polyroots(degree, p, zr, zi, istatus)
             call check_results('polyroots', istatus, zr, zi, degree)
 
             call cpolyroots(degree, cp, r, istatus)
             call check_results_complex('cpolyroots [complex coefficients]', istatus, real(r, wp), aimag(r), degree)
+#endif
         end if
 
         call rpoly(p, degree, zr, zi, istatus)
