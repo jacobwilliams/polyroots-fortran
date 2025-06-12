@@ -103,13 +103,34 @@ Preprocessor flag | Kind  | Number of bytes
 `REAL64`  | `real(kind=real64)`  | 8
 `REAL128` | `real(kind=real128)` | 16
 
-For example, to build a single precision version of the library, use:
+<!-- For example, to build a single precision version of the library, use:
 
 ```
 fpm build --profile release --flag "-DREAL32"
 ```
 
-All routines, except for `polyroots` are available for any of the three real kinds. `polyroots` is not available for `real128` kinds since there is no corresponding LAPACK eigenvalue solver.
+All routines, except for `polyroots` are available for any of the three real kinds. `polyroots` is not available for `real128` kinds since there is no corresponding LAPACK eigenvalue solver. -->
+
+<!-- UPDATE: -->
+
+The library requires some LAPACK routines to be present. You can specify them to the linker:
+
+```
+fpm test --profile release --flag "-DREAL64 -lblas -llapack"
+```
+
+Or, on a Mac:
+```
+fpm test --profile release --flag "-DREAL64 -framework Accelerate"
+```
+
+Or, use the FPM package from [here](https://github.com/perazz/fortran-lapack) by defining the `USE_STDLIB_LAPACK` preprocessor flag:
+
+```
+fpm test --profile release --flag "-DREAL64 -DUSE_STDLIB_LAPACK"
+```
+
+Note that using `USE_STDLIB_LAPACK` is the only way to get a quad precision version of `polyroots` and `cpolyroots`, since the default LAPACK does not have a quad precision version.
 
 To run the unit tests:
 
