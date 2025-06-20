@@ -1,0 +1,999 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Polynomial Roots with Modern Fortran">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>cmplx_roots_gen &ndash; polyroots-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">polyroots-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/polyroots_module.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>cmplx_roots_gen
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="10.0% of total for procedures.">426 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/polyroots_module.F90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/polyroots_module.f90.html'>polyroots_module.F90</a></li>
+                <li class="breadcrumb-item"><a href='../module/polyroots_module.html'>polyroots_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">cmplx_roots_gen</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/cmplx_roots_gen.html#src">cmplx_roots_gen</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  subroutine cmplx_roots_gen(degree, poly, roots, polish_roots_after, use_roots_as_starting_points)  
+</h2>
+    
+
+    <p>This subroutine finds roots of a complex polynomial.
+  It uses a new dynamic root finding algorithm (see the Paper).</p>
+<p>It can use Laguerre's method (subroutine <a>cmplx_laguerre</a>)
+  or Laguerre-&gt;SG-&gt;Newton method (subroutine
+  <a>cmplx_laguerre2newton</a> - this is default choice) to find
+  roots. It divides polynomial one by one by found roots. At the
+  end it finds last root from Viete's formula for quadratic
+  equation. Finally, it polishes all found roots using a full
+  polynomial and Newton's or Laguerre's method (default is
+  Laguerre's - subroutine <a>cmplx_laguerre</a>).
+  You can change default choices by commenting out and uncommenting
+  certain lines in the code below.</p>
+<h3>Reference</h3>
+<ul>
+<li>J. Skowron &amp; A. Gould,
+    "<a href="https://arxiv.org/pdf/1203.1034.pdf">General Complex Polynomial Root Solver and Its Further Optimization for Binary Microlenses</a>"
+    (2012)</li>
+</ul>
+<h3>History</h3>
+<ul>
+<li>Original code here (Apache license): http://www.astrouw.edu.pl/~jskowron/cmplx_roots_sg/</li>
+<li>Jacob Williams, 9/18/2022 : refactored this code a bit</li>
+</ul>
+<h3>Notes:</h3>
+<ul>
+<li>we solve for the last root with Viete's formula rather
+   than doing full Laguerre step (which is time consuming
+   and unnecessary)</li>
+<li>we do not introduce any preference to real roots</li>
+<li>in Laguerre implementation we omit unneccesarry calculation of
+   absolute values of denominator</li>
+<li>we do not sort roots.</li>
+</ul>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-degree~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>degree</strong></td>
+            <td>
+                <p>degree of the polynomial and size of 'roots' array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-poly"></span>
+              complex(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(degree+1)
+            </td>
+            <td>::</td>
+            <td><strong>poly</strong></td>
+            <td>
+                <p>coeffs of the polynomial, in order of increasing powers.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-roots"></span>
+              complex(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(degree)
+            </td>
+            <td>::</td>
+            <td><strong>roots</strong></td>
+            <td>
+                <p>array which will hold all roots that had been found.
+If the flag 'use_roots_as_starting_points' is set to
+.true., then instead of point (0,0) we use value from
+this array as starting point for <a>cmplx_laguerre</a></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-polish_roots_after"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>polish_roots_after</strong></td>
+            <td>
+                <p>after all roots have been found by dividing
+original polynomial by each root found,
+you can opt in to polish all roots using full
+polynomial. [default is false]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-use_roots_as_starting_points"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>use_roots_as_starting_points</strong></td>
+            <td>
+                <p>usually we start Laguerre's
+method from point (0,0), but you can decide to use the
+values of 'roots' array as starting point for each new
+root that is searched for. This is useful if you have
+very rough idea where some of the roots can be.
+[default is false]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="k">subroutine </span><span class="n">cmplx_roots_gen</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">roots</span><span class="p">,</span><span class="w"> </span><span class="n">polish_roots_after</span><span class="p">,</span><span class="w"> </span><span class="n">use_roots_as_starting_points</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">degree</span><span class="w"> </span><span class="c">!! degree of the polynomial and size of &#39;roots&#39; array</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">poly</span><span class="w"> </span><span class="c">!! coeffs of the polynomial, in order of increasing powers.</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">roots</span><span class="w"> </span><span class="c">!! array which will hold all roots that had been found.</span>
+<span class="w">                                                           </span><span class="c">!! If the flag &#39;use_roots_as_starting_points&#39; is set to</span>
+<span class="w">                                                           </span><span class="c">!! .true., then instead of point (0,0) we use value from</span>
+<span class="w">                                                           </span><span class="c">!! this array as starting point for [[cmplx_laguerre]]</span>
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">polish_roots_after</span><span class="w"> </span><span class="c">!! after all roots have been found by dividing</span>
+<span class="w">                                                        </span><span class="c">!! original polynomial by each root found,</span>
+<span class="w">                                                        </span><span class="c">!! you can opt in to polish all roots using full</span>
+<span class="w">                                                        </span><span class="c">!! polynomial. [default is false]</span>
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">use_roots_as_starting_points</span><span class="w"> </span><span class="c">!! usually we start Laguerre&#39;s</span>
+<span class="w">                                                                  </span><span class="c">!! method from point (0,0), but you can decide to use the</span>
+<span class="w">                                                                  </span><span class="c">!! values of &#39;roots&#39; array as starting point for each new</span>
+<span class="w">                                                                  </span><span class="c">!! root that is searched for. This is useful if you have</span>
+<span class="w">                                                                  </span><span class="c">!! very rough idea where some of the roots can be.</span>
+<span class="w">                                                                  </span><span class="c">!! [default is false]</span>
+
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">poly2</span><span class="w"> </span><span class="c">!! `degree+1` array</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span>
+<span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">success</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">coef</span><span class="p">,</span><span class="w"> </span><span class="n">prev</span>
+
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MAX_ITERS</span><span class="o">=</span><span class="mi">50</span>
+<span class="w">    </span><span class="c">! constants needed to break cycles in the scheme</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FRAC_JUMP_EVERY</span><span class="o">=</span><span class="mi">10</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FRAC_JUMP_LEN</span><span class="o">=</span><span class="mi">10</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">FRAC_JUMP_LEN</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FRAC_JUMPS</span><span class="o">=</span><span class="p">&amp;</span>
+<span class="w">        </span><span class="p">[</span><span class="mf">0.64109297_wp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.91577881_wp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.25921289_wp</span><span class="p">,</span><span class="w">  </span><span class="mf">0.50487203_wp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.08177045_wp</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="mf">0.13653241_wp</span><span class="p">,</span><span class="w">  </span><span class="mf">0.306162_wp</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="mf">0.37794326_wp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.04618805_wp</span><span class="p">,</span><span class="w">  </span><span class="mf">0.75132137_wp</span><span class="p">]</span><span class="w"> </span><span class="c">!! some random numbers</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FRAC_ERR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_wp</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eps</span><span class="w">  </span><span class="c">!! fractional error</span>
+<span class="w">                                                     </span><span class="c">!! (see. Adams 1967 Eqs 9 and 10)</span>
+<span class="w">                                                     </span><span class="c">!! [2.0d-15 in original code]</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">c_one</span><span class="o">=</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">1.0_wp</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c">! initialize starting points</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">use_roots_as_starting_points</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="n">use_roots_as_starting_points</span><span class="p">)</span><span class="w"> </span><span class="n">roots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="k">        </span><span class="n">roots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">    </span><span class="k">end if</span>
+
+<span class="w">    </span><span class="c">! skip small degree polynomials from doing Laguerre&#39;s method</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">=-</span><span class="n">poly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">poly</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">    endif</span>
+
+<span class="k">    allocate</span><span class="p">(</span><span class="n">poly2</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">    </span><span class="n">poly2</span><span class="o">=</span><span class="n">poly</span>
+
+<span class="w">    </span><span class="k">do </span><span class="n">n</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+
+<span class="w">      </span><span class="c">! find root with Laguerre&#39;s method</span>
+<span class="w">      </span><span class="c">!call cmplx_laguerre(poly2, n, roots(n), iter, success)</span>
+<span class="w">      </span><span class="c">! or</span>
+<span class="w">      </span><span class="c">! find root with (Laguerre&#39;s method -&gt; SG method -&gt; Newton&#39;s method)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">cmplx_laguerre2newton</span><span class="p">(</span><span class="n">poly2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">roots</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">        </span><span class="k">call </span><span class="n">cmplx_laguerre</span><span class="p">(</span><span class="n">poly2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">)</span>
+<span class="w">      </span><span class="k">endif</span>
+
+<span class="w">      </span><span class="c">! divide the polynomial by this root</span>
+<span class="w">      </span><span class="n">coef</span><span class="o">=</span><span class="n">poly2</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">        </span><span class="n">prev</span><span class="o">=</span><span class="n">poly2</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="w">        </span><span class="n">poly2</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">coef</span>
+<span class="w">        </span><span class="n">coef</span><span class="o">=</span><span class="n">prev</span><span class="o">+</span><span class="n">roots</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">coef</span>
+<span class="w">      </span><span class="k">enddo</span>
+<span class="w">      </span><span class="c">! variable coef now holds a remainder - should be close to 0</span>
+
+<span class="w">    </span><span class="k">enddo</span>
+
+<span class="w">    </span><span class="c">! find all but last root with Laguerre&#39;s method</span>
+<span class="w">    </span><span class="c">!call cmplx_laguerre(poly2, 2, roots(2), iter, success)</span>
+<span class="w">    </span><span class="c">! or</span>
+<span class="w">    </span><span class="k">call </span><span class="n">cmplx_laguerre2newton</span><span class="p">(</span><span class="n">poly2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      call </span><span class="n">solve_quadratic_eq</span><span class="p">(</span><span class="n">roots</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">roots</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">poly2</span><span class="p">)</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">      </span><span class="c">! calculate last root from Viete&#39;s formula</span>
+<span class="w">      </span><span class="n">roots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">=-</span><span class="p">(</span><span class="n">roots</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">poly2</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">poly2</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="w">    </span><span class="k">endif</span>
+
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">polish_roots_after</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">polish_roots_after</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            do </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="w"> </span><span class="c">! polish roots one-by-one with a full polynomial</span>
+<span class="w">                </span><span class="k">call </span><span class="n">cmplx_laguerre</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">roots</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">)</span>
+<span class="w">                </span><span class="c">!call cmplx_newton_spec(poly, degree, roots(n), iter, success)</span>
+<span class="w">            </span><span class="k">enddo</span>
+<span class="k">        endif</span>
+<span class="k">    end if</span>
+
+<span class="k">    contains</span>
+
+<span class="k">    recursive subroutine </span><span class="n">cmplx_laguerre</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c">!!  Subroutine finds one root of a complex polynomial using</span>
+<span class="w">    </span><span class="c">!!  Laguerre&#39;s method. In every loop it calculates simplified</span>
+<span class="w">    </span><span class="c">!!  Adams&#39; stopping criterion for the value of the polynomial.</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  For a summary of the method go to:</span>
+<span class="w">    </span><span class="c">!!  http://en.wikipedia.org/wiki/Laguerre&#39;s_method</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">degree</span><span class="w"> </span><span class="c">!! a degree of the polynomial</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">poly</span><span class="w"> </span><span class="c">!! an array of polynomial cooefs</span>
+<span class="w">                                                          </span><span class="c">!! length = degree+1, poly(1) is constant</span>
+<span class="w">                                                          </span><span class="c">!!```</span>
+<span class="w">                                                          </span><span class="c">!!        1              2             3</span>
+<span class="w">                                                          </span><span class="c">!!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...</span>
+<span class="w">                                                          </span><span class="c">!!```</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="c">!! number of iterations performed (the number of polynomial</span>
+<span class="w">                                 </span><span class="c">!! evaluations and stopping criterion evaluation)</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! * input: guess for the value of a root</span>
+<span class="w">                                       </span><span class="c">!! * output: a root of the polynomial</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!! Uses &#39;root&#39; value as a starting point (!!!!!)</span>
+<span class="w">                                       </span><span class="c">!! Remember to initialize &#39;root&#39; to some initial guess or to</span>
+<span class="w">                                       </span><span class="c">!! point (0,0) if you have no prior knowledge.</span>
+
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="c">!! is false if routine reaches maximum number of iterations</span>
+
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">faq</span><span class="w"> </span><span class="c">!! jump length</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w">         </span><span class="c">!! value of polynomial</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dp</span><span class="w">        </span><span class="c">!! value of 1st derivative</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">d2p_half</span><span class="w">  </span><span class="c">!! value of 2nd derivative</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">k</span>
+<span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">good_to_go</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">denom</span><span class="p">,</span><span class="w"> </span><span class="n">denom_sqrt</span><span class="p">,</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="n">newroot</span><span class="p">,</span><span class="w"> </span><span class="n">fac_netwon</span><span class="p">,</span><span class="w"> </span><span class="n">fac_extra</span><span class="p">,</span><span class="w"> </span><span class="n">F_half</span><span class="p">,</span><span class="w"> </span><span class="n">c_one_nth</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="n">absroot</span><span class="p">,</span><span class="w"> </span><span class="n">abs2p</span><span class="p">,</span><span class="w"> </span><span class="n">one_nth</span><span class="p">,</span><span class="w"> </span><span class="n">n_1_nth</span><span class="p">,</span><span class="w"> </span><span class="n">two_n_div_n_1</span><span class="p">,</span><span class="w"> </span><span class="n">stopping_crit2</span>
+
+<span class="w">    </span><span class="n">iter</span><span class="o">=</span><span class="mi">0</span>
+<span class="w">    </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+
+<span class="w">    </span><span class="c">! next if-endif block is an EXTREME failsafe, not usually needed, and thus turned off in this version.</span>
+<span class="w">    </span><span class="c">!if (.false.) then ! change false--&gt;true if you would like to use caution about having first coefficient == 0</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;Error: cmplx_laguerre: degree&lt;0&#39;</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">      endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="k">        call </span><span class="n">cmplx_laguerre</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">      endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! we know from previous check than poly(1) not equal zero</span>
+<span class="w">          </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">          </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;Warning: cmplx_laguerre: degree=0 and poly(1)/=0, no roots&#39;</span>
+<span class="w">          </span><span class="k">return</span>
+<span class="k">        else</span>
+<span class="k">          </span><span class="n">root</span><span class="o">=-</span><span class="n">poly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">poly</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">          </span><span class="k">return</span>
+<span class="k">        endif</span>
+<span class="k">      endif</span>
+<span class="w">    </span><span class="c">!endif</span>
+<span class="w">    </span><span class="c">!  end EXTREME failsafe</span>
+
+<span class="w">    </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">    </span><span class="n">one_nth</span><span class="o">=</span><span class="mf">1.0_wp</span><span class="o">/</span><span class="n">degree</span>
+<span class="w">    </span><span class="n">n_1_nth</span><span class="o">=</span><span class="p">(</span><span class="n">degree</span><span class="o">-</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="n">one_nth</span>
+<span class="w">    </span><span class="n">two_n_div_n_1</span><span class="o">=</span><span class="mf">2.0_wp</span><span class="o">/</span><span class="n">n_1_nth</span>
+<span class="w">    </span><span class="n">c_one_nth</span><span class="o">=</span><span class="nb">cmplx</span><span class="p">(</span><span class="n">one_nth</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">MAX_ITERS</span>
+<span class="w">      </span><span class="c">! prepare stoping criterion</span>
+<span class="w">      </span><span class="n">ek</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="n">absroot</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! calculate value of polynomial and its first two derivatives</span>
+<span class="w">      </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="k">do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">        </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">dp</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d2p_half</span><span class="o">*</span><span class="n">root</span>
+<span class="w">        </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">        </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">        </span><span class="c">! Adams, Duane A., 1967, &quot;A stopping criterion for polynomial root finding&quot;,</span>
+<span class="w">        </span><span class="c">! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655</span>
+<span class="w">        </span><span class="c">! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf</span>
+<span class="w">        </span><span class="c">! Eq 8.</span>
+<span class="w">        </span><span class="n">ek</span><span class="o">=</span><span class="n">absroot</span><span class="o">*</span><span class="n">ek</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="w">      </span><span class="k">enddo</span>
+<span class="k">      </span><span class="n">iter</span><span class="o">=</span><span class="n">iter</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="w">      </span><span class="n">abs2p</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">==</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="k">      </span><span class="n">stopping_crit2</span><span class="o">=</span><span class="p">(</span><span class="n">FRAC_ERR</span><span class="o">*</span><span class="n">ek</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! (simplified a little Eq. 10 of Adams 1967)</span>
+<span class="w">        </span><span class="c">! do additional iteration if we are less than 10x from stopping criterion</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="mf">0.01d0</span><span class="o">*</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">          return</span><span class="w"> </span><span class="c">! return immediately, because we are at very good place</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="k">          </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"> </span><span class="c">! do one iteration more</span>
+<span class="w">        </span><span class="k">endif</span>
+<span class="k">      else</span>
+<span class="k">        </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">  </span><span class="c">! reset if we are outside the zone of the root</span>
+<span class="w">      </span><span class="k">endif</span>
+
+<span class="k">      </span><span class="n">faq</span><span class="o">=</span><span class="mf">1.0_wp</span>
+<span class="w">      </span><span class="n">denom</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">/=</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">fac_netwon</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">        </span><span class="n">fac_extra</span><span class="o">=</span><span class="n">d2p_half</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">        </span><span class="n">F_half</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">*</span><span class="n">fac_extra</span>
+
+<span class="w">        </span><span class="n">denom_sqrt</span><span class="o">=</span><span class="nb">sqrt</span><span class="p">(</span><span class="n">c_one</span><span class="o">-</span><span class="n">two_n_div_n_1</span><span class="o">*</span><span class="n">F_half</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c">!G=dp/p  ! gradient of ln(p)</span>
+<span class="w">        </span><span class="c">!G2=G*G</span>
+<span class="w">        </span><span class="c">!H=G2-2.0_wp*d2p_half/p  ! second derivative of ln(p)</span>
+<span class="w">        </span><span class="c">!denom_sqrt=sqrt( (degree-1)*(degree*H-G2) )</span>
+
+<span class="w">        </span><span class="c">! NEXT LINE PROBABLY CAN BE COMMENTED OUT</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">real</span><span class="p">(</span><span class="n">denom_sqrt</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">          </span><span class="c">! real part of a square root is positive for probably all compilers. You can</span>
+<span class="w">          </span><span class="c">! test this on your compiler and if so, you can omit this check</span>
+<span class="w">          </span><span class="n">denom</span><span class="o">=</span><span class="n">c_one_nth</span><span class="o">+</span><span class="n">n_1_nth</span><span class="o">*</span><span class="n">denom_sqrt</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="k">          </span><span class="n">denom</span><span class="o">=</span><span class="n">c_one_nth</span><span class="o">-</span><span class="n">n_1_nth</span><span class="o">*</span><span class="n">denom_sqrt</span>
+<span class="w">        </span><span class="k">endif</span>
+<span class="k">      endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">denom</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">!test if demoninators are &gt; 0.0 not to divide by zero</span>
+<span class="w">        </span><span class="n">dx</span><span class="o">=</span><span class="p">(</span><span class="n">absroot</span><span class="o">+</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="nb">exp</span><span class="p">(</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="n">wp</span><span class="p">))</span><span class="w"> </span><span class="c">! make some random jump</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="k">        </span><span class="n">dx</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">/</span><span class="n">denom</span>
+<span class="w">        </span><span class="c">!dx=degree/denom</span>
+<span class="w">      </span><span class="k">endif</span>
+
+<span class="k">      </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">dx</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newroot</span><span class="o">==</span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="c">! nothing changes -&gt; return</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">good_to_go</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">       </span><span class="c">! this was jump already after stopping criterion was met</span>
+<span class="w">        </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">      endif</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_EVERY</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! decide whether to do a jump of modified length (to break cycles)</span>
+<span class="w">        </span><span class="n">faq</span><span class="o">=</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="n">FRAC_JUMP_EVERY</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">faq</span><span class="o">*</span><span class="n">dx</span><span class="w"> </span><span class="c">! do jump of some semi-random length (0&lt;faq&lt;1)</span>
+<span class="w">      </span><span class="k">endif</span>
+<span class="k">      </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">    </span><span class="k">enddo</span>
+<span class="k">    </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">    </span><span class="c">! too many iterations here</span>
+<span class="w">  </span><span class="k">end subroutine </span><span class="n">cmplx_laguerre</span>
+
+<span class="w">  </span><span class="k">subroutine </span><span class="n">solve_quadratic_eq</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span><span class="n">x1</span><span class="p">,</span><span class="n">poly</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c">! Quadratic equation solver for complex polynomial (degree=2)</span>
+
+<span class="w">      </span><span class="k">implicit none</span>
+
+<span class="k">      </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="n">x1</span>
+<span class="w">      </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">poly</span><span class="w"> </span><span class="c">!! coeffs of the polynomial</span>
+<span class="w">                                                    </span><span class="c">!! an array of polynomial cooefs,</span>
+<span class="w">                                                    </span><span class="c">!! length = degree+1, poly(1) is constant</span>
+<span class="w">                                                    </span><span class="c">!!```</span>
+<span class="w">                                                    </span><span class="c">!!        1              2             3</span>
+<span class="w">                                                    </span><span class="c">!!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2</span>
+<span class="w">                                                    </span><span class="c">!!```</span>
+<span class="w">      </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="p">,</span><span class="w"> </span><span class="n">delta</span>
+
+<span class="w">      </span><span class="n">a</span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="w">      </span><span class="n">b</span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="n">c</span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! quadratic equation: a z^2 + b z + c = 0</span>
+
+<span class="w">      </span><span class="n">b2</span><span class="o">=</span><span class="n">b</span><span class="o">*</span><span class="n">b</span>
+<span class="w">      </span><span class="n">delta</span><span class="o">=</span><span class="nb">sqrt</span><span class="p">(</span><span class="n">b2</span><span class="o">-</span><span class="mf">4.0_wp</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">c</span><span class="p">))</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">delta</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! scalar product to decide the sign yielding bigger magnitude</span>
+<span class="w">        </span><span class="n">x0</span><span class="o">=-</span><span class="mf">0.5_wp</span><span class="o">*</span><span class="p">(</span><span class="n">b</span><span class="o">+</span><span class="n">delta</span><span class="p">)</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="k">        </span><span class="n">x0</span><span class="o">=-</span><span class="mf">0.5_wp</span><span class="o">*</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">delta</span><span class="p">)</span>
+<span class="w">      </span><span class="k">endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">x0</span><span class="o">==</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">x1</span><span class="o">=</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">)</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="c">! Viete&#39;s formula</span>
+<span class="w">        </span><span class="n">x1</span><span class="o">=</span><span class="n">c</span><span class="o">/</span><span class="n">x0</span>
+<span class="w">        </span><span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="o">/</span><span class="n">a</span>
+<span class="w">      </span><span class="k">endif</span>
+
+<span class="k">    end subroutine </span><span class="n">solve_quadratic_eq</span>
+
+<span class="w">  </span><span class="k">recursive subroutine </span><span class="n">cmplx_laguerre2newton</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="n">starting_mode</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c">!!  Subroutine finds one root of a complex polynomial using</span>
+<span class="w">    </span><span class="c">!!  Laguerre&#39;s method, Second-order General method and Newton&#39;s</span>
+<span class="w">    </span><span class="c">!!  method - depending on the value of function F, which is a</span>
+<span class="w">    </span><span class="c">!!  combination of second derivative, first derivative and</span>
+<span class="w">    </span><span class="c">!!  value of polynomial [F=-(p&quot;*p)/(p&#39;p&#39;)].</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  Subroutine has 3 modes of operation. It starts with mode=2</span>
+<span class="w">    </span><span class="c">!!  which is the Laguerre&#39;s method, and continues until F</span>
+<span class="w">    </span><span class="c">!!  becames F&lt;0.50, at which point, it switches to mode=1,</span>
+<span class="w">    </span><span class="c">!!  i.e., SG method (see paper). While in the first two</span>
+<span class="w">    </span><span class="c">!!  modes, routine calculates stopping criterion once per every</span>
+<span class="w">    </span><span class="c">!!  iteration. Switch to the last mode, Newton&#39;s method, (mode=0)</span>
+<span class="w">    </span><span class="c">!!  happens when becomes F&lt;0.05. In this mode, routine calculates</span>
+<span class="w">    </span><span class="c">!!  stopping criterion only once, at the beginning, under an</span>
+<span class="w">    </span><span class="c">!!  assumption that we are already very close to the root.</span>
+<span class="w">    </span><span class="c">!!  If there are more than 10 iterations in Newton&#39;s mode,</span>
+<span class="w">    </span><span class="c">!!  it means that in fact we were far from the root, and</span>
+<span class="w">    </span><span class="c">!!  routine goes back to Laguerre&#39;s method (mode=2).</span>
+<span class="w">    </span><span class="c">!!</span>
+<span class="w">    </span><span class="c">!!  For a summary of the method see the paper: Skowron &amp; Gould (2012)</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">degree</span><span class="w"> </span><span class="c">!! a degree of the polynomial</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">poly</span><span class="w"> </span><span class="c">!! is an array of polynomial cooefs</span>
+<span class="w">                                                               </span><span class="c">!! length = degree+1, poly(1) is constant</span>
+<span class="w">                                                               </span><span class="c">!!```</span>
+<span class="w">                                                               </span><span class="c">!!        1              2             3</span>
+<span class="w">                                                               </span><span class="c">!!   poly(1) x^0 + poly(2) x^1 + poly(3) x^2 + ...</span>
+<span class="w">                                                               </span><span class="c">!!```</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="c">!! * input: guess for the value of a root</span>
+<span class="w">                                       </span><span class="c">!! * output: a root of the polynomial</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!! Uses &#39;root&#39; value as a starting point (!!!!!)</span>
+<span class="w">                                       </span><span class="c">!! Remember to initialize &#39;root&#39; to some initial guess or to</span>
+<span class="w">                                       </span><span class="c">!! point (0,0) if you have no prior knowledge.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">starting_mode</span><span class="w"> </span><span class="c">!! this should be by default = 2. However if you</span>
+<span class="w">                                         </span><span class="c">!! choose to start with SG method put 1 instead.</span>
+<span class="w">                                         </span><span class="c">!! Zero will cause the routine to</span>
+<span class="w">                                         </span><span class="c">!! start with Newton for first 10 iterations, and</span>
+<span class="w">                                         </span><span class="c">!! then go back to mode 2.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="c">!! number of iterations performed (the number of polynomial</span>
+<span class="w">                                 </span><span class="c">!! evaluations and stopping criterion evaluation)</span>
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="c">!! is false if routine reaches maximum number of iterations</span>
+
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">faq</span><span class="w"> </span><span class="c">! jump length</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w">         </span><span class="c">! value of polynomial</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dp</span><span class="w">        </span><span class="c">! value of 1st derivative</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">d2p_half</span><span class="w">  </span><span class="c">! value of 2nd derivative</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span>
+<span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">good_to_go</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">denom</span><span class="p">,</span><span class="w"> </span><span class="n">denom_sqrt</span><span class="p">,</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="n">newroot</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="n">absroot</span><span class="p">,</span><span class="w"> </span><span class="n">abs2p</span><span class="p">,</span><span class="w"> </span><span class="n">abs2_F_half</span>
+<span class="w">    </span><span class="kt">complex</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">fac_netwon</span><span class="p">,</span><span class="w"> </span><span class="n">fac_extra</span><span class="p">,</span><span class="w"> </span><span class="n">F_half</span><span class="p">,</span><span class="w"> </span><span class="n">c_one_nth</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">one_nth</span><span class="p">,</span><span class="w"> </span><span class="n">n_1_nth</span><span class="p">,</span><span class="w"> </span><span class="n">two_n_div_n_1</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mode</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">stopping_crit2</span>
+
+<span class="w">    </span><span class="n">iter</span><span class="o">=</span><span class="mi">0</span>
+<span class="w">    </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+<span class="w">    </span><span class="n">stopping_crit2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">  </span><span class="c">!  value not important, will be initialized anyway on the first loop (because mod(1,10)==1)</span>
+
+<span class="w">    </span><span class="c">! next if-endif block is an EXTREME failsafe, not usually needed, and thus turned off in this version.</span>
+<span class="w">    </span><span class="c">!if (.false.)then ! change false--&gt;true if you would like to use caution about having first coefficient == 0</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">          write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;Error: cmplx_laguerre2newton: degree&lt;0&#39;</span>
+<span class="w">          </span><span class="k">return</span>
+<span class="k">      endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="k">          call </span><span class="n">cmplx_laguerre2newton</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w"> </span><span class="n">degree</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="n">starting_mode</span><span class="p">)</span>
+<span class="w">          </span><span class="k">return</span>
+<span class="k">      endif</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">degree</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! we know from previous check than poly(1) not equal zero</span>
+<span class="w">            </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">            </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s1">&#39;Warning: cmplx_laguerre2newton: degree=0 and poly(1)/=0, no roots&#39;</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">          else</span>
+<span class="k">            </span><span class="n">root</span><span class="o">=-</span><span class="n">poly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">poly</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">          endif</span>
+<span class="k">      endif</span>
+<span class="w">    </span><span class="c">!endif</span>
+<span class="w">    </span><span class="c">!  end EXTREME failsafe</span>
+
+<span class="w">    </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span>
+<span class="w">    </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">    </span><span class="n">mode</span><span class="o">=</span><span class="n">starting_mode</span><span class="w">  </span><span class="c">! mode=2 full laguerre, mode=1 SG, mode=0 newton</span>
+
+<span class="w">    </span><span class="k">do</span><span class="w"> </span><span class="c">! infinite loop, just to be able to come back from newton, if more than 10 iteration there</span>
+
+<span class="w">      </span><span class="c">!------------------------------------------------------------- mode 2</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">&gt;=</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! LAGUERRE&#39;S METHOD</span>
+<span class="w">          </span><span class="n">one_nth</span><span class="o">=</span><span class="mf">1.0_wp</span><span class="o">/</span><span class="n">degree</span>
+<span class="w">          </span><span class="n">n_1_nth</span><span class="o">=</span><span class="p">(</span><span class="n">degree</span><span class="o">-</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="n">one_nth</span>
+<span class="w">          </span><span class="n">two_n_div_n_1</span><span class="o">=</span><span class="mf">2.0_wp</span><span class="o">/</span><span class="n">n_1_nth</span>
+<span class="w">          </span><span class="n">c_one_nth</span><span class="o">=</span><span class="nb">cmplx</span><span class="p">(</span><span class="n">one_nth</span><span class="p">,</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">wp</span><span class="p">)</span>
+
+<span class="w">          </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">MAX_ITERS</span><span class="w">  </span><span class="c">!</span>
+<span class="w">          </span><span class="n">faq</span><span class="o">=</span><span class="mf">1.0_wp</span>
+
+<span class="w">          </span><span class="c">! prepare stoping criterion</span>
+<span class="w">          </span><span class="n">ek</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">          </span><span class="n">absroot</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="w">          </span><span class="c">! calculate value of polynomial and its first two derivatives</span>
+<span class="w">          </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">zero</span>
+<span class="w">          </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">          </span><span class="k">do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">              </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">dp</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d2p_half</span><span class="o">*</span><span class="n">root</span>
+<span class="w">              </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">              </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">              </span><span class="c">! Adams, Duane A., 1967, &quot;A stopping criterion for polynomial root finding&quot;,</span>
+<span class="w">              </span><span class="c">! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655</span>
+<span class="w">              </span><span class="c">! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf</span>
+<span class="w">              </span><span class="c">! Eq 8.</span>
+<span class="w">              </span><span class="n">ek</span><span class="o">=</span><span class="n">absroot</span><span class="o">*</span><span class="n">ek</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="w">          </span><span class="k">enddo</span>
+<span class="k">          </span><span class="n">abs2p</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="c">!abs(p)</span>
+<span class="w">          </span><span class="n">iter</span><span class="o">=</span><span class="n">iter</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">==</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+
+<span class="k">          </span><span class="n">stopping_crit2</span><span class="o">=</span><span class="p">(</span><span class="n">FRAC_ERR</span><span class="o">*</span><span class="n">ek</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! (simplified a little Eq. 10 of Adams 1967)</span>
+<span class="w">              </span><span class="c">! do additional iteration if we are less than 10x from stopping criterion</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="mf">0.01_wp</span><span class="o">*</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! ten times better than stopping criterion</span>
+<span class="w">              </span><span class="k">return</span><span class="w"> </span><span class="c">! return immediately, because we are at very good place</span>
+<span class="w">              </span><span class="k">else</span>
+<span class="k">              </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"> </span><span class="c">! do one iteration more</span>
+<span class="w">              </span><span class="k">endif</span>
+<span class="k">          else</span>
+<span class="k">              </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"> </span><span class="c">! reset if we are outside the zone of the root</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          </span><span class="n">denom</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">/=</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">              </span><span class="n">fac_netwon</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">              </span><span class="n">fac_extra</span><span class="o">=</span><span class="n">d2p_half</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">              </span><span class="n">F_half</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">*</span><span class="n">fac_extra</span>
+
+<span class="w">              </span><span class="n">abs2_F_half</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">F_half</span><span class="p">)</span><span class="o">*</span><span class="n">F_half</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2_F_half</span><span class="o">&lt;=</span><span class="mf">0.0625_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">     </span><span class="c">! F&lt;0.50, F/2&lt;0.25</span>
+<span class="w">              </span><span class="c">! go to SG method</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2_F_half</span><span class="o">&lt;=</span><span class="mf">0.000625_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! F&lt;0.05, F/2&lt;0.025</span>
+<span class="w">                  </span><span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="c">! go to Newton&#39;s</span>
+<span class="w">              </span><span class="k">else</span>
+<span class="k">                  </span><span class="n">mode</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="c">! go to SG</span>
+<span class="w">              </span><span class="k">endif</span>
+<span class="k">              endif</span>
+
+<span class="k">              </span><span class="n">denom_sqrt</span><span class="o">=</span><span class="nb">sqrt</span><span class="p">(</span><span class="n">c_one</span><span class="o">-</span><span class="n">two_n_div_n_1</span><span class="o">*</span><span class="n">F_half</span><span class="p">)</span>
+
+<span class="w">              </span><span class="c">! NEXT LINE PROBABLY CAN BE COMMENTED OUT</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">real</span><span class="p">(</span><span class="n">denom_sqrt</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                </span><span class="c">! real part of a square root is positive for probably all compilers. You can</span>
+<span class="w">                </span><span class="c">! test this on your compiler and if so, you can omit this check</span>
+<span class="w">                </span><span class="n">denom</span><span class="o">=</span><span class="n">c_one_nth</span><span class="o">+</span><span class="n">n_1_nth</span><span class="o">*</span><span class="n">denom_sqrt</span>
+<span class="w">              </span><span class="k">else</span>
+<span class="k">                </span><span class="n">denom</span><span class="o">=</span><span class="n">c_one_nth</span><span class="o">-</span><span class="n">n_1_nth</span><span class="o">*</span><span class="n">denom_sqrt</span>
+<span class="w">              </span><span class="k">endif</span>
+<span class="k">          endif</span>
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">denom</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">!test if demoninators are &gt; 0.0 not to divide by zero</span>
+<span class="w">              </span><span class="n">dx</span><span class="o">=</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="nb">exp</span><span class="p">(</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="n">wp</span><span class="p">))</span><span class="w"> </span><span class="c">! make some random jump</span>
+<span class="w">          </span><span class="k">else</span>
+<span class="k">              </span><span class="n">dx</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">/</span><span class="n">denom</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">dx</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newroot</span><span class="o">==</span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="c">! nothing changes -&gt; return</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">good_to_go</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">       </span><span class="c">! this was jump already after stopping criterion was met</span>
+<span class="w">              </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">              </span><span class="k">return</span>
+<span class="k">          endif</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">/=</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">              </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">              </span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="w">    </span><span class="c">! remember iteration index</span>
+<span class="w">              </span><span class="k">exit</span><span class="w">     </span><span class="c">! go to Newton&#39;s or SG</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_EVERY</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! decide whether to do a jump of modified length (to break cycles)</span>
+<span class="w">              </span><span class="n">faq</span><span class="o">=</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="n">FRAC_JUMP_EVERY</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">              </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">faq</span><span class="o">*</span><span class="n">dx</span><span class="w"> </span><span class="c">! do jump of some semi-random length (0&lt;faq&lt;1)</span>
+<span class="w">          </span><span class="k">endif</span>
+<span class="k">          </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">          </span><span class="k">enddo</span><span class="w"> </span><span class="c">! do mode 2</span>
+
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">&gt;=</span><span class="n">MAX_ITERS</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">          endif</span>
+
+<span class="k">      endif</span><span class="w"> </span><span class="c">! if mode 2</span>
+
+<span class="w">      </span><span class="c">!------------------------------------------------------------- mode 1</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! SECOND-ORDER GENERAL METHOD (SG)</span>
+
+<span class="w">          </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="n">j</span><span class="p">,</span><span class="n">MAX_ITERS</span><span class="w">  </span><span class="c">!</span>
+<span class="w">          </span><span class="n">faq</span><span class="o">=</span><span class="mf">1.0_wp</span>
+
+<span class="w">          </span><span class="c">! calculate value of polynomial and its first two derivatives</span>
+<span class="w">          </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">zero</span>
+<span class="w">          </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">              </span><span class="c">! prepare stoping criterion</span>
+<span class="w">              </span><span class="n">ek</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">              </span><span class="n">absroot</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="w">              </span><span class="k">do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">                </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">dp</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d2p_half</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">                </span><span class="c">! Adams, Duane A., 1967, &quot;A stopping criterion for polynomial root finding&quot;,</span>
+<span class="w">                </span><span class="c">! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655</span>
+<span class="w">                </span><span class="c">! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf</span>
+<span class="w">                </span><span class="c">! Eq 8.</span>
+<span class="w">                </span><span class="n">ek</span><span class="o">=</span><span class="n">absroot</span><span class="o">*</span><span class="n">ek</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="w">              </span><span class="k">enddo</span>
+<span class="k">              </span><span class="n">stopping_crit2</span><span class="o">=</span><span class="p">(</span><span class="n">FRAC_ERR</span><span class="o">*</span><span class="n">ek</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">          </span><span class="k">else</span>
+<span class="k">              do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">                </span><span class="n">d2p_half</span><span class="o">=</span><span class="n">dp</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d2p_half</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">              </span><span class="k">enddo</span>
+<span class="k">          endif</span>
+
+<span class="k">          </span><span class="n">abs2p</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="c">!abs(p)**2</span>
+<span class="w">          </span><span class="n">iter</span><span class="o">=</span><span class="n">iter</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">==</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! (simplified a little Eq. 10 of Adams 1967)</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="w">                </span><span class="c">! do additional iteration if we are less than 10x from stopping criterion</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="mf">0.01_wp</span><span class="o">*</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! ten times better than stopping criterion</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="c">! return immediately, because we are at very good place</span>
+<span class="w">              </span><span class="k">else</span>
+<span class="k">                </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"> </span><span class="c">! do one iteration more</span>
+<span class="w">              </span><span class="k">endif</span>
+<span class="k">          else</span>
+<span class="k">              </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"> </span><span class="c">! reset if we are outside the zone of the root</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">!test if demoninators are &gt; 0.0 not to divide by zero</span>
+<span class="w">              </span><span class="n">dx</span><span class="o">=</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="nb">exp</span><span class="p">(</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="n">wp</span><span class="p">))</span><span class="w"> </span><span class="c">! make some random jump</span>
+<span class="w">          </span><span class="k">else</span>
+<span class="k">              </span><span class="n">fac_netwon</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">              </span><span class="n">fac_extra</span><span class="o">=</span><span class="n">d2p_half</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">              </span><span class="n">F_half</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">*</span><span class="n">fac_extra</span>
+
+<span class="w">              </span><span class="n">abs2_F_half</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">F_half</span><span class="p">)</span><span class="o">*</span><span class="n">F_half</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2_F_half</span><span class="o">&lt;=</span><span class="mf">0.000625_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! F&lt;0.05, F/2&lt;0.025</span>
+<span class="w">                </span><span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="c">! set Newton&#39;s, go there after jump</span>
+<span class="w">              </span><span class="k">endif</span>
+
+<span class="k">              </span><span class="n">dx</span><span class="o">=</span><span class="n">fac_netwon</span><span class="o">*</span><span class="p">(</span><span class="n">c_one</span><span class="o">+</span><span class="n">F_half</span><span class="p">)</span><span class="w">  </span><span class="c">! SG</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">dx</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newroot</span><span class="o">==</span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="c">! nothing changes -&gt; return</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">good_to_go</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">       </span><span class="c">! this was jump already after stopping criterion was met</span>
+<span class="w">              </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">              </span><span class="k">return</span>
+<span class="k">          endif</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">/=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">              </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">              </span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="w">    </span><span class="c">! remember iteration number</span>
+<span class="w">              </span><span class="k">exit</span><span class="w">     </span><span class="c">! go to Newton&#39;s</span>
+<span class="w">          </span><span class="k">endif</span>
+
+<span class="k">          if</span><span class="w"> </span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_EVERY</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! decide whether to do a jump of modified length (to break cycles)</span>
+<span class="w">              </span><span class="n">faq</span><span class="o">=</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="n">FRAC_JUMP_EVERY</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">              </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">faq</span><span class="o">*</span><span class="n">dx</span><span class="w"> </span><span class="c">! do jump of some semi-random length (0&lt;faq&lt;1)</span>
+<span class="w">          </span><span class="k">endif</span>
+<span class="k">          </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+
+<span class="w">          </span><span class="k">enddo</span><span class="w"> </span><span class="c">! do mode 1</span>
+
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">&gt;=</span><span class="n">MAX_ITERS</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">          endif</span>
+
+<span class="k">      endif</span><span class="w"> </span><span class="c">! if mode 1</span>
+
+<span class="w">      </span><span class="c">!------------------------------------------------------------- mode 0</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! NEWTON&#39;S METHOD</span>
+
+<span class="w">          </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="n">j</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">10</span><span class="w">  </span><span class="c">! do only 10 iterations the most, then go back to full Laguerre&#39;s</span>
+<span class="w">            </span><span class="n">faq</span><span class="o">=</span><span class="mf">1.0_wp</span>
+
+<span class="w">            </span><span class="c">! calculate value of polynomial and its first two derivatives</span>
+<span class="w">            </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">            </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">zero</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! calculate stopping crit only once at the begining</span>
+<span class="w">                </span><span class="c">! prepare stoping criterion</span>
+<span class="w">                </span><span class="n">ek</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">                </span><span class="n">absroot</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="w">                </span><span class="k">do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">                    </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                    </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">                    </span><span class="c">! Adams, Duane A., 1967, &quot;A stopping criterion for polynomial root finding&quot;,</span>
+<span class="w">                    </span><span class="c">! Communications of the ACM, Volume 10 Issue 10, Oct. 1967, p. 655</span>
+<span class="w">                    </span><span class="c">! ftp://reports.stanford.edu/pub/cstr/reports/cs/tr/67/55/CS-TR-67-55.pdf</span>
+<span class="w">                    </span><span class="c">! Eq 8.</span>
+<span class="w">                    </span><span class="n">ek</span><span class="o">=</span><span class="n">absroot</span><span class="o">*</span><span class="n">ek</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="w">                </span><span class="k">enddo</span>
+<span class="k">                </span><span class="n">stopping_crit2</span><span class="o">=</span><span class="p">(</span><span class="n">FRAC_ERR</span><span class="o">*</span><span class="n">ek</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">            </span><span class="k">else</span><span class="w">        </span><span class="c">!</span>
+<span class="w">                </span><span class="k">do </span><span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="c">! Horner Scheme, see for eg.  Numerical Recipes Sec. 5.3 how to evaluate polynomials and derivatives</span>
+<span class="w">                    </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dp</span><span class="o">*</span><span class="n">root</span>
+<span class="w">                    </span><span class="n">p</span><span class="w">  </span><span class="o">=</span><span class="n">poly</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="n">root</span><span class="w">    </span><span class="c">! b_k</span>
+<span class="w">                </span><span class="k">enddo</span>
+<span class="k">            endif</span>
+<span class="k">            </span><span class="n">abs2p</span><span class="o">=</span><span class="kt">real</span><span class="p">(</span><span class="nb">conjg</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="c">!abs(p)**2</span>
+<span class="w">            </span><span class="n">iter</span><span class="o">=</span><span class="n">iter</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">==</span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+
+<span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! (simplified a little Eq. 10 of Adams 1967)</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="w">                </span><span class="c">! do additional iteration if we are less than 10x from stopping criterion</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">abs2p</span><span class="o">&lt;</span><span class="mf">0.01_wp</span><span class="o">*</span><span class="n">stopping_crit2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! ten times better than stopping criterion</span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="c">! return immediately, because we are at very good place</span>
+<span class="w">                </span><span class="k">else</span>
+<span class="k">                    </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"> </span><span class="c">! do one iteration more</span>
+<span class="w">                </span><span class="k">endif</span>
+<span class="k">            else</span>
+<span class="k">                </span><span class="n">good_to_go</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"> </span><span class="c">! reset if we are outside the zone of the root</span>
+<span class="w">            </span><span class="k">endif</span>
+
+<span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="n">dp</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! test if demoninators are &gt; 0.0 not to divide by zero</span>
+<span class="w">                </span><span class="n">dx</span><span class="o">=</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">*</span><span class="nb">exp</span><span class="p">(</span><span class="nb">cmplx</span><span class="p">(</span><span class="mf">0.0_wp</span><span class="p">,</span><span class="n">FRAC_JUMPS</span><span class="p">(</span><span class="nb">mod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">FRAC_JUMP_LEN</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="n">wp</span><span class="p">))</span><span class="w"> </span><span class="c">! make some random jump</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="k">                </span><span class="n">dx</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">dp</span>
+<span class="w">            </span><span class="k">endif</span>
+
+<span class="k">            </span><span class="n">newroot</span><span class="o">=</span><span class="n">root</span><span class="o">-</span><span class="n">dx</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newroot</span><span class="o">==</span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="c">! nothing changes -&gt; return</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">good_to_go</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+<span class="w">                </span><span class="k">return</span>
+<span class="k">            endif</span>
+
+<span class="w">            </span><span class="c">! this loop is done only 10 times. So skip this check</span>
+<span class="w">            </span><span class="c">!if (mod(i,FRAC_JUMP_EVERY)==0) then ! decide whether to do a jump of modified length (to break cycles)</span>
+<span class="w">            </span><span class="c">!  faq=FRAC_JUMPS(mod(i/FRAC_JUMP_EVERY-1,FRAC_JUMP_LEN)+1)</span>
+<span class="w">            </span><span class="c">!  newroot=root-faq*dx ! do jump of some semi-random length (0&lt;faq&lt;1)</span>
+<span class="w">            </span><span class="c">!endif</span>
+<span class="w">            </span><span class="n">root</span><span class="o">=</span><span class="n">newroot</span>
+
+<span class="w">          </span><span class="k">enddo</span><span class="w"> </span><span class="c">! do mode 0 10 times</span>
+
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">iter</span><span class="o">&gt;=</span><span class="n">MAX_ITERS</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="c">! too many iterations here</span>
+<span class="w">            </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">          endif</span>
+<span class="k">          </span><span class="n">mode</span><span class="o">=</span><span class="mi">2</span><span class="w"> </span><span class="c">! go back to Laguerre&#39;s. This happens when we were unable to converge in 10 iterations with Newton&#39;s</span>
+
+<span class="w">      </span><span class="k">endif</span><span class="w"> </span><span class="c">! if mode 0</span>
+
+<span class="w">    </span><span class="k">enddo</span><span class="w"> </span><span class="c">! end of infinite loop</span>
+
+<span class="w">    </span><span class="n">success</span><span class="o">=</span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+
+<span class="w">  </span><span class="k">end subroutine </span><span class="n">cmplx_laguerre2newton</span>
+
+<span class="k">end subroutine </span><span class="n">cmplx_roots_gen</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              polyroots-fortran
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
