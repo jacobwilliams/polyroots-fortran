@@ -9,7 +9,7 @@
 
     implicit none
 
-    integer :: degree = 5 !! polynomial degree
+    integer :: degree !! polynomial degree
     integer,dimension(2) :: icoeffs = [-1,1] !! set of coefficients
     integer :: ierr !! error code from [[dpolz]]
     type(pyplot) :: plt !! for making the plot
@@ -18,7 +18,8 @@
     integer,dimension (:),allocatable :: a !! coefficients of polynomial
     real(wp),dimension(:),allocatable :: zr, zi !! roots
 
-    do i = 2, 10, 2
+    !do i = 2, 10, 2
+    do i = 11, 11
 
         write(istr,'(I5)') i; istr = adjustl(istr)
         degree = i
@@ -29,10 +30,10 @@
 
         !icoeffs = icoeffs + 1
         write(*,*) 'degree = ', degree
-        call plt%initialize(grid=.true.,xlabel='$\Re(z)$',ylabel='$\Im(z)$',&
+        call plt%initialize(grid=.true.,xlabel='$\\Re(z)$',ylabel='$\\Im(z)$',&
                             title='Degree '//trim(istr)//' Polynomial Roots',usetex=.true.,&
-                            font_size=25, axes_labelsize=25, &
-                            xtick_labelsize=25, ytick_labelsize=25, &
+                            font_size=30, axes_labelsize=30, &
+                            xtick_labelsize=30, ytick_labelsize=30, &
                             figsize=[20,10])
         call generate(1)
         call plt%savefig('roots_'//trim(istr)//'.png')
@@ -45,8 +46,8 @@
         integer, intent(in) :: i
         integer :: ix
         if (i > degree+1) then
-            !write (*, '(*(I2,","))') a
-            call polyroots(degree,real(a,wp),zr,zi,ierr)  !polyroots !! dpolz
+            ! write (*, '(*(I2,","))') a
+            call dpolz(degree,real(a,wp),zr,zi,ierr)  !polyroots !! dpolz
             if (ierr/=0) return !error stop ierr
             call plt%add_plot(zr,zi,label='',linestyle='bo',markersize=2)
         else
